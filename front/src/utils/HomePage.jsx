@@ -6,13 +6,13 @@ import Header from './Header';
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header en haut */}
+      {/* Header  */}
       <div className="absolute top-0 w-full"><Header /></div>
 
-      {/* Body au centre */}
-      <div className="flex-grow"><Body /></div>
+      {/* Body */}
+      <div className="flex-grow mt-20 "><Body /></div>
 
-      {/* Footer en bas */}
+      {/* Footer */}
       <div className=" bottom-0 w-full"><Footer /></div>
     </div>
   );

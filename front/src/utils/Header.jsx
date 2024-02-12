@@ -1,10 +1,16 @@
-import React from 'react';
-import {NavLink} from 'react-router-dom'
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 
 function Header() {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
     return (
         <header className="bg-gray-800 py-4">
-            <nav className="container mx-auto flex justify-between items-center">
+            <nav className="container mx-auto flex justify-between items-center relative">
                 <div className="flex items-center">
                     <a href="/" className="text-white text-xl font-bold">Pfe a Distance</a>
                 </div>
@@ -15,13 +21,25 @@ function Header() {
                     </ul>
                 </div>
                 <div className="md:hidden">
-                    <button className="text-white focus:outline-none">
+                    <button className="text-white focus:outline-none" onClick={toggleMenu}>
                         <svg className="h-6 w-6 fill-current" viewBox="0 0 24 24">
                             <path fillRule="evenodd" clipRule="evenodd" d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
                         </svg>
                     </button>
                 </div>
             </nav>
+            {/* Afficher le menu si isMenuOpen est vrai */}
+            {isMenuOpen && (
+    <div className="sticky top-0 right-0 h-full bg-gray-900 bg-opacity-70 backdrop-filter backdrop-blur-lg z-50">
+        <div className="absolute top-0 right-0 mt-5 w-44 bg-gray-900 bg-opacity-90 shadow-lg p-4">
+            <ul className="flex flex-col space-y-2">
+                <li><a href="#Login" className="text-white hover:text-gray-300">Login</a></li>
+                <li><a href="#Contact" className="text-white hover:text-gray-300">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+)}
+
         </header>
     );
 }
