@@ -5,9 +5,9 @@ import Header from './Header';
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className=" flex flex-col min-h-screen bg-gray-200 ">
       {/* Header  */}
-      <div className="absolute top-0 w-full"><Header /></div>
+      <div className="absolute top-0 w-full "><Header /></div>
 
       {/* Body */}
       <div className="flex-grow mt-20 "><Body /></div>

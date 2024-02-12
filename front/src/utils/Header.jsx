@@ -10,11 +10,11 @@ function Header() {
 
     return (
         <header className="bg-gray-800 py-4">
-            <nav className="container mx-auto flex justify-between items-center relative">
+            <nav className="container mx-auto flex justify-between items-center relative  ">
                 <div className="flex items-center">
-                    <a href="/" className="text-white text-xl font-bold">Pfe a Distance</a>
+                    <a href="/" className="text-white text-xl font-bold ml-3">Pfe a Distance</a>
                 </div>
-                <div className="hidden md:block">
+                <div className="hidden md:block mr-3">
                     <ul className="flex space-x-4">
                         <li><a href="#Login" className="text-white hover:text-gray-300">Login</a></li>
                         <li><a href="#Contact" className="text-white hover:text-gray-300">Contact</a></li>
@@ -33,8 +33,8 @@ function Header() {
     <div className="sticky top-0 right-0 h-full bg-gray-900 bg-opacity-70 backdrop-filter backdrop-blur-lg z-50">
         <div className="absolute top-0 right-0 mt-5 w-44 bg-gray-900 bg-opacity-90 shadow-lg p-4">
             <ul className="flex flex-col space-y-2">
-                <li><a href="#Login" className="text-white hover:text-gray-300">Login</a></li>
-                <li><a href="#Contact" className="text-white hover:text-gray-300">Contact</a></li>
+                <li><a href="#Login" className="text-white hover:text-gray-300" onClick={toggleMenu}>Login</a></li>
+                <li><a href="#Contact" className="text-white hover:text-gray-300" onClick={toggleMenu}>Contact</a></li>
             </ul>
         </div>
     </div>
