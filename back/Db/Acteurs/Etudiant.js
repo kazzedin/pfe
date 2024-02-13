@@ -5,7 +5,8 @@ const etudiantSchema = new mongoose.Schema({
     prenom: String,
     matricule: String,
     filier: String,
-    email: String
+    email: String,
+    password:String,
 });
 
 const etudiantModel = mongoose.model('etudiant', etudiantSchema);

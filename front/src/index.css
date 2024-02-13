@@ -19,7 +19,19 @@
 }
 .contenaire{
     gap: 12rem;
-   
-    
-    
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('./utils/image.jpg');
 } 
+.contenaire2{
+    gap:12rem
+}
+
+.verifier{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+ 
+}

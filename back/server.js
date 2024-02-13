@@ -19,9 +19,9 @@ app.use(cors({
 
 //connection avec la base de donne
 mongoose.connect(connection_db)
-.then(()=>{
-    console.log('Connected to MongoDB')
-})
+.then(()=>
+console.log('Connected to MongoDB')
+ ) 
 .catch(()=>{
     console.log('Failed to connect to MongoDB')
 })

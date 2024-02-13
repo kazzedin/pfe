@@ -3,10 +3,10 @@ import React from 'react'
 export default function Footer() {
   return (
     <div>
-        <footer class="bg-gray-800 text-white py-4">
-    <div class="container mx-auto flex justify-between items-center">
+        <footer className="bg-gray-800 bg-opacity-50 text-white py-4">
+    <div className="container mx-auto flex justify-between items-center">
         <span>© <span id="currentYear"></span> Pfe à Distance. Tous droits réservés.</span>
-        <a href="https://ent.usthb.dz/index.php/accueil" class="text-gray-400 hover:text-white">Visitez notre site partenaire</a>
+        <a href="https://ent.usthb.dz/index.php/accueil" className="text-gray-400 hover:text-blue-500"> site ent USTHB</a>
     </div>
 </footer>
 
