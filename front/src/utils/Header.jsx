@@ -39,6 +39,7 @@ function Header() {
                         <ul className="flex flex-col space-y-2">
                             <li><a href="#Login" className="text-white hover:text-blue-500" onClick={toggleMenu}>Login</a></li>
                             <li><a href="#Contact" className="text-white hover:text-blue-500" onClick={toggleMenu}>Contact</a></li>
+                            <li><a href="/CheckAdmin" className="text-white hover:text-blue-500" onClick={toggleMenu}>Admin</a></li>
                         </ul>
                     </div>
                 </div>

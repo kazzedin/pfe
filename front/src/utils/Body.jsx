@@ -34,19 +34,19 @@ function Body() {
         <h2 className="text-2xl font-bold text-white mb-4">Login</h2>
         <div className="flex justify-center items-center gap-20">
           {/* Carte de connexion Etudiant */}
-          <div className={`etu max-w-md bg-gray-800 bg-opacity-40 p-8 rounded-lg shadow-lg cursor-pointer transition-transform transform ${choixetu ? 'translate-y-0 ease-out' : '-translate-y-2'}`} onClick={handleChoixEtu}>
+          <div className={`etu max-w-md bg-gray-800 bg-opacity-40 p-8 rounded-lg shadow-lg cursor-pointer transition-transform transform ${choixetu ? 'translate-y-0 ease-out' : '-translate-y-2'}`} >
             
-            <h4 className="text-xl font-semibold mb-4 text-white hover:text-blue-500">
-              Étudiant
+            <h4 className="text-xl font-semibold mb-4 text-white hover:text-blue-500 " onClick={handleChoixEtu}>
+              Étudiant <hr className={`${choixetu ? 'hidden':'block'}`} />  
             </h4>
             <p className={`text-sm ${choixetu ? 'hidden' : 'block'} text-white mb-2`}>Si vous êtes étudiant, cliquez ici</p>
             {choixetu && (<LoginForm />)}
           </div>
           {/* Carte de connexion Enseignant */}
-          <div className={`ens max-w-md bg-gray-800 bg-opacity-40 p-8 rounded-lg shadow-lg cursor-pointer transition-transform transform ${choixprf ? 'translate-y-0 ease-out' : '-translate-y-2'}`} onClick={handleChoixPrf}>
+          <div className={`ens max-w-md bg-gray-800 bg-opacity-40 p-8 rounded-lg shadow-lg cursor-pointer transition-transform transform ${choixprf ? 'translate-y-0 ease-out' : '-translate-y-2'}`} >
             
-            <h4 className="text-xl font-semibold mb-4 text-white hover:text-blue-500">
-              Enseignant
+            <h4 className="text-xl font-semibold mb-4 text-white hover:text-blue-500" onClick={handleChoixPrf}>
+              Enseignant <hr className={`${choixprf ? 'hidden':'block'}`} />
             </h4>
             <p className={`text-sm ${choixprf ? 'hidden' : 'block'} text-white mb-2`}>Si vous êtes enseignant, cliquez ici</p>
             {choixprf && (<LoginForm />)}

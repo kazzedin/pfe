@@ -35,3 +35,27 @@
     border: 1px solid black;
  
 }
+.check-admin {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('./utils/image.jpg');
+}
+.reset-page{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('./utils/image.jpg');
+}
+.info-page{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('./utils/image.jpg');
+}
+.form-info{
+    width: 35rem;
+}
+.colone-gauche{
+    margin-top: 5rem;
+}
