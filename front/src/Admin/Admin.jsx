@@ -1,7 +1,13 @@
-import React from 'react'
+import React,{useState} from 'react'
+import Sidebar from './components/Sidebar'
+import Dashboard from './components/Dashboard'
 
 export default function Admin() {
+  const [sideBare,setSideBare]=useState(false)
   return (
-    <div> here goes admin Admin</div>
+    <div className='flex'> 
+      <Sidebar sidebar={sideBare}/>
+      <Dashboard sidebar={sideBare} sidebareFunc={setSideBare}/>
+    </div>
   )
 }
