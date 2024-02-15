@@ -22,7 +22,7 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('./utils/image.jpg');
+    background-image: url('/public/image.jpg');
 } 
 .contenaire2{
     gap:12rem
@@ -39,19 +39,25 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('./utils/image.jpg');
+    background-image: url('/public/image.jpg');
 }
 .reset-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('./utils/image.jpg');
+    background-image: url('/public/image.jpg');
 }
 .info-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('./utils/image.jpg');
+    background-image: url('/public/image.jpg');
+}
+.admin-page{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('/public/image.jpg');
 }
 .form-info{
     width: 35rem;
@@ -59,3 +65,18 @@
 .colone-gauche{
     margin-top: 5rem;
 }
+.profil-page{
+    gap: 2rem;
+    width: 45rem;
+    height: 40rem;
+    
+}
+
+
+
+@media screen and (min-width: 1024px) {
+    .nav-page {
+      width: 83.4%; /* Le Navbar occupe toute la largeur de l'écran */
+      margin-left: 15.6rem; /* Aucun décalage lorsque le Sidebar est masqué */
+    }
+  }

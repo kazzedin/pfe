@@ -28,6 +28,7 @@ export default function CheckAdmin() {
                 setValid(true);
             } else {
                 alert("Vérification échouée");
+                console.log(response.data.message);
             }
         } catch (error) {
             console.error("Erreur lors de la vérification:", error);

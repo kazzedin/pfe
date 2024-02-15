@@ -1,13 +1,20 @@
-import React,{useState} from 'react'
-import Sidebar from './components/Sidebar'
-import Dashboard from './components/Dashboard'
+import React, { useState } from 'react';
+import Sidebar from './components/Sidebar';
+import Dashboard from './components/Dashboard';
+import { Outlet } from 'react-router-dom';
 
 export default function Admin() {
-  const [sideBare,setSideBare]=useState(false)
+  const [sideBar, setSideBar] = useState(false);
   return (
-    <div className='flex'> 
-      <Sidebar sidebar={sideBare}/>
-      <Dashboard sidebar={sideBare} sidebareFunc={setSideBare}/>
-    </div>
-  )
+    <div className='admin-page flex min-h-screen items-center flex-col'>
+      <Sidebar sidebar={sideBar}/>
+    
+        <Dashboard sidebar={sideBar} sidebareFunc={setSideBar}/>
+
+        <div className="content-container flex-grow flex justify-center items-center  ">
+          <Outlet/>
+        </div>
+
+      </div>
+  );
 }

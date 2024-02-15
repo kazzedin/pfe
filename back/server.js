@@ -30,6 +30,7 @@ mongoose.connection.on('error', (err) => {
     console.error('MongoDB connection error:', err);
   });
 
+  
 
 // la partie des routes
 app.use('/admin',adminRouter);
