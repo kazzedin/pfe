@@ -21,7 +21,7 @@ function Header() {
                         <li><a href="#Login" className="text-white hover:text-blue-500">Login</a></li>
                         <li><a href="#Contact" className="text-white hover:text-blue-500">Contact</a></li>
                         {/* Utilisez Link pour naviguer vers la page d'administration */}
-                        <li className='text-white hover:text-gray-300 g-1'><FontAwesomeIcon icon={faUser} className="text-white hover:text-blue-500 mr-1" /><Link to='/CheckAdmin'>Admin</Link></li>
+                        <li className='text-white hover:text-gray-300 g-1'><FontAwesomeIcon icon={faUser} className="text-white hover:text-blue-500 mr-1" /><Link to='/Admin'>Admin</Link></li>
                     </ul>
                 </div>
                 <div className="md:hidden hover:text-blue-500">
@@ -39,7 +39,7 @@ function Header() {
                         <ul className="flex flex-col space-y-2">
                             <li><a href="#Login" className="text-white hover:text-blue-500" onClick={toggleMenu}>Login</a></li>
                             <li><a href="#Contact" className="text-white hover:text-blue-500" onClick={toggleMenu}>Contact</a></li>
-                            <li><a href="/CheckAdmin" className="text-white hover:text-blue-500" onClick={toggleMenu}>Admin</a></li>
+                            <li><a href="/Admin" className="text-white hover:text-blue-500" onClick={toggleMenu}>Admin</a></li>
                         </ul>
                     </div>
                 </div>

@@ -3,9 +3,12 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import { Outlet } from 'react-router-dom';
 
+
 export default function Admin() {
   const [sideBar, setSideBar] = useState(false);
   return (
+   
+    
     <div className='admin-page flex min-h-screen items-center flex-col'>
       <Sidebar sidebar={sideBar}/>
     
@@ -16,5 +19,6 @@ export default function Admin() {
         </div>
 
       </div>
+     
   );
 }

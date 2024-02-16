@@ -5,6 +5,7 @@ const cors=require('cors');
 const cookieParser=require('cookie-parser');
 require('dotenv').config();
 const adminRouter=require('./routes/Admin');
+const insertDefaultAdmin =require('./Middleware/AdminMiddleware/DefaultAdmin')
 const port=process.env.PORT
 const connection_db=process.env.MONGO_URL
 
@@ -13,9 +14,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
     origin:["http://localhost:5173"],
-    credentials:true,
-    methods:["GET", "POST"]
+    methods:["GET", "POST"],
+    credentials:true
 }));
+
+// middleware pour inserer l'admin par default dans le debut de site
+
 
 //connection avec la base de donne
 mongoose.connect(connection_db)
@@ -31,7 +35,8 @@ mongoose.connection.on('error', (err) => {
   });
 
   
-
+  insertDefaultAdmin()
+  
 // la partie des routes
 app.use('/admin',adminRouter);
 

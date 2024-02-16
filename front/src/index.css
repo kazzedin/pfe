@@ -22,7 +22,7 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/public/image.jpg');
+    background-image: url('/image.jpg');
 } 
 .contenaire2{
     gap:12rem
@@ -39,19 +39,19 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/public/image.jpg');
+    background-image: url('/image.jpg');
 }
 .reset-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/public/image.jpg');
+    background-image: url('/image.jpg');
 }
 .info-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/public/image.jpg');
+    background-image: url('/image.jpg');
 }
 .admin-page{
     background-position: center;

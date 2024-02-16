@@ -6,6 +6,7 @@ import Info from './utils/Info';
 import Profile from './utils/Profile';
 import Admin from './Admin/Admin';
 import CheckAdmin from './Admin/CheckAdmin';
+import LoginAdmin from './Admin/LoginAdmin';
 
 export default function App() {
   return (
@@ -13,10 +14,15 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<HomePage />} />
-          <Route path='/CheckAdmin' element={<CheckAdmin />} />
-          <Route path='/Admin' element={<Admin />}>
-            <Route path='Profile' element={<Profile />} />
+
+          
+          <Route  element={<CheckAdmin />}>
+            <Route path='/Admin' element={<Admin />} />
+            <Route path='/Profile' element={<Profile />} />
           </Route>
+          
+          
+          <Route path='/LoginAdmin' element={<LoginAdmin/>}/>
           <Route path='/Reset' element={<Reset />} />
           <Route path='/Info' element={<Info />} />
         </Routes>
