@@ -57,22 +57,45 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/public/image.jpg');
+    background-image: url('/image.jpg');
+}
+.error-page{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('/image.jpg');
+}
+.redirect-page{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('/image.jpg');
 }
 .form-info{
     width: 35rem;
 }
+.return{
+    height: 2rem;
+}
+.first-input{
+    width: 25rem;
+}
+
+
+  
+.profil-page.expanded {
+    width: 100%; /* Adjust this value as needed */
+  }
+
 .colone-gauche{
     margin-top: 5rem;
 }
 .profil-page{
     gap: 2rem;
-    width: 45rem;
+    width: 25rem;
     height: 40rem;
-    
+    transition: width 0.5s ease-out;
 }
-
-
 
 @media screen and (min-width: 1024px) {
     .nav-page {

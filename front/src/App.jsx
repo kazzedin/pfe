@@ -7,6 +7,7 @@ import Profile from './utils/Profile';
 import Admin from './Admin/Admin';
 import CheckAdmin from './Admin/CheckAdmin';
 import LoginAdmin from './Admin/LoginAdmin';
+import ErrorPage from './utils/ErrorPage';
 
 export default function App() {
   return (
@@ -17,14 +18,16 @@ export default function App() {
 
           
           <Route  element={<CheckAdmin />}>
-            <Route path='/Admin' element={<Admin />} />
-            <Route path='/Profile' element={<Profile />} />
+            <Route path='/Admin' element={<Admin />} >
+            <Route path='Profile' element={<Profile />} />
+            </Route>
           </Route>
           
           
           <Route path='/LoginAdmin' element={<LoginAdmin/>}/>
           <Route path='/Reset' element={<Reset />} />
           <Route path='/Info' element={<Info />} />
+          <Route path='*' element={<ErrorPage/>}/>
         </Routes>
       </BrowserRouter>
     </div>

@@ -6,9 +6,10 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const {check,validationResult} = require('express-validator');
-const Verify =require('../Middleware/AdminMiddleware/VerificationJwt')
+const verifyToken =require('../Middleware/AdminMiddleware/VerificationJwt')
+const cookieParser=require('cookie-parser');
 
-
+router.use(cookieParser());
 
 
 //creation de message passer par l'utilisateur
@@ -35,19 +36,19 @@ router.post('/contact',[
 
 
 // la verifcation de JWT dans le cas denter dans la page Admin Pour Allowd or not 
-router.get('/check',Verify,(req,res)=>{
+router.get('/check',verifyToken,(req,res)=>{
     res.json({Valide:true})
 })
 
 
-//verification des infomrations de l'admin
+
 //verification des infomrations de l'admin
 router.post('/verification',   [
     check("email", "Please enter a valid email address").isEmail()
 ],  (req, res) => {
     const { email, password } = req.body;
      const errors = validationResult(req);
-    if (errors.isEmpty()) { 
+    if (errors.isEmpty()) {  
         adminModel.findOne({ email: email })
             .then(user => {
                 if (user) {
@@ -71,6 +72,13 @@ router.post('/verification',   [
         res.status(400).json({ message: "You Enter Invalid Email!!!" });
     }   
 });
+
+// Log Out
+router.get('/logout', (req, res) => {
+res.clearCookie('access_token');
+res.clearCookie('refresh_token');
+res.json({response:true});
+})
 
 
 

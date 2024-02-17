@@ -1,6 +1,7 @@
 import React, { useState , useEffect } from 'react';
 import { Outlet,Link } from 'react-router-dom';
 import axios from 'axios';
+import RedirectingPage from '../utils/RedirectingPage';
 
 export default function CheckAdmin() {
    
@@ -9,10 +10,11 @@ export default function CheckAdmin() {
     const [valid, setValid] = useState(false);
 
     // Fonction pour soumettre les données du formulaire et vérifier l'authentification
+    axios.defaults.withCredentials=true;
     useEffect(() => {
             axios.get('http://localhost:3001/admin/check')
             .then(res=>{
-                if (res.data.Valide == true ) {
+                if (res.data.Valide) {
                     setValid(true);
                     console.log("Verification Success")
                 } else {
@@ -30,8 +32,7 @@ export default function CheckAdmin() {
             )
             :
             <div>
-                <h3>You Are not Allowed to see This Page Please Login as Adminstartor to keep Going</h3>
-                <Link to='/LoginAdmin'>Login Admin</Link>
+                <RedirectingPage/>
             </div>
         }
            

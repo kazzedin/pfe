@@ -9,6 +9,7 @@ const insertDefaultAdmin =require('./Middleware/AdminMiddleware/DefaultAdmin')
 const port=process.env.PORT
 const connection_db=process.env.MONGO_URL
 
+
 //utils
 app.use(express.json());
 app.use(cookieParser());
@@ -18,7 +19,7 @@ app.use(cors({
     credentials:true
 }));
 
-// middleware pour inserer l'admin par default dans le debut de site
+
 
 
 //connection avec la base de donne
@@ -34,17 +35,24 @@ mongoose.connection.on('error', (err) => {
     console.error('MongoDB connection error:', err);
   });
 
-  
-  insertDefaultAdmin()
+
+// middlewares
+insertDefaultAdmin()
+
+
   
 // la partie des routes
 app.use('/admin',adminRouter);
+
+
 
 //fonction de test
 app.get('/', (req,res)=>{
     res.send("hello world !!!!");
 }
 )
+
+
 
 
 //fonction de listener
