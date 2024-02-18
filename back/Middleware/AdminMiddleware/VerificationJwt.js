@@ -20,12 +20,14 @@ function verifyToken(req, res, next) {
             else{
                 console.log("Token verified");
                 req.email = decoded.email;
+                req.password =decoded.password;
                 next();
             }
             
         });
     }
 }
+
 
 
 // la fonction qui va faire le refresh de access token
@@ -44,6 +46,8 @@ function refrech_access_token(req, res) {
             else{
                 const access_token=jwt.sign({email:decoded.email},process.env.ACCESS_TOKEN,{expiresIn:'1m'})
                 res.cookie("access_token", access_token, { maxAge: 60000, httpOnly: true, secure: true, sameSite: 'strict' });
+                req.email=decoded.email;
+                req.password=decoded.password;
                 refresh=true;
              }
             

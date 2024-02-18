@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-regular-svg-icons'; // Importez l'icône d'utilisateur régulier
+import { Link } from 'react-router-dom';
+import { FaUser } from 'react-icons/fa';
+
+
 
 function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,7 +22,7 @@ function Header() {
                         <li><a href="#Login" className="text-white hover:text-blue-500">Login</a></li>
                         <li><a href="#Contact" className="text-white hover:text-blue-500">Contact</a></li>
                         {/* Utilisez Link pour naviguer vers la page d'administration */}
-                        <li className='text-white hover:text-gray-300 g-1'><FontAwesomeIcon icon={faUser} className="text-white hover:text-blue-500 mr-1" /><Link to='/Admin'>Admin</Link></li>
+                        <li className='text-white hover:text-blue-500 '><Link to='/Admin' className='flex flex-row gap-1 items-center justify-center'> <FaUser />Admin</Link></li>
                     </ul>
                 </div>
                 <div className="md:hidden hover:text-blue-500">

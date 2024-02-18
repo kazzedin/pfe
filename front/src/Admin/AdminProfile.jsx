@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { IoIosArrowBack } from 'react-icons/io';
+import { AdminUserContext } from './AdminUserProvider';
 
 
-export default function Profile() {
+export default function Profile(props) {
   const [change, setChange] = useState(false);
   const [inputs, setInputs] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
@@ -13,9 +14,12 @@ export default function Profile() {
   const [showPassword2, setShowPassword2] = useState(false);
   const [showPassword3, setShowPassword3] = useState(false);
   const navigate = useNavigate();
+  const {adminUserEmail}=useContext(AdminUserContext)
+  const {passwordAdmin}=useContext(AdminUserContext)
 
   const returnAdmin = (e) => {
     e.preventDefault();
+    console.log(props.user)
     navigate('/Admin');
   };
 
@@ -26,14 +30,21 @@ export default function Profile() {
     setInputs((prev) => ({ ...prev, [name]: value }));
   };
 
+  axios.defaults.withCredentials=true;
   const handleSave = (e) => {
     e.preventDefault();
-    axios
-      .put('http://localhost:3001/admin/profil', { email: inputs.email, password: inputs.password })
+    axios.put('http://localhost:3001/admin/profil', { email:inputs.email, password:inputs.password ,find:adminUserEmail})
       .then((res) => {
-        if (res.data.message === 'success') {
-          alert('Vous avez changé vos informations avec succès');
+        if (res.data.message === 'Success') {
           setChange(false); // Réinitialiser le mode de modification après l'enregistrement
+          alert('Vous avez changé vos informations avec succès You Should You Are redirecting to the Login Page  ');
+          // fair un post request to logout route pour supprimer les coockie car on a changer les information donc on doit fair le login autre fois  
+          axios.get('http://localhost:3001/admin/logout')
+          .then(res=>{
+            navigate('/LoginAdmin')
+            console.log(res)})
+          .catch(err=>console.log(err))
+         
         } else {
           alert('Une erreur est survenue');
         }
@@ -42,6 +53,7 @@ export default function Profile() {
         console.log(err);
       });
   };
+  
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -77,6 +89,7 @@ export default function Profile() {
 
   return (
     <div className={`flex flex-col bg-gray-800 bg-opacity-50 profil-page  ${change ? 'expanded' : ''}`}>
+      
       <div className='flex items-center return'>
         <Link onClick={returnAdmin} className='hover:text-red-700 text-white font-bold rounded return-admin flex items-center'>
           <IoIosArrowBack className="mr-2" />
@@ -107,11 +120,11 @@ export default function Profile() {
         <form className='flex flex-col items-start gap-6  first-input ml-3'>
           <div className='flex gap-2 flex-row items-center justify-center'>
             <label htmlFor='Email' className='text-gray-300 font-semibold mb-2 mt-2 ml-8'>Email :</label>
-            <input type='text' key='email' readOnly className='px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white' value={"admin@usthb.com"} />
+            <input type='text' key='email' readOnly className='px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white' value={adminUserEmail} />
           </div>
           <div className='flex flex-row gap-2'>
             <label htmlFor='password' className='text-gray-300 font-semibold mb-2 mt-2'>Password :</label>
-            <input type={`${showPassword1 ? 'text' : 'password'}`} key='password' readOnly value={'admin'} className='px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white' />
+            <input type={`${showPassword1 ? 'text' : 'password'}`} key='password' readOnly value={passwordAdmin} className='px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white' />
             <button
               className='focus:outline-none'
               onClick={(e) => handleShowPassword('current',e)}
@@ -167,8 +180,6 @@ export default function Profile() {
                    type={`${showPassword3 ? 'text' : 'password'}`}
                    key='confirmPassword'
                    name='confirmPassword'
-                   value={inputs.confirmPassword || ''}
-                   onChange={handleInputs}
                    className='px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white mr-3'
                  />
                  <button

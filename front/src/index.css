@@ -80,6 +80,12 @@
 .first-input{
     width: 25rem;
 }
+.loading-page{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('/image.jpg');
+}
 
 
   
@@ -93,6 +99,7 @@
 .profil-page{
     gap: 2rem;
     width: 25rem;
+    margin-top: 3rem;
     height: 40rem;
     transition: width 0.5s ease-out;
 }

@@ -3,15 +3,17 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './utils/HomePage';
 import Reset from './utils/Reset';
 import Info from './utils/Info';
-import Profile from './utils/Profile';
+import AdminProfile from './Admin/AdminProfile';
 import Admin from './Admin/Admin';
 import CheckAdmin from './Admin/CheckAdmin';
 import LoginAdmin from './Admin/LoginAdmin';
 import ErrorPage from './utils/ErrorPage';
+import { AdminUserProvider } from './Admin/AdminUserProvider';
 
 export default function App() {
   return (
     <div>
+      <AdminUserProvider>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<HomePage />} />
@@ -19,7 +21,7 @@ export default function App() {
           
           <Route  element={<CheckAdmin />}>
             <Route path='/Admin' element={<Admin />} >
-            <Route path='Profile' element={<Profile />} />
+            <Route path='Profile' element={<AdminProfile />} />
             </Route>
           </Route>
           
@@ -30,6 +32,7 @@ export default function App() {
           <Route path='*' element={<ErrorPage/>}/>
         </Routes>
       </BrowserRouter>
+      </AdminUserProvider>
     </div>
   );
 }
