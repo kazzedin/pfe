@@ -29,7 +29,7 @@ export default function Info() {
         <div>
           <form className="form-info bg-gray-800 max-w-xl mx-auto bg-opacity-70 p-6 rounded shadow-lg grid grid-cols-2 gap-4" >
             <div className="col-span-1">
-              <h2 className="text-2xl font-bold mb-4 text-center text-white ml-48">Personnel Information</h2>
+              <h2 className="text-2xl font-bold mb-4 text-center text-white ml-48">Informations Personnelles</h2>
 
               <div className="mb-4">
                 <label htmlFor="email" className="block text-gray-300 font-semibold mb-2">Email :</label>
@@ -54,7 +54,7 @@ export default function Info() {
 
             <div className=" colone-gauche col-span-1">
               <div className="mb-4">
-                <label htmlFor="mainChoice" className="block text-gray-300 font-semibold mb-2">Specialiter :</label>
+                <label htmlFor="mainChoice" className="block text-gray-300 font-semibold mb-2">Specialité :</label>
                 <select
                   id="mainChoice"
                   name="mainChoice"
@@ -62,7 +62,7 @@ export default function Info() {
                   onChange={handleChoixSpecialiter}
                   className="w-full px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-300 placeholder-gray-400"
                 >
-                  <option value="" className='text-black'>Selectionner votre sepecialiter</option>
+                  <option value="" className='text-black'>Sélectionner votre sepecialité</option>
                   <option value="ACAD" className='text-black'>ACAD</option>
                   <option value="ISIL" className='text-black'>ISIL</option>
                   <option value="GTR" className='text-black'>GTR</option>
@@ -79,7 +79,7 @@ export default function Info() {
                     onChange={handleChoixSection}
                     className="w-full px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-300 placeholder-gray-400"
                   >
-                    <option value="">Selectionner votre section</option>
+                    <option value="">Sélectionner votre section</option>
                     {sepcialiter === 'ACAD' && (
                       <>
                         <option value="ACAD_A" className='text-black'>ACAD A</option>
@@ -98,11 +98,11 @@ export default function Info() {
               )}
 
               <div className="text-gray-400 text-sm mb-4">
-                En remplissant ce formulaire l'administration vous envoyer votre donner de login dans l'email que vous avez entre Merci !
+                En remplissant ce formulaire, l'administration vous enverra vos informations de connexion à l'email que vous avez renseigné. Merci !
               </div>
 
               <div className="flex justify-center">
-                <button type="submit" className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Send</button>
+                <button type="submit" className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Envoyer</button>
               </div>
             </div>
           </form>

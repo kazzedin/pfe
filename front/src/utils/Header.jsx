@@ -19,7 +19,7 @@ function Header() {
                 </div>
                 <div className="hidden md:block mr-3">
                     <ul className="flex space-x-4">
-                        <li><a href="#Login" className="text-white hover:text-blue-500">Login</a></li>
+                        <li><a href="#Login" className="text-white hover:text-blue-500">Se connecter</a></li>
                         <li><a href="#Contact" className="text-white hover:text-blue-500">Contact</a></li>
                         {/* Utilisez Link pour naviguer vers la page d'administration */}
                         <li className='text-white hover:text-blue-500 '><Link to='/Admin' className='flex flex-row gap-1 items-center justify-center'> <FaUser />Admin</Link></li>
@@ -38,7 +38,7 @@ function Header() {
                 <div className="sticky top-0 right-0 h-full bg-gray-900 bg-opacity-70 backdrop-filter backdrop-blur-lg z-50">
                     <div className="absolute top-0 right-0 mt-5 w-44 bg-gray-900 bg-opacity-90 shadow-lg p-4">
                         <ul className="flex flex-col space-y-2">
-                            <li><a href="#Login" className="text-white hover:text-blue-500" onClick={toggleMenu}>Login</a></li>
+                            <li><a href="#Login" className="text-white hover:text-blue-500" onClick={toggleMenu}>Se connecter</a></li>
                             <li><a href="#Contact" className="text-white hover:text-blue-500" onClick={toggleMenu}>Contact</a></li>
                             <li><a href="/Admin" className="text-white hover:text-blue-500" onClick={toggleMenu}>Admin</a></li>
                         </ul>

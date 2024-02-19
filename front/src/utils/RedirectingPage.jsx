@@ -14,7 +14,7 @@ export default function RedirectingPage() {
       <div className='flex flex-grow justify-center items-center bg-gray-800 bg-opacity-60 text-white'>
         <div className="text-center p-4">
           <div className='flex items-center gap-2'>
-          <h3>You Are not Allowed to see This Page. Please Login as Administrator to Continue</h3>
+          <h3>You are not allowed to see this page. Please login as Administrator to continue</h3>
           <FaExclamationTriangle style={{color:'red'}} />
           </div>
           <Link to='/LoginAdmin' className='hover:text-blue-500'>Login Administrator</Link>

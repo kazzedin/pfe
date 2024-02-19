@@ -31,7 +31,7 @@ function Body() {
 
       {/* Section Connexion */}
       <section id='Login' className="mb-8 w-full flex justify-center flex-col items-center">
-        <h2 className="text-2xl font-bold text-white mb-4">Login</h2>
+        <h2 className="text-2xl font-bold text-white mb-4">Se connecter</h2>
         <div className="flex justify-center items-center gap-20">
           {/* Carte de connexion Etudiant */}
           <div className={`etu max-w-md bg-gray-800 bg-opacity-40 p-8 rounded-lg shadow-lg cursor-pointer transition-transform transform ${choixetu ? 'translate-y-0 ease-out' : '-translate-y-2'}`} >
@@ -42,13 +42,13 @@ function Body() {
             <p className={`text-sm ${choixetu ? 'hidden' : 'block'} text-white mb-2`}>Si vous êtes étudiant, cliquez ici</p>
             {choixetu && (<LoginForm />)}
           </div>
-          {/* Carte de connexion Enseignant */}
+          {/* Carte de connexion Encadreur */}
           <div className={`ens max-w-md bg-gray-800 bg-opacity-40 p-8 rounded-lg shadow-lg cursor-pointer transition-transform transform ${choixprf ? 'translate-y-0 ease-out' : '-translate-y-2'}`} >
             
             <h4 className="text-xl font-semibold mb-4 text-white hover:text-blue-500" onClick={handleChoixPrf}>
-              Enseignant <hr className={`${choixprf ? 'hidden':'block'}`} />
+              Encadreur <hr className={`${choixprf ? 'hidden':'block'}`} />
             </h4>
-            <p className={`text-sm ${choixprf ? 'hidden' : 'block'} text-white mb-2`}>Si vous êtes enseignant, cliquez ici</p>
+            <p className={`text-sm ${choixprf ? 'hidden' : 'block'} text-white mb-2`}>Si vous êtes encadreur, cliquez ici</p>
             {choixprf && (<LoginForm />)}
           </div>
         </div>
