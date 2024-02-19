@@ -9,17 +9,19 @@ const {check,validationResult} = require('express-validator');
 const verifyToken =require('../Middleware/AdminMiddleware/VerificationJwt')
 const cookieParser=require('cookie-parser');
 
+
 router.use(cookieParser());
 
 
 //creation de message passer par l'utilisateur
 router.post('/contact',[
-    check("email","Please enter a valid email address").isEmail()
+    check("sender","Please enter a valid email address").isEmail()
 ], (req, res) => {
-    const { email, message } = req.body;
+    const { sender, message,type } = req.body;
     const errors=validationResult(req);
+    console.log(errors.array());
     if(errors.isEmpty()){
-        messageModel.create({ email: email, message: message })
+        messageModel.create({ sender: sender, message: message,type:type })
         .then((result) => {
             console.log(result);
             res.status(201).json({ message: 'Message sent successfully' });
@@ -29,7 +31,7 @@ router.post('/contact',[
             res.status(500).json({ error: 'Internal server error' });
         });
     }else{
-        res.json({message:"You Enter Invalid Email!!!"})
+        res.json({message:'You Enterd Invalid Email'});
     }
     
 });
@@ -120,7 +122,16 @@ router.put('/profil', [
     }
   });
   
+  router.get('/inbox', (req, res) => {
+    messageModel.find()
+        .then(messages => res.json({ messages: messages })) // Envoyer les messages dans la réponse JSON
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ message: 'Error fetching messages' }); // Gérer les erreurs
+        });
+});
   
+
 
 
 

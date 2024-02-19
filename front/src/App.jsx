@@ -15,6 +15,7 @@ import Docs from './Admin/Docs';
 import ListeEtudiant from './Admin/ListeEtudiant';
 import ListeProf from './Admin/ListeProf';
 import ListePfe from './Admin/ListePfe';
+import DetailsMessages from './Admin/DetailsMessages';
 
 export default function App() {
   return (
@@ -29,7 +30,11 @@ export default function App() {
             <Route path='/Admin' element={<Admin />} >
 
             <Route path='Profile' element={<AdminProfile />} />
-            <Route path='Inbox' element={<Inbox />} />
+
+            <Route path='Inbox' element={<Inbox />} >
+              <Route path='Messages' element={<DetailsMessages/>}/>
+            </Route>
+            
             <Route path='Setting' element={<Setting />} />
             <Route path='ListeEtudiant' element={<ListeEtudiant />} />
             <Route path='ListeProf' element={<ListeProf />} />
