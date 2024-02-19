@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaUserGraduate, FaChalkboardTeacher, FaInbox, FaCog, FaBookOpen, FaFileAlt } from 'react-icons/fa';
+import {Link} from 'react-router-dom'
 
 
 export default function Sidebar(props) {
@@ -15,45 +16,45 @@ export default function Sidebar(props) {
       <ul className='mt-3 text-white font-bold'>
         
         <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2'>
-          <a href="/" className='px-3'>
+          <Link to="/Admin/ListePfe" className='px-3'>
             <FaBookOpen className='inline-block w-6 h-6 mr-2 -mt-2'></FaBookOpen>
             Pfe
-          </a>
+          </Link>
         </li>
 
         <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2'>
-          <a href="/" className='px-3'>
+          <Link to="/Admin/ListeEtudiant" className='px-3'>
             <FaUserGraduate className='inline-block w-6 h-6 mr-2 -mt-2'></FaUserGraduate>
             Etudiant
-          </a>
+          </Link>
         </li>
 
         <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2'>
-          <a href="/" className='px-3'>
+          <Link to="/Admin/ListeProf" className='px-3'>
             <FaChalkboardTeacher className='inline-block w-6 h-6 mr-2 -mt-2'></FaChalkboardTeacher>
             Prof
-          </a>
+          </Link>
         </li>
 
         <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2'>
-          <a href="/" className='px-3'>
+          <Link to="/Admin/Inbox" className='px-3'>
             <FaInbox className='inline-block w-6 h-6 mr-2 -mt-2'></FaInbox>
             Inbox
-          </a>
+          </Link>
         </li>
 
         <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2'>
-          <a href="/" className='px-3'>
+          <Link to="/Admin/Docs" className='px-3'>
             <FaFileAlt className='inline-block w-6 h-6 mr-2 -mt-2'></FaFileAlt>
             Docs
-          </a>
+          </Link>
         </li>
 
         <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2'>
-          <a href="/" className='px-3'>
+          <Link to="/Admin/Setting" className='px-3'>
             <FaCog className='inline-block w-6 h-6 mr-2 -mt-2'></FaCog>
             Settings
-          </a>
+          </Link>
         </li>
       </ul>
 
