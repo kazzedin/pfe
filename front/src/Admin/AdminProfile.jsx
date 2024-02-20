@@ -5,7 +5,7 @@ import { FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
 import { IoIosArrowBack } from 'react-icons/io';
 import { AdminUserContext } from './AdminUserProvider';
 
-export default function Profile(props) {
+export default function Profile() {
   const [change, setChange] = useState(false);
   const [inputs, setInputs] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
@@ -18,7 +18,6 @@ export default function Profile(props) {
 
   const returnAdmin = (e) => {
     e.preventDefault();
-    console.log(props.user);
     navigate('/Admin');
   };
 
@@ -95,7 +94,7 @@ export default function Profile(props) {
     <div className={`flex flex-col bg-gray-800 bg-opacity-50 profil-page ${change ? 'expanded' : ''}`}>
 
       <div className='flex items-center return'>
-        <Link onClick={returnAdmin} className='hover:text-red-700 text-white font-bold rounded return-admin flex items-center'>
+        <Link onClick={returnAdmin} className='hover:text-red-700 text-white rounded return-admin flex items-center'>
           <IoIosArrowBack className="mr-2" />
           Return Admin Page
         </Link>

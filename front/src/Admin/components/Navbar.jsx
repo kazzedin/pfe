@@ -25,7 +25,8 @@ export default function Navbar(props) {
       .catch(err => console.log(err));
   }
 
-  const toggleSidebar = () => {
+  const toggleSidebar = (e) => {
+    e.preventDefault();
     props.sidebareFunc(!props.sidebar);
   };
 
@@ -46,7 +47,7 @@ export default function Navbar(props) {
           </button>
         </div>
         <div>
-          <button className={`text-white group bg-red-500 hover:bg-red-700 p-1 rounded-2xl font-bold `} onClick={LogOut}>
+          <button className={`text-white group bg-red-500 hover:bg-red-700 p-1 rounded-2xl `} onClick={LogOut}>
             Log Out
           </button>
         </div>

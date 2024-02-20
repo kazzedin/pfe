@@ -130,6 +130,14 @@ router.put('/profil', [
             res.status(500).json({ message: 'Error fetching messages' }); // Gérer les erreurs
         });
 });
+
+router.delete('/deletemessage', (req, res) => {
+  console.log(req.body.sender);
+  messageModel.findOneAndDelete({ sender: req.body.sender })
+    .then(response => res.json({ message: 'Deleted' }))
+    .catch(err => res.json(err));
+});
+
   
 
 

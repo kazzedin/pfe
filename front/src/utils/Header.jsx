@@ -13,7 +13,7 @@ function Header() {
 
     return (
         <header className=" bg-gray-800 bg-opacity-50  opacity-9 py-4">
-            <nav className="container mx-auto flex justify-between items-center relative">
+            <nav className=" mx-auto flex justify-between items-center relative">
                 <div className="flex items-center">
                     <a href="/" className="text-white text-xl font-bold ml-3 hover:text-blue-500">Pfe a Distance</a>
                 </div>
@@ -35,7 +35,7 @@ function Header() {
             </nav>
             {/* Afficher le menu si isMenuOpen est vrai */}
             {isMenuOpen && (
-                <div className="sticky top-0 right-0 h-full bg-gray-900 bg-opacity-70 backdrop-filter backdrop-blur-lg z-50">
+                <div className="sticky top-0 right-0 h-full bg-gray-800 bg-opacity-70 backdrop-filter backdrop-blur-lg z-50">
                     <div className="absolute top-0 right-0 mt-5 w-44 bg-gray-900 bg-opacity-90 shadow-lg p-4">
                         <ul className="flex flex-col space-y-2">
                             <li><a href="#Login" className="text-white hover:text-blue-500" onClick={toggleMenu}>Login</a></li>
