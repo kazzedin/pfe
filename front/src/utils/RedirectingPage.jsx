@@ -2,6 +2,7 @@ import React from 'react';
 import Footer from './Footer';
 import { Link } from 'react-router-dom';
 import { FaExclamationTriangle } from 'react-icons/fa';
+import { IoIosArrowBack } from 'react-icons/io';
 
 export default function RedirectingPage() {
   return (
@@ -17,7 +18,10 @@ export default function RedirectingPage() {
           <h3>You Are not Allowed to see This Page. Please Login as Administrator to Continue</h3>
           <FaExclamationTriangle style={{color:'red'}} />
           </div>
-          <Link to='/LoginAdmin' className='hover:text-blue-500'>Login Administrator</Link>
+          <div className='flex flex-row justify-center items-center gap-24 mt-2'>
+          <Link to='/' className='hover:text-red-500 flex flex-row items-center justify-center'>  <IoIosArrowBack/> Return home</Link>
+          <Link to='/LoginAdmin' className='hover:text-blue-500'>Login-As-Administrator</Link>
+          </div>
         </div>
       </div>
       <Footer />

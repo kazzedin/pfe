@@ -27,14 +27,12 @@ export default function App() {
 
           
           <Route  element={<CheckAdmin />}>
+            
             <Route path='/Admin' element={<Admin />} >
 
-            <Route path='Profile' element={<AdminProfile />} />
-
-            <Route path='Inbox' element={<Inbox />} >
-              <Route path='Messages' element={<DetailsMessages/>}/>
-            </Route>
-            
+            <Route path='Profile' element={<AdminProfile />}/>
+            <Route path='Inbox' element={<Inbox />} />
+            <Route path='Messages' element={<DetailsMessages/>}/>
             <Route path='Setting' element={<Setting />} />
             <Route path='ListeEtudiant' element={<ListeEtudiant />} />
             <Route path='ListeProf' element={<ListeProf />} />

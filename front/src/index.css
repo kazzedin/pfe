@@ -109,9 +109,9 @@
 }
 
 .container{
-    width: 59rem;
-    height: 35rem;
-    
+    width: 69rem;
+    height: 37rem;
+    margin-top: 2rem;
  
 }
 .message-container{
@@ -119,14 +119,18 @@
     border: 1px solid red; 
 }
 .message-container2{
-    height: 25rem; 
-    margin-bottom: 2rem; 
+    height: 30rem; 
+   margin-top: 4rem;
+   width: 68rem; 
+   
 }
 
 .table-message{
-    width: 42rem;
+    width: 62rem;
+    margin-bottom: 9rem;
   
 }
+
 .relative.overflow-x-auto::-webkit-scrollbar {
     width: 12px; /* Largeur de la barre de défilement */
 }
