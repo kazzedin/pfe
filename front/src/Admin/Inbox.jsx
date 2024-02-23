@@ -111,7 +111,7 @@ export default function Inbox() {
                 <h4 className='font-bold text-white'>Filtre:</h4>
                 <Link to='?type=contact' className='border border-white bg-transparent rounded-2xl p-1 hover:border-blue-500 hover:text-blue-500'>Contact</Link>
                 <Link to='?type=logininfo' className='border border-white bg-transparent rounded-2xl p-1 hover:border-blue-500 hover:text-blue-500'>Login-Info</Link>
-                <Link to='?type=reset' className='border border-white bg-transparent rounded-2xl p-1 hover:border-blue-500 hover:text-blue-500'>Reset</Link>
+         
                 {messageFilter ? <Link to='' className='bg-transparent rounded-2xl p-1 hover:border-blue-500 hover:text-blue-500'>Clear-Filter ?</Link> : ''}
             </div>
             {/* Affichage des messages */}
