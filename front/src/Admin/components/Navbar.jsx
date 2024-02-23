@@ -1,7 +1,10 @@
-import React from 'react';
+import React ,{useContext} from 'react';
 import { FaBars, FaUserCircle, FaBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'; // Import axios for making HTTP requests
+import MessageContext from '../MessageProvider';
+
+
 
 export default function Navbar(props) {
   const navigate = useNavigate();
@@ -25,10 +28,13 @@ export default function Navbar(props) {
       .catch(err => console.log(err));
   }
 
-  const toggleSidebar = () => {
+  const toggleSidebar = (e) => {
+    e.preventDefault();
     props.sidebareFunc(!props.sidebar);
   };
 
+  const { unreadMessages } = useContext(MessageContext);
+  
   return (
     <nav className={`bg-gray-800 bg-opacity-50 opacity-9 px-4 py-3 flex justify-between w-full fixed top-0 left-0 transition-transform duration-500 ${!props.sidebar ? 'translate-x-64' : 'translate-x-0'}`}>
       <div className='flex items-center text-xl'>
@@ -37,7 +43,7 @@ export default function Navbar(props) {
       </div>
 
       <div className={`flex items-center transition-transform duration-500 ${!props.sidebar ? ' mr-64' : ''}`}>
-        <div className={`text-white mr-4 `}>
+        <div className={`text-white mr-4 ${unreadMessages ? "unread-indicator": "unread-dot"} `}>
           <FaBell className='w-6 h-6' />
         </div>
         <div className={`text-white mr-4  `}>
@@ -46,7 +52,7 @@ export default function Navbar(props) {
           </button>
         </div>
         <div>
-          <button className={`text-white group bg-red-500 hover:bg-red-700 p-1 rounded-2xl font-bold `} onClick={LogOut}>
+          <button className={`text-white group bg-red-500 hover:bg-red-700 p-1 rounded-2xl `} onClick={LogOut}>
             Log Out
           </button>
         </div>

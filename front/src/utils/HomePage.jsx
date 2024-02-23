@@ -7,7 +7,7 @@ export default function HomePage() {
   return (
     <div className="contenaire flex flex-col min-h-screen bg-gray-200 ">
       {/* Header  */}
-      <div className="absolute top-0 w-full "><Header /></div>
+      <div className="absolute top-0 w-full header "><Header /></div>
 
       {/* Body */}
       <div className="flex-grow mt-20 "><Body /></div>

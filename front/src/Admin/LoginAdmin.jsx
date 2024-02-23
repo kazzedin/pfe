@@ -37,7 +37,7 @@ export default function LoginAdmin() {
 
     return (
         <div className=' check-admin flex flex-col min-h-screen'>
-            <header className="bg-gray-800 py-4">
+            <header className="bg-gray-800 bg-opacity-25 py-4">
                 <div className="flex items-center">
                     <Link to="/" className="text-white text-xl font-bold ml-3 hover:text-blue-500">Pfe a Distance</Link>
                 </div>
@@ -65,8 +65,8 @@ export default function LoginAdmin() {
                 </div>
             </div>
 
-            <footer className="bg-gray-800 text-white py-3">
-                <div className="container mx-auto flex justify-between items-center">
+            <footer className="bg-gray-800 bg-opacity-25 text-white py-3">
+                <div className=" mx-auto flex justify-between items-center">
                     <span>© <span id="currentYear"></span> Pfe à Distance. Tous droits réservés.</span>
                     <a href="https://ent.usthb.dz/index.php/accueil" className="text-gray-400  hover:text-blue-500">Site ent USTHB</a>
                 </div>
