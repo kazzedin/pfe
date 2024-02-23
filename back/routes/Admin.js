@@ -8,9 +8,21 @@ const bcrypt = require('bcrypt');
 const {check,validationResult} = require('express-validator');
 const verifyToken =require('../Middleware/AdminMiddleware/VerificationJwt')
 const cookieParser=require('cookie-parser');
+const nodemailer = require('nodemailer');
 
 
 router.use(cookieParser());
+
+
+// la creation d'un trasporter pour envoyer des emails
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth:{
+    user:process.env.ADMIN_EMAIL,
+    pass:process.env.ADMIN_EMAIL_PASSWORD,
+  },
+});
+
 
 
 //creation de message passer par l'utilisateur
@@ -138,7 +150,23 @@ router.delete('/deletemessage', (req, res) => {
     .catch(err => res.json(err));
 });
 
-  
+
+router.post('/response',(req,res)=>{
+  const {message,sender} = req.body;
+  const mailOption={
+    from:process.env.ADMIN_EMAIL,
+    to:sender,
+    subject:"Repondre sur une qst",
+    html:`<h1>Response</h1> <p>${message}</p>`
+  }
+  transporter.sendMail(mailOption,(err, result) => {
+    if(err){
+      res.json({message:"failed to send mail"})
+    }else{
+      res.json({message:"success"})
+    }
+  })
+})
 
 
 

@@ -108,27 +108,24 @@
     transition: width 0.5s ease-out;
 }
 
-.container{
+.container {
     width: 69rem;
-    height: 37rem;
     margin-top: 2rem;
- 
+    height: 37rem;
 }
 .message-container{
     width: 35rem;  
-    border: 1px solid red; 
+  
 }
-.message-container2{
-    height: 30rem; 
-   margin-top: 4rem;
-   width: 68rem; 
-   
+.message-container2 {
+    max-height: 25rem;
+    margin-top: 4rem;
+    width: 68rem;
+
 }
 
 .table-message{
     width: 62rem;
-    margin-bottom: 9rem;
-  
 }
 
 .relative.overflow-x-auto::-webkit-scrollbar {
@@ -156,9 +153,26 @@ thead th {
 }
 
 .skelaton{
-    
     height: 25rem;
     width: 24rem;
+}
+
+.unread-indicator {
+    position: relative;
+}
+
+.unread-indicator::before {
+    content: '';
+    position: absolute;
+    top: -5px; /* Ajustez la position verticale selon vos besoins */
+    right: -5px; /* Ajustez la position horizontale selon vos besoins */
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+}
+.unread-dot{
+    display: block;
 }
 
 /* Media Query */

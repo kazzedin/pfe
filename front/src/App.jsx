@@ -9,6 +9,7 @@ import CheckAdmin from './Admin/CheckAdmin';
 import LoginAdmin from './Admin/LoginAdmin';
 import ErrorPage from './utils/ErrorPage';
 import { AdminUserProvider } from './Admin/AdminUserProvider';
+import { MessageProvider } from './Admin/MessageProvider';
 import Inbox from './Admin/Inbox';
 import Setting from './Admin/Setting';
 import Docs from './Admin/Docs';
@@ -20,36 +21,31 @@ import DetailsMessages from './Admin/DetailsMessages';
 export default function App() {
   return (
     <div>
-      <AdminUserProvider>
+    <AdminUserProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<HomePage />} />
-
-          
-          <Route  element={<CheckAdmin />}>
-            
-            <Route path='/Admin' element={<Admin />} >
-
-            <Route path='Profile' element={<AdminProfile />}/>
-            <Route path='Inbox' element={<Inbox />} />
-            <Route path='Messages' element={<DetailsMessages/>}/>
-            <Route path='Setting' element={<Setting />} />
-            <Route path='ListeEtudiant' element={<ListeEtudiant />} />
-            <Route path='ListeProf' element={<ListeProf />} />
-            <Route path='ListePfe' element={<ListePfe />} />
-            <Route path='Docs' element={<Docs />} />
-            
+        <MessageProvider>
+          <Routes>
+            <Route path='/' element={<HomePage />} />
+            <Route element={<CheckAdmin />}>
+              <Route path='/Admin' element={<Admin />} >
+                <Route path='Profile' element={<AdminProfile />}/>
+                <Route path='Inbox' element={<Inbox />} />
+                <Route path='Messages' element={<DetailsMessages/>}/>
+                <Route path='Setting' element={<Setting />} />
+                <Route path='ListeEtudiant' element={<ListeEtudiant />} />
+                <Route path='ListeProf' element={<ListeProf />} />
+                <Route path='ListePfe' element={<ListePfe />} />
+                <Route path='Docs' element={<Docs />} />
+              </Route>
             </Route>
-          </Route>
-          
-          
-          <Route path='/LoginAdmin' element={<LoginAdmin/>}/>
-          <Route path='/Reset' element={<Reset />} />
-          <Route path='/Info' element={<Info />} />
-          <Route path='*' element={<ErrorPage/>}/>
-        </Routes>
+            <Route path='/LoginAdmin' element={<LoginAdmin/>}/>
+            <Route path='/Reset' element={<Reset />} />
+            <Route path='/Info' element={<Info />} />
+            <Route path='*' element={<ErrorPage/>}/>
+          </Routes>
+        </MessageProvider>
       </BrowserRouter>
-      </AdminUserProvider>
-    </div>
+    </AdminUserProvider>
+  </div>
   );
 }

@@ -1,9 +1,9 @@
-import React,{useState} from 'react'
+import React,{useState,useContext} from 'react'
 import axios from 'axios'
-
+import MessageContext from '../Admin/MessageProvider';
 export default function Contact() {
-  const [inputs, setInputs] = useState({ email: '', message: '' });
-
+const [inputs, setInputs] = useState({ email: '', message: '' });
+const {setUnreadMessages} = useContext(MessageContext);
 
 
 const HandelEnvoyer = (e) => {
@@ -18,6 +18,7 @@ const HandelEnvoyer = (e) => {
           console.log(res);
           alert('Your message has been sent');
           setInputs({email:'', message:''})
+          setUnreadMessages(true);
       })
       .catch(err => {
           console.log(err);
@@ -29,8 +30,9 @@ const HandelEnvoyer = (e) => {
  const name=e.target.name
  const value=e.target.value
  setInputs(values=>({...values, [name]:value}))
-  }
 
+  }
+  console.log(setUnreadMessages)
   return (
     <form className="mt-4" onSubmit={HandelEnvoyer}>
     <div className="mb-4">
