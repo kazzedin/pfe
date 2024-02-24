@@ -74,11 +74,11 @@ router.post('/verification',   [
                             res.cookie("refresh_token", refresh_token, { maxAge: 300000, httpOnly: true, secure: true, sameSite: 'strict' }); 
                             res.json({ message: "Success" });
                         } else {
-                            res.status(401).json({ message: 'Incorrect password ' });
+                          res.json({ message: "Password Wrong" });
                         }
                     });
                 } else {
-                    res.status(404).json({ message: "User not found" });
+                    res.json({ message: "User not found" });
                 }
             })
             .catch(err => res.status(500).json({ message: "Internal server error", error: err }));

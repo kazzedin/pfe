@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {FaTimes} from 'react-icons/fa';
 
 export default function LoginAdmin() {
     // État pour stocker les données du formulaire
     const [inputs, setInputs] = useState({email: '', password:''});
+    // État pour gérer l'affichage du message d'erreur
+    const [pwderror, setpwdError] = useState(false);
+    const [emlerror, setemlError] = useState(false);
 
     // Utilisation de useNavigate
     const navigate = useNavigate();
@@ -21,20 +25,22 @@ export default function LoginAdmin() {
     // Fonction pour soumettre les données du formulaire et vérifier l'authentification
     const handleVerifier = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:3001/admin/verification', { email:inputs.email, password:inputs.password })
+        axios.post('http://localhost:3001/admin/verification', { email: inputs.email, password: inputs.password })
             .then(res => {
-                if (res.data.message == "Success") {
+                if (res.data.message === "Success") {
                     navigate('/Admin');
                     console.log(res.data.message);
-                } else {
-                    alert("Vérification échouée: " + (res.data && res.data.message ? res.data.message : "Unknown error"));
-                    console.log("Verification failed:", res.data);
+                } else if (res.data.message === "Password Wrong" && res.data.message === "User not found") {
+                    setpwdError(true);
+                    setemlError(true);
+                } else if (res.data.message === "Password Wrong") {
+                    setpwdError(true);
+                } else if (res.data.message === "User not found") {
+                    setemlError(true);
                 }
             })
             .catch(err => console.log(err));
     };
-    
-
     return (
         <div className=' check-admin flex flex-col min-h-screen'>
             <header className="bg-gray-800 bg-opacity-25 py-4">
@@ -55,6 +61,10 @@ export default function LoginAdmin() {
                             <label htmlFor="password" className="block text-gray-300 font-semibold mb-2">Mot de passe :</label>
                             <input type="password" id="password" name="password" className="w-full px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white placeholder-gray-400" placeholder="Entrez votre mot de passe" value={inputs.password} onChange={handleInputChange} />
                         </div>
+                        
+                        {pwderror? <div className="text-red-600 font-bold mb-4 flex flex-row items-center gap-1">Mot de Passe Incorrect <FaTimes className='text-red-500' /> </div>:""}
+                        {emlerror? <div className="text-red-600 font-bold mb-4 flex flex-row items-center gap-1">Email Incorrect <FaTimes className='text-red-500' /> </div>:""}
+                     
                         <div className="text-gray-400 text-sm mb-4">
                             Vous entrez sur le site en tant qu'administrateur.
                         </div>
