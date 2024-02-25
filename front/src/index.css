@@ -108,10 +108,11 @@
 
 .page-etudiant{
     width: 77rem;
-    height: 36rem;
+    height: 38rem;
 }  
 .table-etudiant{
     width: 75rem;
+    height: 25rem;
 }
 .file-upload-button {
     background-color: transparent;
