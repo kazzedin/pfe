@@ -107,12 +107,16 @@
   }
 
 .page-etudiant{
-    width: 77rem;
-    height: 38rem;
+    margin-top: 4rem;
+    width: 82rem;
+    height: 40rem;
 }  
 .table-etudiant{
-    width: 75rem;
-    height: 25rem;
+    width: 80rem;
+    height: 30rem;
+    margin-left: 1rem;
+    
+    
 }
 .file-upload-button {
     background-color: transparent;
@@ -125,6 +129,7 @@
  
 .search{
  text-indent: 2rem;
+ margin-left: 2rem;
 }  
 
 

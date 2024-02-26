@@ -3,11 +3,23 @@ import Select from 'react-select';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
 import * as XLSX from 'xlsx';
+import {FaCheck, FaTimes,FaAngleDown, FaAngleUp} from 'react-icons/fa';
+import axios from 'axios';
 
 export default function ListeEtudiant() {
   const [students, setStudents] = useState([]);
   const [filter, setFilter] = useState('');
   const [subFilter, setSubFilter] = useState('');
+  const [search, setSearch] = useState('');
+  const [selectAll, setSelectAll] = useState(false);
+  const [individualSelection, setIndividualSelection] = useState({});
+  const [isOpen, setIsOpen] = useState(false);
+  const [emailEtu, setEmailEtu] = useState([]);
+  const [envoyer, setEnvoyer]=useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
   const handleFileUpload = (e) => {
     const reader = new FileReader();
@@ -22,32 +34,7 @@ export default function ListeEtudiant() {
     };
   }
 
-  const handleFilterChange = (selectedOption) => {
-    setFilter(selectedOption);
-    setSubFilter('');
-  };
-
-  const handleSubFilterChange = (selectedOption) => {
-    setSubFilter(selectedOption);
-  };
-
-  const options = [
-    { value: 'acad', label: 'Acad' },
-    { value: 'isil', label: 'ISIL' },
-    { value: 'gtr', label: 'GTR' }
-  ];
-
-  const subOptions = {
-    acad: [
-      { value: 'acad a', label: 'Acad A' },
-      { value: 'acad b', label: 'Acad B' },
-      { value: 'acad c', label: 'Acad C' }
-    ],
-    isil: [
-      { value: 'isil a', label: 'ISIL A' },
-      { value: 'isil b', label: 'ISIL B' }
-    ]
-  };
+  
 
   const navigate = useNavigate();
   const returnAdmin = (e) => {
@@ -55,6 +42,71 @@ export default function ListeEtudiant() {
     navigate('/Admin');
   };
 
+  const HandelSearch=(e)=>{
+    e.preventDefault();
+    setSearch(e.target.value);
+  }
+
+  const handleSelectAll = () => {
+    const newSelectAllState = !selectAll;
+    setSelectAll(newSelectAllState);
+    
+    const newIndividualSelection = {};
+    students.forEach((student, index) => {
+      newIndividualSelection[index] = newSelectAllState;
+    });
+    setIndividualSelection(newIndividualSelection);
+  
+    if (newSelectAllState) {
+      // Si "Sélectionner tout" est coché, ajoutez tous les e-mails à la liste
+      const allEmails = students.map(student => student['email']);
+      setEmailEtu(new Set(allEmails));
+    } else {
+      // Si "Sélectionner tout" est décoché, effacez la liste des e-mails
+      setEmailEtu(new Set());
+    }
+  };
+  
+
+  const handleCheckboxChange = (index, email) => {
+    const newIndividualSelection = { ...individualSelection };
+    newIndividualSelection[index] = !newIndividualSelection[index];
+    setIndividualSelection(newIndividualSelection);
+  
+    if (newIndividualSelection[index]) {
+      // Case is checked, add email to the list
+      setEmailEtu(prevEmails => new Set([...prevEmails, email]));
+    } else {
+      // Case is unchecked, remove email from the list
+      setEmailEtu(prevEmails => {
+        const updatedEmails = new Set(prevEmails);
+        updatedEmails.delete(email);
+        return updatedEmails;
+      });
+    }
+  };
+
+  
+console.log(emailEtu)
+  const EnvoyerEmail=(e)=>{
+    e.preventDefault()
+    const emaillArray=[...emailEtu]
+    
+    axios.post('http://localhost:3001/admin/login-info',{email:emaillArray})
+    .then(res=>{
+      if(res.data.message==='success'){
+        alert('Success to send Login Info')
+        setEnvoyer(true);
+      }else{
+        alert('Error to send Login Info')
+      }
+    })
+    .catch(err=>console.log(err))
+
+    setEnvoyer(false);
+  }
+
+  
   return (
     <div className='page-etudiant relative bg-gray-800 bg-opacity-40'>
       <div className='top-0 left-0 absolute flex items-center'>
@@ -73,49 +125,64 @@ export default function ListeEtudiant() {
           Choisir un fichier
         </label>
         <input type="file" id="file-upload" onChange={handleFileUpload} accept=".xls,.xlsx" style={{ display: 'none' }} />
+        {students.length > 0 && (
+        <button
+          disabled={!Object.values(individualSelection).some(selected => selected)}
+          className={`bg-blue-500 px-4 py-2 text-white  rounded cursor-pointer ${
+            !Object.values(individualSelection).some(selected => selected) ? 'opacity-50 cursor-not-allowed' : '  hover:bg-blue-700 '
+          }`}
+          onClick={EnvoyerEmail}>
+          Envoyer
+        </button>
+      )}
+        <div className="top-0 right-0 absolute flex text-left mr-2 mt-2">
+      <button onClick={toggleMenu} type="button" className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none ">
+        Options
+        {isOpen ? <FaAngleUp className="ml-2" /> : <FaAngleDown className="ml-2" />}
+      </button>
+      {isOpen && (
+        <div className=" absolute right-0 mt-10 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+          <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+            <p  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Edit</p>
+            <p  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">View</p>
+            <p  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Delete</p>
+          </div>
+        </div>
+      )}
+    </div>
 
-        <Select
-          value={filter}
-          onChange={handleFilterChange}
-          options={options}
-          placeholder="Sélectionner une filière"
-          className="mr-4"
-        />
-
-        {filter && (
-          <Select
-            value={subFilter}
-            onChange={handleSubFilterChange}
-            options={subOptions[filter.value]}
-            placeholder={`Sélectionner une filière ${filter.label}`}
-            className="mr-4"
-          />
-        )}
+       
       </div>
 
       <div className="search-bar">
         <label htmlFor="table-search" className="sr-only">Search</label>
         <div className="relative">
           <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-            <svg className="w-4 h-4 ml-2 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+            <svg className="w-4 h-4 ml-6 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
             </svg>
           </div>
-          <input type="text" id="table-search" className="ml-4 bg-gray-800 text-white text-sm w-64 h-9 rounded-sm border-none search" placeholder="Chercher étudiant"/>
+          <input type="text" id="table-search" className="ml-4 bg-gray-800 text-white text-sm w-64 h-9 rounded-sm border-none search" placeholder="Chercher étudiant" onChange={HandelSearch} value={search}/>
         </div>
       </div>
 
       <div className="table-container">
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg table-etudiant mt-4" style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <table className="w-full text-sm text-left rtl:text-right text-white ">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="p-4">
-                  <div className="flex items-center">
-                    <input id="checkbox-all-search" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                    <label htmlFor="checkbox-all-search" className="sr-only">All</label>
-                  </div>
-                </th>
+              <th scope="col" className="p-4">
+  <div className="flex items-center">
+    <input 
+      id="checkbox-all-search" 
+      type="checkbox" 
+      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
+      onChange={handleSelectAll} 
+      checked={selectAll}
+    />
+    <label htmlFor="checkbox-all-search" className="ml-2">Sélectionner tout</label>
+  </div>
+</th>
                 <th scope="col" className="px-6 py-3">
                   Nom/Prenom
                 </th>
@@ -131,27 +198,50 @@ export default function ListeEtudiant() {
                 <th scope="col" className="px-6 py-3">
                   Section
                 </th>
+                <th scope="col" className="px-6 py-3">
+                  Etat
+                </th>
               </tr>
             </thead>
             <tbody>
-              {students.map((row, index) => (
-                <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="w-4 p-4">
-                    <div className="flex items-center">
-                      <input id="checkbox-table-search-2" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                      <label htmlFor="checkbox-table-search-2" className="sr-only">checkbox</label>
-                    </div>
-                  </td>
-                  {Object.values(row).map((value, index) => (
-                    <td key={index} className="px-6 py-4">{value}</td>
-                  ))}
-                </tr>
-              ))}
+              {students
+                .filter((student, index) => {
+                  if (!search) return true;
+                  return (
+                    String(student['nom/prenom']).toLowerCase().includes(search.toLowerCase()) ||
+                    String(student['email']).toLowerCase().includes(search.toLowerCase()) ||
+                    String(student['matricule']).toLowerCase().includes(search.toLowerCase())
+                  );
+                })
+                .map((row, index) => (
+                  <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td className="w-4 p-4">
+                      <div className="flex items-center">
+                        <input 
+                          id={`checkbox-table-search-${index}`} 
+                          type="checkbox" 
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
+                          checked={individualSelection[index] || false}
+                          onChange={() => handleCheckboxChange(index,row['email'])}
+                        />
+                        <label htmlFor={`checkbox-table-search-${index}`} className="sr-only">checkbox</label>
+                      </div>
+                    </td>
+                    {Object.values(row).map((value, index) => (
+                      <td key={index} className="px-6 py-4">{value}</td>
+                    ))}
+                   <td>
+  {
+    envoyer && emailEtu.has(row['email']) ? 
+    <div><p>Envoyé</p><FaCheck className='text-green-500' /></div> :
+    <div><p>Non envoyé</p><FaTimes className='text-red-500' /></div>
+  }
+</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
-          <div>
-            {students.length < 0 ? <h4>Loading....</h4> : ""}
-          </div>
+          <div>{students.length < 0 ? <h4>Loading....</h4> : ""}</div>
         </div>
       </div>
     </div>

@@ -68,8 +68,8 @@ router.post('/verification',   [
                 if (user) {
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (result) {
-                            const access_token = jwt.sign({ email: user.email,password:password }, process.env.ACCESS_TOKEN, { expiresIn: '1m' });
-                            const refresh_token = jwt.sign({ email: user.email,password:password  }, process.env.REFRESH_TOKEN, { expiresIn: '5m' });
+                            const access_token = jwt.sign({ email: user.email,password:password }, process.env.ACCESS_TOKEN, { expiresIn: '2m' });
+                            const refresh_token = jwt.sign({ email: user.email,password:password  }, process.env.REFRESH_TOKEN, { expiresIn: '10m' });
                             res.cookie("access_token", access_token, { maxAge: 60000, httpOnly: true, secure: true, sameSite: 'strict' });
                             res.cookie("refresh_token", refresh_token, { maxAge: 300000, httpOnly: true, secure: true, sameSite: 'strict' }); 
                             res.json({ message: "Success" });
@@ -168,7 +168,14 @@ router.post('/response',(req,res)=>{
   })
 })
 
+router.post('/login-info',(req,res)=>{
+  const {email}=req.body;
+  console.log(email)
 
+  res.json({message: 'success',email:email})
+
+ 
+})
 
 
 
