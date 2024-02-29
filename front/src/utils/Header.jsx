@@ -15,14 +15,14 @@ function Header() {
         <header className=" bg-gray-800 bg-opacity-50  opacity-9 py-4">
             <nav className=" mx-auto flex justify-between items-center relative">
                 <div className="flex items-center">
-                    <a href="/" className="text-white text-xl font-bold ml-3 hover:text-blue-500">Pfe a Distance</a>
+                    <a href="/" className="text-white text-2xl font-bold hover:text-blue-500 ml-7">Pfe a Distance</a>
                 </div>
-                <div className="hidden md:block mr-3">
-                    <ul className="flex space-x-4">
-                        <li><a href="#Login" className="text-white hover:text-blue-500">Login</a></li>
-                        <li><a href="#Contact" className="text-white hover:text-blue-500">Contact</a></li>
+                <div className="hidden md:block mr-7">
+                    <ul className="flex space-x-6">
+                        <li><a href="#Login" className="text-white hover:text-blue-500   ">Login</a></li>
+                        <li><a href="#Contact" className="text-white hover:text-blue-500  ">Contact</a></li>
                         {/* Utilisez Link pour naviguer vers la page d'administration */}
-                        <li className='text-white hover:text-blue-500 '><Link to='/Admin' className='flex flex-row gap-1 items-center justify-center'> <FaUser />Admin</Link></li>
+                        <li className='text-white hover:text-blue-500  '><Link to='/Admin' className='flex flex-row gap-1 items-center justify-center'> <FaUser />Admin</Link></li>
                     </ul>
                 </div>
                 <div className="md:hidden hover:text-blue-500">

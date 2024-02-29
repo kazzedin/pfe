@@ -111,12 +111,20 @@
     width: 82rem;
     height: 40rem;
 }  
+.page-professeur{
+    margin-top: 4rem;
+    width: 82rem;
+    height: 40rem;
+}  
 .table-etudiant{
     width: 80rem;
     height: 30rem;
     margin-left: 1rem;
-    
-    
+}
+.table-prof{
+    width: 80rem;
+    height: 30rem;
+    margin-left: 1rem;
 }
 .file-upload-button {
     background-color: transparent;
@@ -131,11 +139,13 @@
  text-indent: 2rem;
  margin-left: 2rem;
 }  
-
+.image{
+    width:40rem ;
+}
 
 
 .container {
-    width: 69rem;
+    width: 82rem;
     margin-top: 2rem;
     height: 37rem;
 }
@@ -146,12 +156,12 @@
 .message-container2 {
     max-height: 25rem;
     margin-top: 4rem;
-    width: 68rem;
+    width: 80rem;
 
 }
 
 .table-message{
-    width: 62rem;
+    width: 80rem;
 }
 
 .relative.overflow-x-auto::-webkit-scrollbar {
@@ -179,8 +189,10 @@ thead th {
 }
 
 .skelaton{
+    margin-top: 3rem;
     height: 25rem;
-    width: 24rem;
+    width: 74rem;
+    
 }
 
 .unread-indicator {

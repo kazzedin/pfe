@@ -102,7 +102,7 @@ export default function Inbox() {
                 <div className='flex items-center '>
                     <Link onClick={returnAdmin} className='hover:text-red-700 text-white rounded return-admin flex items-center'>
                         <IoIosArrowBack className="mr-2" />
-                        Return Admin Page
+                        Retourner à la page d'administration
                     </Link>
                 </div>
             </div>
@@ -116,12 +116,12 @@ export default function Inbox() {
             </div>
             {/* Affichage des messages */}
             {loading ? (
-                <div role="status" className="max-w-lg p-3 space-y-5 divide-y divide-gray-200 rounded shadow animate-pulse dark:divide-gray-700 skelaton">
+                <div role="status" className=" p-3 space-y-5 divide-y divide-gray-200 rounded shadow animate-pulse dark:divide-gray-700 skelaton">
                     {[...Array(5)].map((_, index) => (
                         <div className="flex items-center justify-between" key={index}>
                             <div>
                                 <div className="h-3 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-                                <div className="w-52 h-3 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                <div className="w-96 h-3 bg-gray-200 rounded-full dark:bg-gray-700"></div>
                                 <div className="h-3 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5 mt-2"></div>
                             </div>
                             <div className="flex flex-col gap-2 justify-center">
@@ -138,7 +138,7 @@ export default function Inbox() {
                             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-message">
                                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
-                                        <th scope="col" className="px-6 py-3">Sender:</th>
+                                        <th scope="col" className="px-6 py-3">Emmeteur:</th>
                                         <th scope="col" className="px-6 py-3">Type:</th>
                                         <th scope="col" className="px-6 py-3">Message:</th>
                                         <th scope="col" className="px-6 py-3">Action:</th>

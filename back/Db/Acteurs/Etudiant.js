@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 
 const etudiantSchema = new mongoose.Schema({
-    nom: String,
-    prenom: String,
+    nomPrenom: String,
     matricule: String,
     filier: String,
     email: String,
+    section:String,
     password:String,
+    etat:Boolean,
 });
 
 const etudiantModel = mongoose.model('etudiant', etudiantSchema);

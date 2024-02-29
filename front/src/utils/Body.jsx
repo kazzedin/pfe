@@ -22,12 +22,17 @@ function Body() {
     <div className='contenaire2 flex flex-col items-center justify-center'>
 
       {/* Section Bienvenue */}
-      <section className='paragraphe mb-8 text-center  p-8 rounded-lg'>
-        <h2 className="titre text-3xl font-bold mb-4 text-white">Bienvenue sur Pfe à Distance !</h2>
-        <p className='text-lg text-white'>
-          Notre plateforme innovante de gestion des projets de fin d'études vous offre une solution complète pour superviser, collaborer et suivre vos projets à distance. Grâce à notre interface conviviale et nos fonctionnalités avancées, vous pouvez facilement créer, organiser et suivre les projets, échanger des commentaires et des idées, fixer des jalons et des échéances, planifier des réunions virtuelles, et bien plus encore.
-        </p>
-      </section>
+      <section class="paragraphe mb-8 flex flex-row items-center justify-center">
+  <div class="max-w-lg mr-8">
+    <h2 class="titre text-3xl font-bold mb-4 text-white">Bienvenue sur Pfe à Distance !</h2>
+    <p class="text-lg text-white">
+      Notre plateforme innovante de gestion des projets de fin d'études vous offre une solution complète pour superviser, collaborer et suivre vos projets à distance. Grâce à notre interface conviviale et nos fonctionnalités avancées, vous pouvez facilement créer, organiser et suivre les projets, échanger des commentaires et des idées, fixer des jalons et des échéances, planifier des réunions virtuelles, et bien plus encore.
+    </p>
+  </div>
+  <div>
+    <img src="home.jpg" alt="crew member" class="image" />
+  </div>
+</section>
 
       {/* Section Connexion */}
       <section id='Login' className="mb-8 w-full flex justify-center flex-col items-center">

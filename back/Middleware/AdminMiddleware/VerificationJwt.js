@@ -44,8 +44,8 @@ function refrech_access_token(req, res) {
                 return res.json({ Valide:false ,message: "Token is invalid or expired" });
             }
             else{
-                const access_token=jwt.sign({email:decoded.email},process.env.ACCESS_TOKEN,{expiresIn:'1m'})
-                res.cookie("access_token", access_token, { maxAge: 60000, httpOnly: true, secure: true, sameSite: 'strict' });
+                const access_token=jwt.sign({email:decoded.email},process.env.ACCESS_TOKEN,{expiresIn:'2m'})
+                res.cookie("access_token", access_token, { maxAge: 120000, httpOnly: true, secure: true, sameSite: 'strict' });
                 req.email=decoded.email;
                 req.password=decoded.password;
                 refresh=true;
