@@ -18,16 +18,18 @@
     margin-bottom: 1rem;
 }
 .contenaire{
-    gap: 12rem;
+    background-color: white;
+    background-image: url('./home.jpg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/image.jpg');
-} 
+   } 
 .contenaire2{
-    gap:12rem
+    gap: 8rem;
 }
-
+.aboutSection{
+    width: 69rem;
+}
 .verifier{
     display: flex;
     justify-content: center;
@@ -39,37 +41,39 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/image.jpg');
+    background-image: url('./home2.jpg');
 }
 .reset-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/image.jpg');
+    background-image: url('./home2.jpg');
 }
 .info-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/image.jpg');
+    background-image: url('./home2.jpg');
 }
 .admin-page{
+    background-color: white;
+    background-image: url('./home2.jpg');
     background-position: center;
     background-repeat: no-repeat;
-    background-size: cover;
-    background-image: url('/image.jpg');
+  background-size: cover;
+    
 }
 .error-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/image.jpg');
+    background-image: url('./home2.jpg');
 }
 .redirect-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/image.jpg');
+    background-image: url('./home2.jpg');
 }
 .form-info{
     width: 35rem;
@@ -88,7 +92,7 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('/image.jpg');
+    background-image: url('./home.jpg');
 }
 
 .profile-page{
@@ -142,7 +146,9 @@
 .image{
     width:40rem ;
 }
-
+.fenetre{
+    width: 25rem;
+}
 
 .container {
     width: 82rem;

@@ -36,18 +36,18 @@ export default function Navbar(props) {
   const { unreadMessages } = useContext(MessageContext);
   
   return (
-    <nav className={`bg-gray-800 bg-opacity-50 opacity-9 px-4 py-3 flex justify-between w-full fixed top-0 left-0 transition-transform duration-500 ${!props.sidebar ? 'translate-x-64' : 'translate-x-0'}`}>
+    <nav className={`bg-white  px-4 py-3 flex justify-between w-full fixed top-0 left-0 transition-transform duration-500 ${!props.sidebar ? 'translate-x-64' : 'translate-x-0'}`}>
       <div className='flex items-center text-xl'>
-        <FaBars className='text-white mr-4 cursor-pointer' onClick={toggleSidebar} />
-        <span className='text-white font-semibold'>Pfe A Distance</span>
+        <FaBars className='text-black mr-4 cursor-pointer' onClick={toggleSidebar} />
+        <span className='text-black font-semibold text-2xl'>Pfe A Distance</span>
       </div>
 
       <div className={`flex items-center transition-transform duration-500 ${!props.sidebar ? ' mr-64' : ''}`}>
-        <div className={`text-white mr-4 ${unreadMessages ? "unread-indicator": "unread-dot"} `}>
+        <div className={`text-black mr-4 ${unreadMessages ? "unread-indicator": "unread-dot"} `}>
           <FaBell className='w-6 h-6' />
         </div>
-        <div className={`text-white mr-4  `}>
-          <button className='text-white group' onClick={Profile} >
+        <div className={`text-black mr-4  `}>
+          <button className='text-black group' onClick={Profile} >
             <FaUserCircle className='w-6 h-6 mt-1' />
           </button>
         </div>

@@ -1,93 +1,123 @@
 import React, { useState } from 'react';
 import Footer from './Footer';
+import axios from 'axios';
 
 export default function Info() {
-  const [sepcialiter, setSpecialiter] = useState('');
-  const [section, setSection] = useState('');
+  
+  const [info, setInfo] = useState({})
+  const [error, setError] = useState(false);
+ 
+  const handleInfo = (e) => {
+    e.preventDefault();
+    const name = e.target.name;
+    const value = e.target.value;
+    setInfo(prev => ({...prev, [name]: value}));
+    setError(false);
+  }
 
-  const handleChoixSpecialiter = (event) => {
-    const choice = event.target.value;
-    setSpecialiter(choice);
-    // Reset subChoice when mainChoice changes
-    setSection('');
-  };
+  const handleEnvoi = (e) => {
+    e.preventDefault();
+    if (!check()) {
+      setError(true);
+      return;
+    }
+    axios.post('http://localhost:3001/admin/Login-info', {
+      sender: info.email,
+      message: "Infos de Connexion",
+      nom: info.nom,
+      prenom: info.prenom,
+      section: info.section,
+      filiere: info.filiere,
+      matricule: info.matricule
+    })
+    .then(res => {
+      alert("Informations envoyées avec succès !");
+      setInfo({});
+      console.log(res);
+    })
+    .catch(err => console.log(err));
+  }
 
-  const handleChoixSection = (event) => {
-    setSection(event.target.value);
+  const check = () => {
+    return info.email && info.nom && info.prenom && info.matricule && info.filiere && info.section;
   };
 
   return (
     <div className='info-page flex flex-col min-h-screen'>
 
-      <header className="bg-gray-800 py-4">
+      <header className="bg-white py-4">
         <div className="flex items-center">
-          <a href="/" className="text-white text-xl font-bold ml-3 hover:text-blue-500">Pfe a Distance</a>
+          <a href="/" className="text-black text-2xl font-bold ml-3 hover:text-blue-500">PFE à Distance</a>
         </div>
       </header>
 
-      <div className='flex justify-center items-center mt-43 flex-grow'>
+      <div className='flex justify-center items-center mt-10 flex-grow  mb-10'>
         <div>
-          <form className="form-info bg-gray-800 max-w-xl mx-auto bg-opacity-70 p-6 rounded shadow-lg grid grid-cols-2 gap-4" >
+          <form className="bg-gray-100 max-w-xl mx-auto p-6 rounded shadow-lg grid grid-cols-2 gap-4" onSubmit={handleEnvoi} >
+            <div className="col-span-2">
+              <h2 className="text-2xl font-bold mb-4 text-center text-black">Informations Personnelles</h2>
+            </div>
+
             <div className="col-span-1">
-              <h2 className="text-2xl font-bold mb-4 text-center text-white ml-48">Personnel Information</h2>
-
               <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-300 font-semibold mb-2">Email :</label>
-                <input type="text" id="email" name="email" className="w-full px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white placeholder-gray-400" placeholder="Entrez votre email" />
+                <label htmlFor="email" className="block text-black font-semibold mb-2">Email :</label>
+                <input type="text" id="email" name="email" className={`w-full px-3 py-2 border ${error && !info.email && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre email" value={info.email || ''} onChange={handleInfo} />
               </div>
 
               <div className="mb-4">
-                <label htmlFor="name" className="block text-gray-300 font-semibold mb-2">Nom :</label>
-                <input type="text" id="nom" name="nom" className="w-full px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white placeholder-gray-400" placeholder="Entrez votre nom" />
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="prenom" className="block text-gray-300 font-semibold mb-2">Prenom :</label>
-                <input type="text" id="prenom" name="prenom" className="w-full px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white placeholder-gray-400" placeholder="Entrez votre Prenom" />
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="matricule" className="block text-gray-300 font-semibold mb-2">Matricule :</label>
-                <input type="text" id="matricule" name="matricule" className="w-full px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white placeholder-gray-400" placeholder="Entrez votre Matricule" />
+                <label htmlFor="nom" className="block text-black font-semibold mb-2">Nom :</label>
+                <input type="text" id="nom" name="nom" className={`w-full px-3 py-2 border ${error && !info.nom && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre nom" value={info.nom || ''} onChange={handleInfo} />
               </div>
             </div>
 
-            <div className=" colone-gauche col-span-1">
+            <div className="col-span-1">
               <div className="mb-4">
-                <label htmlFor="mainChoice" className="block text-gray-300 font-semibold mb-2">Specialiter :</label>
+                <label htmlFor="prenom" className="block text-black font-semibold mb-2">Prénom :</label>
+                <input type="text" id="prenom" name="prenom" className={`w-full px-3 py-2 border ${error && !info.prenom && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre prénom" value={info.prenom || ''} onChange={handleInfo} />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="matricule" className="block text-black font-semibold mb-2">Matricule :</label>
+                <input type="text" id="matricule" name="matricule" className={`w-full px-3 py-2 border ${error && !info.matricule && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre matricule" value={info.matricule || ''} onChange={handleInfo} maxLength={12}/>
+              </div>
+            </div>
+
+            <div className="col-span-2">
+              <div className="mb-4">
+                <label htmlFor="filiere" className="block text-black font-semibold mb-2">Filière :</label>
                 <select
-                  id="mainChoice"
-                  name="mainChoice"
-                  value={sepcialiter}
-                  onChange={handleChoixSpecialiter}
-                  className="w-full px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-300 placeholder-gray-400"
+                  id="filiere"
+                  name="filiere"
+                  value={info.filiere || ''}
+                  onChange={handleInfo}
+                  className={`w-full px-3 py-2 border ${error && !info.filiere && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`}
                 >
-                  <option value="" className='text-black'>Selectionner votre sepecialiter</option>
+                  <option value="" className='text-black'>Sélectionner votre filière</option>
                   <option value="ACAD" className='text-black'>ACAD</option>
                   <option value="ISIL" className='text-black'>ISIL</option>
                   <option value="GTR" className='text-black'>GTR</option>
                 </select>
               </div>
-
-              {(sepcialiter === 'ACAD' || sepcialiter === 'ISIL') && (
+              
+              {(info.filiere === 'ACAD' || info.filiere === 'ISIL') && (
                 <div className="mb-4">
-                  <label htmlFor="subChoice" className="block text-gray-300 font-semibold mb-2">Section :</label>
+                  <label htmlFor="section" className="block text-black font-semibold mb-2">Section :</label>
                   <select
-                    id="subChoice"
-                    name="subChoice"
-                    value={section}
-                    onChange={handleChoixSection}
-                    className="w-full px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-300 placeholder-gray-400"
+                    id="section"
+                    name="section"
+                    value={info.section || ''}
+                    onChange={handleInfo}
+                    className={`w-full px-3 py-2 border ${error && !info.section && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`}
                   >
-                    <option value="">Selectionner votre section</option>
-                    {sepcialiter === 'ACAD' && (
+                    <option value="">Sélectionner votre section</option>
+                    {info.filiere === 'ACAD' && (
                       <>
                         <option value="ACAD_A" className='text-black'>ACAD A</option>
                         <option value="ACAD_B" className='text-black'>ACAD B</option>
                         <option value="ACAD_C" className='text-black'>ACAD C</option>
                       </>
                     )}
-                    {sepcialiter === 'ISIL' && (
+                    {info.filiere === 'ISIL' && (
                       <>
                         <option value="ISIL_A" className='text-black'>ISIL A</option>
                         <option value="ISIL_B" className='text-black'>ISIL B</option>
@@ -97,12 +127,21 @@ export default function Info() {
                 </div>
               )}
 
-              <div className="text-gray-400 text-sm mb-4">
-                En remplissant ce formulaire l'administration vous envoyer votre donner de login dans l'email que vous avez entre Merci !
+              {error && (
+                <div className="text-red-600 font-bold mb-4">Veuillez remplir tous les champs.</div>
+              )}
+
+              <div className="text-gray-800 text-sm mb-4">
+                En remplissant ce formulaire, l'administration vous enverra vos informations de connexion par email. Merci !
               </div>
 
               <div className="flex justify-center">
-                <button type="submit" className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Send</button>
+                <button 
+                  className={`text-white font-semibold px-4 py-2 rounded ${check() ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none' :  'bg-blue-600 bg-opacity-70 cursor-not-allowed'}`} 
+                  disabled={!check()}
+                >
+                  Envoyer
+                </button>
               </div>
             </div>
           </form>
@@ -112,4 +151,3 @@ export default function Info() {
     </div>
   )
 }
-

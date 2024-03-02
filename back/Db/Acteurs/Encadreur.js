@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
 const encadreurSchema = new mongoose.Schema({
-    nom: String,
-    prenom: String,
-    specialiter: String,
+    nomPrenom: String,
+    section: String,
     email: String,
+    filier:String,
     password:String,
+    etat:Boolean,
 });
 
 const encadreurModel = mongoose.model('encadreur', encadreurSchema);

@@ -38,12 +38,12 @@ export default function Contact() {
   return (
     <form className="mt-4" onSubmit={handleEnvoyer}>
       <div className="mb-4">
-        <label htmlFor="email" className="block text-white font-semibold mb-2">Email :</label>
-        <input type="text" id="email" name="email" className="w-1/2 px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white placeholder-gray-400" placeholder="Entrez votre email" value={inputs.email} onChange={handleInputs} />
+        <label htmlFor="email" className="block text-black font-semibold mb-2">Email :</label>
+        <input type="text" id="email" name="email" className="w-1/2 px-3 py-2 border bg-transparent border-black rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-600" placeholder="Entrez votre email" value={inputs.email} onChange={handleInputs} />
       </div>
       <div className="mb-4">
-        <label htmlFor="message" className="block text-white font-semibold mb-2">Message :</label>
-        <textarea id="message" name="message" className="w-1/2 px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white placeholder-gray-400 " placeholder="Entrez votre message ici" rows="4" value={inputs.message} onChange={handleInputs}></textarea>
+        <label htmlFor="message" className="block text-black font-semibold mb-2">Message :</label>
+        <textarea id="message" name="message" className="w-1/2 px-3 py-2  bg-transparent border border-black rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-600 " placeholder="Entrez votre message ici" rows="4" value={inputs.message} onChange={handleInputs}></textarea>
       </div>
       <button type='submit' className={`bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600 ${(!inputs.email || !inputs.message) ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={!inputs.email || !inputs.message}>Envoyer</button>
     </form>

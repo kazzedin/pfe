@@ -1,88 +1,56 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from 'axios'; // Importez axios
 
-export default function DetailsMessages(props) {
-    const [replying, setReplying] = useState(false);
-    const [reply, setReply] = useState('');
+export default function DetailsMessages({ show, showFunc, msg, check, checkFunc, onReply }) {
+  const [replyMessage, setReplyMessage] = useState('');
 
-    const handleReply = (e) => {
-        e.preventDefault();
-        if (reply.trim() === '') {
-            alert('Please enter a response');
-            return;
-        }
+  const handleClose = () => {
+    showFunc(false);
+  };
 
-        axios.post('http://localhost:3001/admin/response', { message: reply, sender: props.msg.sender })
+  const handleReply = () => {
+    if (replyMessage.trim() === '') {
+      alert('Veuillez saisir un message de réponse.');
+      return;
+    }
+    axios.post('http://localhost:3001/admin/response', { message: replyMessage, sender: msg.sender }) // Utilisez msg.sender au lieu de props.msg.sender
             .then(res => {
                 if (res.data.message === 'success') {
                     alert('Response sent successfully');
-                    props.checkFunc(!props.check);
-                    setReply('');
+                    checkFunc(!check); // Utilisez check et checkFunc au lieu de props.check et props.checkFunc
+                    setReplyMessage('');
                 } else {
                     alert('Failed to send response');
                 }
             })
             .catch(err => console.log(err));
-    };
+  };
 
-    const handleTextArea = (e) => {
-        setReply(e.target.value);
-    };
-
-    const toggleReplying = () => {
-        setReplying(!replying);
-    };
-
-    const returnToInbox = (e) => {
-        e.preventDefault();
-        props.showFunc(!props.show);
-    };
-
-    return (
-        <div className="w-8/12 bg-gray-800 text-white p-6 rounded-lg shadow-lg flex flex-col">
-            {props.msg.type === 'contact' ? (
-                <div className="flex flex-col justify-start items-start gap-3">
-                    <h4 className="font-semibold text-xl">Sender: {props.msg.sender}</h4>
-                    <p className="text-lg">Message: {props.msg.message}</p>
-                    {replying && (
-                        <form className="w-full max-w-lg">
-                            <label className="block uppercase tracking-wide text-gray-300 text-xs font-bold mt-6" htmlFor="response">
-                                Response
-                            </label>
-                            <textarea
-                                className="block w-full bg-gray-700 text-gray-200 rounded-lg py-3 px-4 mb-6 leading-tight focus:outline-none focus:bg-gray-900"
-                                id="response"
-                                rows="6"
-                                placeholder="Enter your response here"
-                                value={reply}
-                                onChange={handleTextArea}
-                            ></textarea>
-                            <button
-                                onClick={handleReply}
-                                className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
-                            >
-                                Send
-                            </button>
-                        </form>
-                    )}
-                    <div className="flex justify-between w-full">
-                        <button
-                            onClick={toggleReplying}
-                            className="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
-                        >
-                            {replying ? 'Cancel' : 'Reply'}
-                        </button>
-                        <button
-                            onClick={returnToInbox}
-                            className="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
-                        >
-                            Go back
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <p>No details available for this message type.</p>
-            )}
+  return (
+    <div className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center ${show ? '' : 'hidden'}`}>
+      <div className="bg-white p-6 rounded-lg shadow-md w-96">
+        <h2 className="text-lg font-semibold mb-4">Détails de l'étudiant</h2>
+        <div className="mb-4">
+          <label htmlFor="sender" className="block text-sm font-medium text-gray-700">Expéditeur:</label>
+          <input type="text" id="sender" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={msg.sender} readOnly />
         </div>
-    );
+        <div className="mb-4">
+          <label htmlFor="type" className="block text-sm font-medium text-gray-700">Type:</label>
+          <input type="text" id="type" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={msg.type} readOnly />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message:</label>
+          <textarea id="message" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={msg.message} readOnly />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="replyMessage" className="block text-sm font-medium text-gray-700">Répondre:</label>
+          <textarea id="replyMessage" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} />
+        </div>
+        <div className="flex justify-center">
+          <button onClick={handleClose} className="mr-2 text-white px-4 py-2 rounded-md bg-blue-500">Fermer</button>
+          <button onClick={handleReply} className="ml-2 text-white px-4 py-2 rounded-md bg-green-500">Répondre</button>
+        </div>
+      </div>
+    </div>
+  );
 }

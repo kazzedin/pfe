@@ -28,7 +28,7 @@ const transporter = nodemailer.createTransport({
 
 
 
-//creation de message passer par l'utilisateur
+ //creation de message passer par l'utilisateur type contact 
 router.post('/contact',[
     check("sender","Please enter a valid email address").isEmail()
 ], (req, res) => {
@@ -48,7 +48,13 @@ router.post('/contact',[
     }else{
         res.json({message:'You Enterd Invalid Email'});
     }
-    
+}); 
+
+router.post('/Login-info',[
+    check("sender","Please enter a valid email address").isEmail()
+], (req, res) => {
+  const {sender,nom,prenom,section,filier, matricule}=req.body;
+  console.log(sender,nom,prenom,section,filier, matricule)
 });
 
 
@@ -163,7 +169,18 @@ router.post('/response',(req,res)=>{
     from:process.env.ADMIN_EMAIL,
     to:sender,
     subject:"Repondre sur une qst",
-    html:`<h1>Response</h1> <p>${message}</p>`
+    html:`<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <div style="background-color: #ffffff; border-radius: 5px; padding: 20px;">
+      <h1 style="color: #333333; margin-bottom: 20px;">Réponse à votre question</h1>
+      <p style="color: #666666; margin-bottom: 20px;">Bonjour,</p>
+      <p style="color: #666666; margin-bottom: 20px;">Merci beaucoup pour votre message. Nous avons bien reçu votre question et nous y avons apporté toute notre attention.</p>
+      <p style="color: #666666; margin-bottom: 20px;">Voici notre réponse :</p>
+      <p style="color: #666666; margin-bottom: 20px;">${message}</p>
+      <p style="color: #666666;">N'hésitez pas à nous contacter si vous avez d'autres questions.</p>
+      <p style="color: #666666;">Cordialement,</p>
+      <p style="color: #666666;">Pfe a distance</p>
+    </div>
+  </div>`
   }
   transporter.sendMail(mailOption,(err, result) => {
     if(err){
@@ -179,14 +196,18 @@ router.post('/response',(req,res)=>{
 router.post('/login-info-etu', async (req, res) => {
   const { info } = req.body;
   const newStudents = [];
+  
 
   try {
       for (const student of info) {
           // Vérifier si l'étudiant existe déjà dans la base de données
           const existingStudent = await etudiantModel.findOne({ email: student.email });
 
-          // Si l'étudiant n'existe pas, ajoutez-le à la liste des nouveaux étudiants
-          if (!existingStudent) {
+          // Si l'étudiant existe, ajouter à la liste des étudiants existants
+          if (existingStudent) {
+              res.json({message:'failed'})
+          } else {
+              // Si l'étudiant n'existe pas, ajouter à la liste des nouveaux étudiants
               newStudents.push(student);
           }
       }
@@ -244,6 +265,7 @@ router.post('/login-info-etu', async (req, res) => {
       res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
+
 
 //envoyer les informations de login pour les prof 
 router.post('/login-info-prf', async (req, res) => {
@@ -314,7 +336,16 @@ router.post('/login-info-prf', async (req, res) => {
   }
 });
 
+router.get('/information-etu',(req,res)=>{
+  etudiantModel.find()
+  .then(response=>res.json(response))
+  .catch(err=>console.log(err));
+})
 
-
+router.get('/information-prf',(req,res)=>{
+  encadreurModel.find()
+  .then(response=>res.json(response))
+  .catch(err=>console.log(err));
+})
 
 module.exports = router

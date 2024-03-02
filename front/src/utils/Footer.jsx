@@ -1,18 +1,15 @@
-import React from 'react'
+import React from 'react';
 
 export default function Footer() {
   return (
-    <div>
-        <footer className="bg-gray-800 bg-opacity-50 text-white py-4">
-    <div className=" mx-auto flex justify-between items-center">
-        <span className=' ml-7'>©  Pfe à Distance. Tous droits réservés.</span>
-        <a href="https://ent.usthb.dz/index.php/accueil" className="text-gray-400 hover:text-blue-500 mr-7" title='ent.usthb'> site ent USTHB</a>
-    </div>
-</footer>
-
-
-
-
-    </div>
-  )
+    <footer className="bg-white py-4  bottom-0 w-full shadow-lg">
+      <div className=" mx-auto flex justify-between items-center">
+        <span className='ml-7 text-gray-700'>© Pfe à Distance. Tous droits réservés.</span>
+        <div className='flex flex-col'>
+          <a href="https://ent.usthb.dz/index.php/accueil" className="text-black hover:text-blue-500 mr-7" title='ent.usthb'>ent USTHB</a>
+        
+        </div>
+      </div>
+    </footer>
+  );
 }

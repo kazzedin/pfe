@@ -13,7 +13,7 @@ export default function HomePage() {
       <div className="flex-grow mt-20 "><Body /></div>
 
       {/* Footer */}
-      <div className=" bottom-0 w-full"><Footer /></div>
+      <div className=" bottom-0 w-full shadow-lg"><Footer /></div>
     </div>
   );
 }

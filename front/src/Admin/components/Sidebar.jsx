@@ -9,15 +9,15 @@ export default function Sidebar(props) {
     props.sidebareFunc(!props.sidebar);
   };
   return (
-    <div className={`sidebar transition-transform duration-500 ${props.sidebar ? '-translate-x-full' : 'translate-x-0'} fixed left-0 top-0 bottom-0 w-64 bg-gray-800 bg-opacity-50 opacity-9 px-4 py-2`}>
+    <div className={`sidebar transition-transform duration-500 ${props.sidebar ? '-translate-x-full' : 'translate-x-0'} fixed left-0 top-0 bottom-0 w-64 bg-white px-4 py-2`}>
 
       <div className='my-2 mb-4'>
-        <h1 className='text-2x text-white font-bold'>Admin Dashboard</h1>
+        <h1 className='text-2x text-black font-bold'>Admin Dashboard</h1>
       </div>
 
       <hr />
 
-      <ul className='mt-3 text-white '>
+      <ul className='mt-3 text-black '>
         
         <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2' onClick={toggleSidebar}>
           <Link to="/Admin/ListePfe" className='px-3' >

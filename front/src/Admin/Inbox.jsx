@@ -91,10 +91,6 @@ export default function Inbox() {
             </td>
         </tr>
     );
-  
-    
-   
-
     return (
         <div className="container bg-gray-800 bg-opacity-40 flex flex-col items-center relative">
             {/* Navigation et filtres */}

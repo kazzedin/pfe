@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
 import * as XLSX from 'xlsx';
@@ -12,14 +12,76 @@ export default function ListeProf() {
   const [search, setSearch] = useState('');
   const [selectAll, setSelectAll] = useState(false);
   const [individualSelection, setIndividualSelection] = useState({});
-  const [isOpen, setIsOpen] = useState(false);
   const [infoPrf, setInfoPrf] = useState([]);
   const [envoyer, setEnvoyer] = useState(false);
   const [envoyeProf, setEnvoyeProf] = useState([]);
-  const [sectionFilier, setSectionFilier] = useState({});
-  const [envoyertout, setEnvoyertout] = useState(false);
-
+  const [info,setInfo]=useState([]);
+  const [ProfDetails, setProfDetails] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   
+  const Verification=(email)=>{
+    const exist=info.some(prof=>prof.email===email && prof.etat===true);
+    if(exist){
+   return true;
+    }else{
+    return false;
+    }
+  }
+
+  const CLoseWindow=(e)=>{
+    e.preventDefault();
+    setShowModal(false);
+  }
+  
+  
+  const OpenWindow=(e,info)=>{
+    e.preventDefault();
+    setShowModal(true);
+    setProfDetails(info)
+  }
+
+  const Window = showModal && ProfDetails &&(
+    <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center ">
+            <div className="bg-white p-6 rounded-lg shadow-md w-96 fenetre">
+              
+              <h2 className="text-lg font-semibold mb-4">Information Etudiant</h2>
+             
+                <div className="mb-4">
+                  <label htmlFor="title" className="block text-sm font-medium text-gray-700">Nom/Prenom:</label>
+                  <input type="text" id="title" readOnly className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={ProfDetails['nom/prenom']} />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="category" className="block text-sm font-medium text-gray-700">Section:</label>
+                  <input type="text" name="section" id="section" value={ProfDetails['section']}  readOnly/>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="file" className="block text-sm font-medium text-gray-700">Fichier:</label>
+                  <input type="text" id="filier" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={ProfDetails['filier']} />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="file" className="block text-sm font-medium text-gray-700">Email:</label>
+                  <input type="text" id="email" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={ProfDetails['email']} />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="file" className="block text-sm font-medium  text-red-600">Etat d'envoi:</label>
+                  <input type="text" id="email" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={Verification(ProfDetails['email'])?"Envoyer":"Non envoyer"} />
+                </div>
+                <div className="flex justify-center">
+                  <button onClick={CLoseWindow} className="ml-2 text-white  px-4 py-2 rounded-md bg-blue-500">Annuler</button>
+                </div>
+              
+            </div>
+          </div>
+  );
+
+  useEffect(()=>{
+    axios.get('http://localhost:3001/admin/information-prf')
+    .then(response=>{
+     setInfo(response.data);
+    })
+    .catch(err=>console.log(err));
+   },[])
+
 
   // Fonction pour charger le fichier XLSX
   const handleFileUpload = (e) => {
@@ -32,24 +94,6 @@ export default function ListeProf() {
       const sheet = workbook.Sheets[sheetName];
       const parsedData = XLSX.utils.sheet_to_json(sheet);
       setProf(parsedData);
-
-      // Extraction de la section et de la filière
-      let filier = null;
-      let section = null;
-      parsedData.some((prof) => {
-        if (prof.filier && prof.section) {
-          filier = prof.filier;
-          section = prof.section;
-          return true; // Sortir de la boucle dès qu'une section et une filière sont trouvées
-        }
-        return false;
-      });
-      // Mettre à jour l'état de la section et de la filière
-      if (filier && section) {
-        setSectionFilier({ filier, section });
-      } else {
-        console.error("Filière ou section non trouvée dans le fichier.");
-      }
     };
   };
 
@@ -131,10 +175,8 @@ export default function ListeProf() {
         if (res.data.message === 'success') {
           alert('Information sent successfully');
           setEnvoyer(true);
-          setEnvoyeProf(selectedProf.map((student) => student['email'])); // Mettre à jour les étudiants envoyés
-          if (infoPrf.length === prof.length) {
-            setEnvoyertout(true);
-          }
+          setEnvoyeProf(selectedProf.map((prof) => prof['email'])); // Mettre à jour les étudiants envoyés
+          setInfoPrf([])// initialisation
         } else {
           alert('Error to send Login Info');
         }
@@ -144,12 +186,7 @@ export default function ListeProf() {
     setInfoPrf(updatedInfoPrf);
   };
 
-  // Fonction pour vérifier la section et la filière
-  const VerificationSectionFiliere = (filier, section) => {
-    if (sectionFilier.section === section && sectionFilier.filier === filier) {
-      return true;
-    }
-  };
+  
 
   return (
     <div className='page-professeur relative bg-gray-800 bg-opacity-40'>
@@ -265,7 +302,7 @@ export default function ListeProf() {
                           id={`checkbox-table-search-${index}`}
                           type='checkbox'
                           className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
-                          checked={individualSelection[index] || false}
+                          checked={individualSelection[index] || false ||Verification(row['email'])}
                           onChange={() =>
                             handleCheckboxChange(
                               index,
@@ -275,7 +312,7 @@ export default function ListeProf() {
                               row['section']
                             )
                           }
-                          disabled={envoyer && envoyeProf.includes(row['email'])}
+                          disabled={envoyer && envoyeProf.includes(row['email']) ||  Verification(row['email'])}
                         />
                         <label htmlFor={`checkbox-table-search-${index}`} className='sr-only'>
                           checkbox
@@ -283,12 +320,12 @@ export default function ListeProf() {
                       </div>
                     </td>
                     {Object.values(row).map((value, index) => (
-                      <td key={index} className='px-6 py-4'>
+                      <td key={index} className='px-6 py-4' onClick={(e) => OpenWindow(e,row)}>
                         {value}
                       </td>
                     ))}
                     <td>
-                      {envoyer && envoyeProf.includes(row['email']) ? ( // Condition pour afficher le check icon
+                      {envoyer && envoyeProf.includes(row['email']) ||  Verification(row['email']) ? ( // Condition pour afficher le check icon
                         <div>
                           <p>Envoyé</p>
                           <FaCheck className='text-green-500' />
@@ -304,7 +341,8 @@ export default function ListeProf() {
                 ))}
             </tbody>
           </table>
-          <div>{prof.length == 0 ? <h4>Pas de fichier selectionner ?</h4> : ''}</div>
+          {Window}
+          <div>{prof.length === 0 ? <h4>Pas de fichier selectionner ?</h4> : ''}</div>
         </div>
       </div>
     </div>

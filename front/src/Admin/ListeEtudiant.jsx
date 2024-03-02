@@ -1,25 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
 import * as XLSX from 'xlsx';
 import { FaCheck, FaTimes, FaAngleDown, FaAngleUp } from 'react-icons/fa';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 import axios from 'axios';
 
-// Constantes pour les sections et les filières
-const SECTION_ACAD_A = 'A';
-const SECTION_ACAD_B = 'B';
-const SECTION_ACAD_C = 'C';
-
-const SECTION_ISIL_A = 'A';
-const SECTION_ISIL_B = 'B';
-
-const SECTION_GTR = ''; // S'il n'y a qu'une seule section dans GTR
-
-const ACAD = 'ACAD';
-const ISIL = 'ISIL';
-const GTR = 'GTR';
 
 export default function ListeEtudiant() {
   // États
@@ -27,17 +12,82 @@ export default function ListeEtudiant() {
   const [search, setSearch] = useState('');
   const [selectAll, setSelectAll] = useState(false);
   const [individualSelection, setIndividualSelection] = useState({});
-  const [isOpen, setIsOpen] = useState(false);
   const [infoEtu, setInfoEtu] = useState([]);
   const [envoyer, setEnvoyer] = useState(false);
   const [envoyeEtudiant, setEnvoyeEtudiant] = useState([]);
-  const [sectionFilier, setSectionFilier] = useState({});
-  const [envoyertout, setEnvoyertout] = useState(false);
+  const [info,setInfo]=useState([]);
+  const [studentDetails, setStudentDetails] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
-  // Fonction pour le petit slider des informations
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const Verification=(email)=>{
+    const exist=info.some(student=>student.email===email && student.etat===true);
+    if(exist){
+   return true;
+    }else{
+    return false;
+    }
+  }
+ 
+const CLoseWindow=(e)=>{
+  e.preventDefault();
+  setShowModal(false);
+}
+
+
+const OpenWindow=(e,info)=>{
+  e.preventDefault();
+  setShowModal(true);
+  setStudentDetails(info)
+}
+
+
+const Window = showModal && studentDetails &&(
+  <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center ">
+          <div className="bg-white p-6 rounded-lg shadow-md w-96 fenetre">
+            
+            <h2 className="text-lg font-semibold mb-4">Information Etudiant</h2>
+           
+              <div className="mb-4">
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700">Nom/Prenom:</label>
+                <input type="text" id="title" readOnly className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails['nom/prenom']} />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="category" className="block text-sm font-medium text-gray-700">Section:</label>
+                <input type="text" name="section" id="section" value={studentDetails['section']}  readOnly/>
+              </div>
+              <div className="mb-4">
+                <label htmlFor="file" className="block text-sm font-medium text-gray-700">Fichier:</label>
+                <input type="text" id="filier" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails['filier']} />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="file" className="block text-sm font-medium text-gray-700">Matricule:</label>
+                <input type="text" id="matricule" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails['matricule']} />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="file" className="block text-sm font-medium text-gray-700">Email:</label>
+                <input type="text" id="email" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails['email']} />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="file" className="block text-sm font-medium  text-red-600">Etat d'envoi:</label>
+                <input type="text" id="email" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={Verification(studentDetails['email'])?"Envoyer":"Non envoyer"} />
+              </div>
+              <div className="flex justify-center">
+                <button onClick={CLoseWindow} className="ml-2 text-white  px-4 py-2 rounded-md bg-blue-500">Annuler</button>
+              </div>
+            
+          </div>
+        </div>
+);
+
+
+  useEffect(()=>{
+   axios.get('http://localhost:3001/admin/information-etu')
+   .then(response=>{
+    setInfo(response.data);
+   })
+   .catch(err=>console.log(err));
+  },[])
+
 
   // Fonction pour charger le fichier XLSX
   const handleFileUpload = (e) => {
@@ -49,27 +99,12 @@ export default function ListeEtudiant() {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const parsedData = XLSX.utils.sheet_to_json(sheet);
-      setStudents(parsedData);
-
-      // Extraction de la section et de la filière
-      let filier = null;
-      let section = null;
-      parsedData.some((student) => {
-        if (student.filier && student.section) {
-          filier = student.filier;
-          section = student.section;
-          return true; // Sortir de la boucle dès qu'une section et une filière sont trouvées
-        }
-        return false;
-      });
-      // Mettre à jour l'état de la section et de la filière
-      if (filier && section) {
-        setSectionFilier({ filier, section });
-      } else {
-        console.error("Filière ou section non trouvée dans le fichier.");
-      }
+      setStudents(parsedData);    
     };
+   
   };
+
+
 
   // Fonction pour retourner à la page d'administration
   const navigate = useNavigate();
@@ -144,32 +179,28 @@ export default function ListeEtudiant() {
       ...student,
       loginInfo: selectedStudents.some((selected) => selected['email'] === student['email']),
     }));
-
+  
     axios
       .post('http://localhost:3001/admin/login-info-etu', { info: updatedInfoEtu })
       .then((res) => {
-        if (res.data.message === 'success') {
-          alert('Information sent successfully');
-          setEnvoyer(true);
-          setEnvoyeEtudiant(selectedStudents.map((student) => student['email'])); // Mettre à jour les étudiants envoyés
-          if (infoEtu.length === students.length) {
-            setEnvoyertout(true);
+        if (res.status === 200 || res.status === 201) {
+          if (res.data.message === 'failed') {
+            alert('Certains des étudiants que vous avez cochés sont déjà des étudiants avec ces informations de connexion.');
+          } else {
+            alert('Information sent successfully');
+            setEnvoyer(true);
+            setEnvoyeEtudiant(selectedStudents.map((student) => student['email'])); // Mettre à jour les étudiants envoyés
+            setInfoEtu([]);
           }
         } else {
-          alert('Error to send Login Info');
+          console.error('Failed to send information:', res.data.message || res.statusText);
         }
       })
-      .catch((err) => console.log(err));
-
+      .catch((err) => console.error('Error sending information:', err));
+  
     setInfoEtu(updatedInfoEtu);
   };
-
-  // Fonction pour vérifier la section et la filière
-  const VerificationSectionFiliere = (filier, section) => {
-    if (sectionFilier.section === section && sectionFilier.filier === filier) {
-      return true;
-    }
-  };
+  
 
   return (
     <div className='page-etudiant relative bg-gray-800 bg-opacity-40'>
@@ -201,36 +232,7 @@ export default function ListeEtudiant() {
             Envoyer
           </button>
         )}
-        <div className='top-0 right-0 absolute flex text-left mr-2 mt-2'>
-          <button
-            onClick={toggleMenu}
-            type='button'
-            className='inline-flex justify-center items-center gap-1 w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none '>
-            Information <FontAwesomeIcon icon={faQuestionCircle} style={{ color: 'black', marginRight: '0.5rem' }} />
-            {isOpen ? <FaAngleUp className='ml-2' /> : <FaAngleDown className='ml-2' />}
-          </button>
-          {isOpen && (
-            <div className=' absolute right-0 mt-10 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5'>
-              <div className='py-1' role='menu' aria-orientation='vertical' aria-labelledby='options-menu'>
-                <p className='flex flex-row items-center justify-start gap-1 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' role='menuitem'>
-                  ACAD:
-                  A: {VerificationSectionFiliere(ACAD, SECTION_ACAD_A) && envoyertout ? <FaCheck className='text-green-500' title='Envoye' />  :<FaTimes className='text-red-500' title='Non envoye' /> }
-                  B: {VerificationSectionFiliere(ACAD, SECTION_ACAD_B) && envoyertout ? <FaCheck className='text-green-500' title='Envoye'/> : <FaTimes className='text-red-500' title='Non envoye' />}
-                  C: {VerificationSectionFiliere(ACAD, SECTION_ACAD_C) && envoyertout ? <FaCheck className='text-green-500'title='Envoye' /> : <FaTimes className='text-red-500' title='Non envoye' />}
-                </p>
-                <p className='flex flex-row items-center justify-start gap-1 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' role='menuitem'>
-                  ISIL:
-                  A: {VerificationSectionFiliere(ISIL, SECTION_ISIL_A) && envoyertout ? <FaCheck className='text-green-500' title='Envoye'/> : <FaTimes className='text-red-500' title='Non envoye' />}
-                  B: {VerificationSectionFiliere(ISIL, SECTION_ISIL_B) && envoyertout ? <FaCheck className='text-green-500' title='Envoye'/> : <FaTimes className='text-red-500' title='Non envoye' />}
-                </p>
-                <p className='flex flex-row items-center justify-start gap-1 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' role='menuitem'>
-                  GTR: {VerificationSectionFiliere(GTR, SECTION_GTR) && envoyertout ? <FaCheck className='text-green-500' title='Envoye'/> : <FaTimes className='text-red-500' title='Non envoye' />}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      </div> 
 
       <div className='search-bar'>
         <label htmlFor='table-search' className='sr-only'>
@@ -295,6 +297,7 @@ export default function ListeEtudiant() {
                 <th scope='col' className='px-6 py-3'>
                   Etat
                 </th>
+                
               </tr>
             </thead>
             <tbody>
@@ -317,7 +320,7 @@ export default function ListeEtudiant() {
                           id={`checkbox-table-search-${index}`}
                           type='checkbox'
                           className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
-                          checked={individualSelection[index] || false}
+                          checked={individualSelection[index] || false ||Verification(row['email'])}
                           onChange={() =>
                             handleCheckboxChange(
                               index,
@@ -328,20 +331,21 @@ export default function ListeEtudiant() {
                               row['section']
                             )
                           }
-                          disabled={envoyer && envoyeEtudiant.includes(row['email'])}
+                          disabled={envoyer && envoyeEtudiant.includes(row['email']) ||Verification(row['email'])}
                         />
                         <label htmlFor={`checkbox-table-search-${index}`} className='sr-only'>
                           checkbox
                         </label>
                       </div>
                     </td>
+                   
                     {Object.values(row).map((value, index) => (
-                      <td key={index} className='px-6 py-4'>
+                      <td key={index} className='px-6 py-4' onClick={(e) => OpenWindow(e,row)}>
                         {value}
                       </td>
                     ))}
                     <td>
-                      {envoyer && envoyeEtudiant.includes(row['email']) ? ( // Condition pour afficher le check icon
+                      {envoyer && envoyeEtudiant.includes(row['email']) ||  Verification(row['email']) ? ( // Condition pour afficher le check icon
                         <div>
                           <p>Envoyé</p>
                           <FaCheck className='text-green-500' />
@@ -353,11 +357,13 @@ export default function ListeEtudiant() {
                         </div>
                       )}
                     </td>
+                    
                   </tr>
                 ))}
             </tbody>
           </table>
-          <div>{students.length == 0 ? <h4>Pas de fichier selectionner ?</h4> : ''}</div>
+          {Window}
+          <div>{students.length === 0 ? <h4>Pas de fichier selectionner ?</h4> : ''}</div>
         </div>
       </div>
     </div>
