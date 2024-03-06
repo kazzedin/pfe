@@ -189,20 +189,20 @@ export default function ListeProf() {
   
 
   return (
-    <div className='page-professeur relative bg-gray-800 bg-opacity-40'>
+    <div className='page-professeur relative bg-gray-800 bg-opacity-10'>
       <div className='top-0 left-0 absolute flex items-center'>
         <div className='flex items-center'>
-          <Link onClick={returnAdmin} className='hover:text-red-700 text-white rounded flex items-center ml-4 mt-4'>
+          <Link onClick={returnAdmin} className='hover:text-red-500 text-black rounded flex items-center ml-4 mt-4'>
             <IoIosArrowBack className='mr-2' />
             Retourner à la page d'administration
           </Link>
         </div>
       </div>
 
-      <h1 className='font-bold text-3xl mb-4 text-white mt-4 text-center'>Liste Professeur</h1>
+      <h1 className='font-bold text-3xl mb-4 text-black mt-4 text-center'>Liste Professeur</h1>
 
       <div className='flex flex-row justify-center items-center gap-3 mb-4'>
-        <label htmlFor='file-upload' className='file-upload-button'>
+        <label htmlFor='file-upload' className='file-upload-button '>
           Choisir un fichier
         </label>
         <input type='file' id='file-upload' onChange={handleFileUpload} accept='.xls,.xlsx' style={{ display: 'none' }} />
@@ -228,7 +228,7 @@ export default function ListeProf() {
         <div className='relative'>
           <div className='absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none'>
             <svg
-              className='w-4 h-4 ml-6 text-gray-500 dark:text-gray-400'
+              className='w-4 h-4 ml-2 text-gray-500 dark:text-gray-400'
               aria-hidden='true'
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
@@ -239,7 +239,7 @@ export default function ListeProf() {
           <input
             type='text'
             id='table-search'
-            className='ml-4 bg-gray-800 text-white text-sm w-64 h-9 rounded-sm border-none search'
+            className=' bg-gray-800 text-white text-sm w-64 h-9 rounded-sm border-none search'
             placeholder='Chercher Professeur'
             onChange={HandelSearch}
             value={search}
@@ -339,10 +339,15 @@ export default function ListeProf() {
                     </td>
                   </tr>
                 ))}
+                <tr>
+                  <td colSpan="6" className="px-6 py-4 text-center">
+                {prof.length === 0 ? <h4 className='font-bold text-black'>Pas de fichier selectionner ?</h4> : ''}
+                </td>
+                </tr>
             </tbody>
           </table>
           {Window}
-          <div>{prof.length === 0 ? <h4>Pas de fichier selectionner ?</h4> : ''}</div>
+
         </div>
       </div>
     </div>

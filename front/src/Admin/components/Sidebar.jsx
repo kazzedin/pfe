@@ -9,7 +9,7 @@ export default function Sidebar(props) {
     props.sidebareFunc(!props.sidebar);
   };
   return (
-    <div className={`sidebar transition-transform duration-500 ${props.sidebar ? '-translate-x-full' : 'translate-x-0'} fixed left-0 top-0 bottom-0 w-64 bg-white px-4 py-2`}>
+    <div className={`sidebar transition-transform duration-500 ${props.sidebar ? '-translate-x-full' : 'translate-x-0'} fixed left-0 top-0 bottom-0 w-64 bg-white px-4 py-2 z-50`}>
 
       <div className='my-2 mb-4'>
         <h1 className='text-2x text-black font-bold'>Admin Dashboard</h1>

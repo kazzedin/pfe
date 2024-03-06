@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaUser } from 'react-icons/fa';
-import { Switch } from '@mui/material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+
 
 function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);

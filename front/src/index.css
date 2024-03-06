@@ -111,12 +111,12 @@
 
 .page-etudiant{
     margin-top: 4rem;
-    width: 82rem;
+    width: 90rem;
     height: 40rem;
 }  
 .page-professeur{
     margin-top: 4rem;
-    width: 82rem;
+    width: 90rem;
     height: 40rem;
 }  
 .table-etudiant{
@@ -125,14 +125,16 @@
     margin-left: 1rem;
 }
 .table-prof{
-    width: 80rem;
-    height: 30rem;
-    margin-left: 1rem;
+    width: 89rem;
+    height: 37rem;
+    backdrop-filter: blur(4px);
+    z-index: 0;
+    margin-left: 0.5rem;
 }
 .file-upload-button {
     background-color: transparent;
-    border:1px solid  #45a049;
-    color: white;
+    border:1px solid  #33d13b;
+    color: black;
     padding: 8px 10px;
     border-radius: 5px;
     cursor: pointer;
@@ -140,7 +142,8 @@
  
 .search{
  text-indent: 2rem;
- margin-left: 2rem;
+margin-left: 1rem;
+border-radius: 8px;
 }  
 .image{
     width:40rem ;
@@ -150,9 +153,11 @@
 }
 
 .container {
-    width: 82rem;
+    width: 90rem;
     margin-top: 2rem;
     height: 37rem;
+    backdrop-filter: blur(4px);
+    z-index: 0;
 }
 .message-container{
     width: 35rem;  
@@ -161,12 +166,12 @@
 .message-container2 {
     max-height: 25rem;
     margin-top: 4rem;
-    width: 80rem;
+    width: 89rem;
 
 }
 
 .table-message{
-    width: 80rem;
+    width: 89rem;
 }
 
 .relative.overflow-x-auto::-webkit-scrollbar {
