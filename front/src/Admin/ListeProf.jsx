@@ -2,7 +2,7 @@ import React, { useState,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
 import * as XLSX from 'xlsx';
-import { FaCheck, FaTimes} from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle} from 'react-icons/fa';
 import axios from 'axios';
 
 
@@ -328,12 +328,12 @@ export default function ListeProf() {
                       {envoyer && envoyeProf.includes(row['email']) ||  Verification(row['email']) ? ( // Condition pour afficher le check icon
                         <div>
                           <p>Envoyé</p>
-                          <FaCheck className='text-green-500' />
+                          <FaCheckCircle className='text-green-500' />
                         </div>
                       ) : (
                         <div>
                           <p>Non envoyé</p>
-                          <FaTimes className='text-red-500' />
+                          <FaTimesCircle className='text-red-500' />
                         </div>
                       )}
                     </td>

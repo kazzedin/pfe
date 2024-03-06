@@ -50,12 +50,57 @@ router.post('/contact',[
     }
 }); 
 
-router.post('/Login-info',[
-    check("sender","Please enter a valid email address").isEmail()
+
+// envoyer les informations pour les etudiant (login-info)
+router.post('/Login-info-etu', [
+    check("sender", "Please enter a valid email address").isEmail(),
+    check("matricule", "Matricule must be 12 characters long").isLength({ min: 12, max: 12 })
 ], (req, res) => {
-  const {sender,nom,prenom,section,filier, matricule}=req.body;
-  console.log(sender,nom,prenom,section,filier, matricule)
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    
+    const { sender, nom, prenom, section, filiere, matricule, message } = req.body;
+    const nomPrenom = nom + ' ' + prenom;
+    messageModel.findOne({ sender: sender, "info.nomPrenom": nom +""+prenom, "info.section": section, "info.filier": filiere, "info.matricule": matricule, type: 'login-info-etu' })
+        .then(msg => {
+            if (msg) {
+                res.json({ message: 'failed' });
+            } else {
+                messageModel.create({ sender: sender, message: message, "info.nomPrenom": nomPrenom, "info.section": section, "info.filier": filiere, "info.matricule": matricule, type: 'login-info-etu' })
+                    .then(() => res.json({ message: 'success' }))
+                    .catch(() => res.json({ message: 'error' }));
+            }
+        })
+        .catch(() => res.json({ message: 'error' }));
 });
+
+// envoyer les informations pour les prof (login-info)
+router.post('/Login-info-prf', [
+    check("sender", "Please enter a valid email address").isEmail(),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    const { sender, nom, prenom, section, filiere, message } = req.body;
+    const nomPrenom = nom + ' ' + prenom;
+    const Section=section.join(',');
+    const Filier=filiere.join(',');
+    messageModel.findOne({ sender: sender, "info.nomPrenom": nom +""+prenom, "info.section": Section, "info.filier": Filier,type: 'login-info-prf' })
+        .then(msg => {
+            if (msg) {
+                res.json({ message: 'failed' });
+            } else {
+                messageModel.create({ sender: sender, message: message, "info.nomPrenom": nomPrenom, "info.section": Section, "info.filier": Filier, type: 'login-info-prf' })
+                    .then(() => res.json({ message: 'success' }))
+                    .catch(() => res.json({ message: 'error' }));
+            }
+        })
+        .catch(() => res.json({ message: 'error' }));
+});
+
 
 
 // la verifcation de JWT dans le cas denter dans la page Admin Pour Allowd or not 
@@ -156,14 +201,15 @@ router.put('/profil', [
 
 //la supprision des messages de la base de donne
 router.delete('/deletemessage', (req, res) => {
-  console.log(req.body.sender);
-  messageModel.findOneAndDelete({ sender: req.body.sender })
+  const {email,message}=req.body;
+  console.log(email,message);
+  messageModel.findOneAndDelete({ sender:email,message:message})
     .then(response => res.json({ message: 'Deleted' }))
-    .catch(err => res.json(err));
+    .catch(err => res.json(err)); 
 });
 
 //envoyer une reponse pour les messages de type contact 
-router.post('/response',(req,res)=>{
+router.post('/response-contact',(req,res)=>{
   const {message,sender} = req.body;
   const mailOption={
     from:process.env.ADMIN_EMAIL,
@@ -190,6 +236,92 @@ router.post('/response',(req,res)=>{
     }
   })
 })
+
+router.post('/response-login-info', (req, res) => {
+  const { sender, type } = req.body;
+  let mailOption = ''; // Déclaration de la variable
+
+  if (type === 'attente') { // Correction du type ici
+    mailOption = {
+      from: process.env.ADMIN_EMAIL,
+      to: sender,
+      subject: "Paraport aux Login information",
+      html: `<div style="font-family: Arial, sans-serif;">
+        <p>Bonjour,</p>
+        <p>Nous vous contactons pour vous informer que vos informations de connexion ne correspondent pas aux listes d'étudiants actuellement disponibles pour la section et la filière spécifiées. En conséquence, nous vous demandons de patienter jusqu'à ce que les listes d'étudiants soient mises à jour.</p>
+        <p>Une fois les listes mises à jour, nous vous enverrons vos informations de connexion.</p>
+        <p>Merci de votre compréhension et de votre patience.</p>
+        <p>Cordialement,<br>Pfe a Distance</p>
+      </div>`
+    }
+  } else {
+    mailOption = {
+      from: process.env.ADMIN_EMAIL,
+      to: sender,
+      subject: "Paraport aux Login information",
+      html: `<div style="font-family: Arial, sans-serif;">
+        <p>Bonjour,</p>
+        <p>Nous vous informons que nous avons déjà envoyé les informations de connexion à votre compte. Veuillez vérifier votre boîte de réception, ainsi que votre dossier de courrier indésirable (spam) au cas où notre e-mail aurait été filtré là-bas.</p>
+        <p>Si vous ne trouvez pas notre e-mail dans votre boîte de réception ou votre dossier de spam, veuillez nous contacter immédiatement afin que nous puissions vous aider à accéder à vos informations de connexion.</p>
+        <p>Merci.</p>
+        <p>Cordialement,<br>Pfe a Distance</p>
+      </div>`
+    }
+  }
+
+  transporter.sendMail(mailOption, (err, result) => {
+    if (err) {
+      res.json({ message: "failed to send mail" })
+    } else {
+      res.json({ message: "success" })
+    }
+  })
+})
+
+//changement d'etat pour les message de type login-info
+router.put('/response-login-info-etat', async (req, res) => {
+  try {
+    const { sender, message, info,type } = req.body;
+   
+    // Recherche du message à mettre à jour
+     const updatedMessage = await messageModel.findOneAndUpdate(
+      { sender: sender, message: message, 'info.nomPrenom': info,type:type },
+      { etat: true }, // Mettre à jour l'état du message à true
+      { new: true } // Pour renvoyer le document mis à jour
+    );
+
+    if (updatedMessage) {
+      res.status(200).json({ message: 'L\'état du message a été mis à jour avec succès' });
+    } else {
+      res.status(404).json({ message: 'Aucun message correspondant trouvé' });
+    } 
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Une erreur s\'est produite lors de la mise à jour de l\'état du message' });
+  }
+});
+//changement d'etat pour les message de type contact 
+router.put('/response-contact-etat', async (req, res) => {
+  try {
+    const { sender, message,type } = req.body;
+    // Recherche du message à mettre à jour
+    const updatedMessage = await messageModel.findOneAndUpdate(
+      { sender: sender, message: message,type:type},
+      { etat: true }, // Mettre à jour l'état du message à true
+      { new: true } // Pour renvoyer le document mis à jour
+    );
+
+    if (updatedMessage) {
+      res.status(200).json({ message: 'L\'état du message a été mis à jour avec succès' });
+    } else {
+      res.status(404).json({ message: 'Aucun message correspondant trouvé' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Une erreur s\'est produite lors de la mise à jour de l\'état du message' });
+  }
+});
+
 
 
 //envoyer les donner de login vers les etudiants

@@ -40,14 +40,14 @@ const Body = () => {
             Étudiant <hr className={`${choixEtu ? 'hidden' : 'block'}`} />
           </h4>
           <p className={`text-sm ${choixEtu ? 'hidden' : 'block'} text-black mb-2`}>Si vous êtes étudiant, cliquez ici</p>
-          {choixEtu && <LoginForm />}
+          {choixEtu && <LoginForm type={"Etu"} />}
         </div>
         <div className={`ens max-w-md bg-gray-100 bg-opacity-40 p-8 rounded-lg shadow-lg cursor-pointer transition-transform transform ${choixPrf ? 'translate-y-0 ease-out' : '-translate-y-2'}`}>
           <h4 className="text-xl font-semibold mb-4 text-black hover:text-blue-500" onClick={handleChoixPrf}>
             Enseignant <hr className={`${choixPrf ? 'hidden' : 'block'}`} />
           </h4>
           <p className={`text-sm ${choixPrf ? 'hidden' : 'block'} text-black mb-2`}>Si vous êtes enseignant, cliquez ici</p>
-          {choixPrf && <LoginForm />}
+          {choixPrf && <LoginForm type={"Prf"} />}
         </div>
       </div>
      

@@ -18,8 +18,8 @@
     margin-bottom: 1rem;
 }
 .contenaire{
-    background-color: white;
-    background-image: url('./home.jpg');
+    
+    background-image: url('../public/home.jpg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -41,39 +41,38 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('./home2.jpg');
+    background-image: url('../public/home2.jpg');
 }
 .reset-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('./home2.jpg');
+    background-image: url('../public/home2.jpg');
 }
 .info-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('./home2.jpg');
+    background-image: url('../public/home2.jpg');
 }
 .admin-page{
-    background-color: white;
-    background-image: url('./home2.jpg');
+    background-image: url('../public/home2.jpg');
     background-position: center;
     background-repeat: no-repeat;
-  background-size: cover;
+    background-size: cover;
     
 }
 .error-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('./home2.jpg');
+    background-image: url('../public/home2.jpg');
 }
 .redirect-page{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('./home2.jpg');
+    background-image: url('../public/home2.jpg');
 }
 .form-info{
     width: 35rem;

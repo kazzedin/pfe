@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { IoIosArrowBack } from 'react-icons/io';
 import DetailsMessages from './DetailsMessages';
-import { FaCheckCircle } from 'react-icons/fa';
+import { FaCheckCircle,FaTimesCircle } from 'react-icons/fa';
 import MessageContext from './MessageProvider';
 
 
@@ -14,8 +14,7 @@ export default function Inbox() {
     const [searchParams, setSearchParams] = useSearchParams();
     const messageFilter = searchParams.get("type");
     const [show, setShow] = useState(false);
-    const [clickedMessage, setClickedMessage] = useState({ sender: '', type: '', message: '' });
-    const [chekedMessage, setChekedMessage] = useState(false);
+    const [clickedMessage, setClickedMessage] = useState({ sender: '', type: '', message: '',nomPrenom: '',matricule: '',section:'',filier:''});
     const {setUnreadMessages} = useContext(MessageContext);
 
     useEffect(() => {
@@ -23,10 +22,8 @@ export default function Inbox() {
             .then(res => {
                 if (res.data.messages) {
                     setMessages(res.data.messages);
-                    
                 } else {
                     console.log("No messages");
-                    
                 }
             })
             .catch(err => {
@@ -44,25 +41,62 @@ export default function Inbox() {
         navigate('/Admin');
     }
 
-    const AfficherDetails = (e, sender, type, message) => {
+    const VerificationEtat=(email,type,message)=>{
+        const etat=messages.some(item=>item.etat===true&&item.sender===email&&item.type===type&&item.message===message)
+        if(etat){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    const AfficherDetails = (e, sender, type, message, nomPrenom, matricule, section, filier) => {
         e.preventDefault();
+    
+        let infoData = {};
+        if (type === 'login-info-etu') {
+            infoData = {
+                nomPrenom: nomPrenom,
+                matricule: matricule,
+                section: section,
+                filier: filier
+            };
+        }else if(type==='login-info-prf'){
+            infoData = {
+                nomPrenom: nomPrenom,
+                section: section,
+                filier: filier
+            };
+        }
         setClickedMessage({
             sender: sender,
             type: type,
-            message: message
+            message: message,
+            info: infoData // Transmettre uniquement si le type de message est "login-info"
         });
+        
         setShow(true);
     }
 
-    const handleDelete = (email) => {
-        axios.delete('http://localhost:3001/admin/deletemessage', { data: { sender: email } })
+    const handleDelete = (e, email, message,type,info,matricule) => {
+        console.log(type);
+        e.preventDefault();
+        axios.delete('http://localhost:3001/admin/deletemessage', { data:{message: message, email: email} })
             .then(res => {
-                console.log(res.data.message);
+               
                 alert('Message deleted successfully')
-                setMessages(prevMessages => prevMessages.filter(message => message.sender !== email));
+                if(type==="login-info-etu"){
+                    setMessages(prevMessages => prevMessages.filter(msg => !(msg.sender === email && msg.message === message &&(msg.info ?msg.info.nomPrenom===info&&msg.info.matricule===matricule:''))));
+                }else if(type==="login-info-prf"){
+                    setMessages(prevMessages => prevMessages.filter(msg => !(msg.sender === email && msg.message === message &&(msg.info ?msg.info.nomPrenom===info :'')))); 
+                }
+                else if(type==="contact"){
+                    setMessages(prevMessages => prevMessages.filter(msg => !(msg.sender === email && msg.message === message)));
+                }
             })
             .catch(err => console.log(err));
     }
+    
 
     const Filtered_Message = messageFilter ? messages.filter(item => item.type === messageFilter) : messages;
 
@@ -78,10 +112,28 @@ export default function Inbox() {
                 <td className="px-6 py-4">
                     {message.message.split(' ').slice(0, 5).join(' ')}{message.message.split(' ').length > 5 ? '...' : ''}
                 </td>
-                <td className="px-6 py-4 flex flex-row items-center gap-2">
-                    <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline" onClick={(e) => AfficherDetails(e, message.sender, message.type, message.message)}>Voir</button>
-                    <button className="font-medium text-red-600 dark:text-red-500 hover:underline" onClick={() => handleDelete(message.sender)}>Delete</button>
-                    {chekedMessage && message.sender===clickedMessage.sender ?<FaCheckCircle color="green" size={20} />:""}
+
+                <td className="px-6 py-4">
+    {message.type === 'login-info-etu'||message.type==='login-info-prf' && message.info ? (
+        <>
+           <p>{message.info.nomPrenom}</p>
+           <p>
+           {message.type==="login-info-etu" ? message.info.matricule:message.info.section || message.info.filier }...
+           </p>
+        
+        </>
+    ) : (
+        <p>Non-exister</p>
+    )}
+</td>
+                <td className="px-6 py-4 flex flex-row items-center mt-1 gap-2">
+                   
+                    <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline" onClick={message.info ?(e)=>AfficherDetails(e,message.sender, message.type, message.message,message.info.nomPrenom,message.info.matricule,message.info.section,message.info.filier) :(e)=>AfficherDetails(e,message.sender, message.type, message.message,"","","") }>Voir</button>
+                    <button className="font-medium text-red-600 dark:text-red-500 hover:underline" onClick={ message.info ? (e) => handleDelete(e,message.sender,message.message,message.type,message.info.nomPrenom,message.info.matricule):(e) => handleDelete(e,message.sender,message.message,message.type)}>Delete</button>
+                    
+                </td>
+                <td>
+                {VerificationEtat(message.sender,message.type,message.message) || (clickedMessage.nomPrenom===message.nomPrenom&&clickedMessage.info.matricule===message.info.matricule)   ?<div className='flex flex-row items-center gap-1'>Repondu <FaCheckCircle color="green"  /></div>:<div className='flex flex-row items-center gap-1'>Non repondu<FaTimesCircle color="red"  /></div>}
                 </td>
             </tr>)
     )) : (
@@ -106,7 +158,7 @@ export default function Inbox() {
             <div className='filter absolute left-0 top-20 flex flex-row items-center justify-center gap-2 text-white mb-1'>
                 <h4 className='font-bold text-white'>Filtre:</h4>
                 <Link to='?type=contact' className='border border-white bg-transparent rounded-2xl p-1 hover:border-blue-500 hover:text-blue-500'>Contact</Link>
-                <Link to='?type=logininfo' className='border border-white bg-transparent rounded-2xl p-1 hover:border-blue-500 hover:text-blue-500'>Login-Info</Link>
+                <Link to='?type=login-info' className='border border-white bg-transparent rounded-2xl p-1 hover:border-blue-500 hover:text-blue-500'>Login-Info</Link>
          
                 {messageFilter ? <Link to='' className='bg-transparent rounded-2xl p-1 hover:border-blue-500 hover:text-blue-500'>Clear-Filter ?</Link> : ''}
             </div>
@@ -129,7 +181,7 @@ export default function Inbox() {
                 </div>
             ) : (
                 <div className="shadow-md sm:rounded-lg message-container2 flex flex-col justify-center items-center">
-                    {show ? <DetailsMessages showFunc={setShow} show={show} msg={clickedMessage} check={chekedMessage} checkFunc={setChekedMessage} /> :
+                    {show ? <DetailsMessages showFunc={setShow} show={show} msg={clickedMessage}  />:
                         <div className=" relative overflow-x-auto">
                             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-message">
                                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -137,7 +189,9 @@ export default function Inbox() {
                                         <th scope="col" className="px-6 py-3">Emmeteur:</th>
                                         <th scope="col" className="px-6 py-3">Type:</th>
                                         <th scope="col" className="px-6 py-3">Message:</th>
+                                        <th scope="col" className="px-6 py-3">Info:</th>
                                         <th scope="col" className="px-6 py-3">Action:</th>
+                                        <th scope="col" className="px-6 py-3">Etat:</th>
                                     </tr>
                                 </thead>
                                 <tbody className="max-h-96 overflow-y-auto">

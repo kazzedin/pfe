@@ -10,7 +10,8 @@ const messageSchema=new mongoose.Schema({
     matricule: String
   },
   type:{type:String,
-  enum:['contact','login-info']}
+  enum:['contact','login-info-etu','login-info-prf']},
+  etat:{type:Boolean, default:false}
 });
 
 const messageModel=mongoose.model('messages',messageSchema);

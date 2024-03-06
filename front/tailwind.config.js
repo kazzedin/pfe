@@ -18,6 +18,7 @@ export default {
     extend:{
       display:["focus-group"]
     }
-  }
+  },
+  darkMode: 'class',
 }
 

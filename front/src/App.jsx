@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './utils/HomePage';
 import Reset from './utils/Reset';
-import Info from './utils/Info';
+import InfoEtu from './utils/InfoEtu';
+import InfoPrf from './utils/InfoPrf';
 import AdminProfile from './Admin/AdminProfile';
 import Admin from './Admin/Admin';
 import CheckAdmin from './Admin/CheckAdmin';
@@ -18,13 +19,16 @@ import ListeProf from './Admin/ListeProf';
 import ListePfe from './Admin/ListePfe';
 import DetailsMessages from './Admin/DetailsMessages';
 
+
 export default function App() {
   return (
     <div>
+      
     <AdminUserProvider>
       <BrowserRouter>
         <MessageProvider>
           <Routes>
+                     
             <Route path='/' element={<HomePage />} />
             <Route element={<CheckAdmin />}>
               <Route path='/Admin' element={<Admin />} >
@@ -40,12 +44,14 @@ export default function App() {
             </Route>
             <Route path='/LoginAdmin' element={<LoginAdmin/>}/>
             <Route path='/Reset' element={<Reset />} />
-            <Route path='/Info' element={<Info />} />
+            <Route path='/InfoEtu' element={<InfoEtu />} />
+            <Route path='/InfoPrf' element={<InfoPrf />} />
             <Route path='*' element={<ErrorPage/>}/>
           </Routes>
         </MessageProvider>
       </BrowserRouter>
     </AdminUserProvider>
+    
   </div>
   );
 }

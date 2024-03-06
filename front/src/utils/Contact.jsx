@@ -5,8 +5,8 @@ import MessageContext from '../Admin/MessageProvider';
 
 export default function Contact() {
   const [inputs, setInputs] = useState({ email: '', message: '' });
-  const { setUnreadMessages } = useContext(MessageContext);
-  const [isValidEmail, setIsValidEmail] = useState(false);
+  const { setUnreadMessages,unreadMessages } = useContext(MessageContext);
+ 
 
   const handleEnvoyer = (e) => {
     e.preventDefault();
@@ -34,7 +34,7 @@ export default function Contact() {
     setInputs({ ...inputs, [name]: value });
     
   };
-
+console.log(unreadMessages)
   return (
     <form className="mt-4" onSubmit={handleEnvoyer}>
       <div className="mb-4">

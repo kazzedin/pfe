@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import Footer from './Footer';
 import axios from 'axios';
+import MessageContext from '../Admin/MessageProvider';
+import {Link} from 'react-router-dom'
 
-export default function Info() {
+export default function InfoEtu() {
   
-  const [info, setInfo] = useState({})
+  const [info, setInfo] = useState({});
   const [error, setError] = useState(false);
+  const { setUnreadMessages,unreadMessages } = useContext(MessageContext);
  
   const handleInfo = (e) => {
     e.preventDefault();
@@ -21,9 +24,9 @@ export default function Info() {
       setError(true);
       return;
     }
-    axios.post('http://localhost:3001/admin/Login-info', {
+    axios.post('http://localhost:3001/admin/Login-info-etu', {
       sender: info.email,
-      message: "Infos de Connexion",
+      message: "Pas de Message",
       nom: info.nom,
       prenom: info.prenom,
       section: info.section,
@@ -31,15 +34,29 @@ export default function Info() {
       matricule: info.matricule
     })
     .then(res => {
-      alert("Informations envoyées avec succès !");
-      setInfo({});
-      console.log(res);
+      if(res.data.message === 'success'){
+        alert("Informations envoyées avec succès Verifier Votre Email dans les 48heurs !");
+        setInfo({sender:'', nom:'',prenom:'',matricule:'',section:'',filiere:''}); // Réinitialisation des champs
+        setUnreadMessages(true);
+      }
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.log(err);
+    });
   }
 
   const check = () => {
-    return info.email && info.nom && info.prenom && info.matricule && info.filiere && info.section;
+   
+
+    if (info.email && info.nom && info.prenom && info.matricule && info.filiere==='GTR'?true : info.section) {
+      if (info.matricule.length === 12) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   };
 
   return (
@@ -47,7 +64,7 @@ export default function Info() {
 
       <header className="bg-white py-4">
         <div className="flex items-center">
-          <a href="/" className="text-black text-2xl font-bold ml-3 hover:text-blue-500">PFE à Distance</a>
+          <Link to="/" className="text-black text-2xl font-bold ml-3 hover:text-blue-500">PFE à Distance</Link>
         </div>
       </header>
 
@@ -55,7 +72,7 @@ export default function Info() {
         <div>
           <form className="bg-gray-100 max-w-xl mx-auto p-6 rounded shadow-lg grid grid-cols-2 gap-4" onSubmit={handleEnvoi} >
             <div className="col-span-2">
-              <h2 className="text-2xl font-bold mb-4 text-center text-black">Informations Personnelles</h2>
+              <h2 className="text-2xl font-bold mb-4 text-center text-black">Informations Personnelles Etudiant</h2>
             </div>
 
             <div className="col-span-1">
@@ -78,7 +95,19 @@ export default function Info() {
 
               <div className="mb-4">
                 <label htmlFor="matricule" className="block text-black font-semibold mb-2">Matricule :</label>
-                <input type="text" id="matricule" name="matricule" className={`w-full px-3 py-2 border ${error && !info.matricule && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre matricule" value={info.matricule || ''} onChange={handleInfo} maxLength={12}/>
+                <input 
+                  type="text" 
+                  id="matricule" 
+                  name="matricule" 
+                  className={`w-full px-3 py-2 border ${error && !info.matricule && 'border-red-500'} ${error && info.matricule && info.matricule.length < 12 && 'input-error'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} 
+                  placeholder="Entrez votre matricule" 
+                  value={info.matricule || ''} 
+                  onChange={handleInfo} 
+                  maxLength={12} 
+                />
+                {error && info.matricule && info.matricule.length < 13 && (
+                  <div className="text-red-600 font-bold mb-2">Le matricule doit comporter exactement 13 caractères.</div>
+                )}
               </div>
             </div>
 
@@ -149,5 +178,5 @@ export default function Info() {
       </div>
       <Footer/> 
     </div>
-  )
+  );
 }

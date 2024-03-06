@@ -36,7 +36,7 @@ export default function Navbar(props) {
   const { unreadMessages } = useContext(MessageContext);
   
   return (
-    <nav className={`bg-white  px-4 py-3 flex justify-between w-full fixed top-0 left-0 transition-transform duration-500 ${!props.sidebar ? 'translate-x-64' : 'translate-x-0'}`}>
+    <nav className={`bg-white border  px-4 py-3 flex justify-between w-full fixed top-0 left-0 transition-transform duration-500 ${!props.sidebar ? 'translate-x-64' : 'translate-x-0'}`}>
       <div className='flex items-center text-xl'>
         <FaBars className='text-black mr-4 cursor-pointer' onClick={toggleSidebar} />
         <span className='text-black font-semibold text-2xl'>Pfe A Distance</span>
