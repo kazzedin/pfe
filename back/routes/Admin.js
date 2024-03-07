@@ -3,6 +3,7 @@ const router = express.Router();
 const { messageModel } = require('../Db/Message');
 const { adminModel } = require('../Db/Acteurs/Admin');
 require('dotenv').config();
+const multer = require('multer'); 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const {check,validationResult} = require('express-validator');
@@ -12,10 +13,13 @@ const nodemailer = require('nodemailer');
 const genrateurpwd=require('../Middleware/AdminMiddleware/GerateurMotdePasse')
 const {etudiantModel} = require('../Db/Acteurs/Etudiant')
 const {encadreurModel} = require('../Db/Acteurs/Encadreur')
-
+const { docsModel } =require('../Db/Docs')
 
 router.use(cookieParser());
 
+
+
+const upload = multer();
 
 // la creation d'un trasporter pour envoyer des emails
 const transporter = nodemailer.createTransport({
@@ -28,6 +32,7 @@ const transporter = nodemailer.createTransport({
 
 
 
+//*********************************ROUTES D'ENVOI DES MESSAGES*********************************/
  //creation de message passer par l'utilisateur type contact 
 router.post('/contact',[
     check("sender","Please enter a valid email address").isEmail()
@@ -100,9 +105,11 @@ router.post('/Login-info-prf', [
         })
         .catch(() => res.json({ message: 'error' }));
 });
+//************************************************************/
 
 
 
+//**********************************ROUTES DE VERIFICATION****************************************/
 // la verifcation de JWT dans le cas denter dans la page Admin Pour Allowd or not 
 router.get('/check',verifyToken,(req,res)=>{
     res.json({Valide:true,User_Email:req.email,User_Password:req.password});
@@ -140,15 +147,11 @@ router.post('/verification',   [
         res.status(400).json({ message: "You Enter Invalid Email!!!" });
     }   
 });
-
-// Log Out
-router.get('/logout', (req, res) => {
-res.clearCookie('access_token');
-res.clearCookie('refresh_token');
-res.json({response:true});
-})
+//************************************************************************ */
 
 
+
+//************************************ROUTES DE PROFILE**********************/
 // Modifier les information de Ladmin
 router.put('/profil', [
     check("email", "Please enter a valid email address").isEmail()
@@ -188,7 +191,15 @@ router.put('/profil', [
     }
   });
   
+  // Log Out
+router.get('/logout', (req, res) => {
+  res.clearCookie('access_token');
+  res.clearCookie('refresh_token');
+  res.json({response:true});
+  })
+//*****************************************************************/
 
+//*********************************************ROUTES DE INBOX****************************************/  
 // laffichage des messages stocker dans la base de donne  
   router.get('/inbox', (req, res) => {
     messageModel.find()
@@ -479,5 +490,81 @@ router.get('/information-prf',(req,res)=>{
   .then(response=>res.json(response))
   .catch(err=>console.log(err));
 })
+//**************************************************************************/
 
+//***********************************ROUTES DES DOCUMENTS**********************/
+//stocker les documents
+router.post('/docs', upload.single('file'), async (req, res) => {
+  try {
+    const { buffer, mimetype, originalname } = req.file;
+    const { title, category } = req.body;
+
+    // Vérifiez si un document avec le même titre, nom de fichier et destinataire existe déjà
+    const existingDoc = await docsModel.findOne({
+      titre: title,
+      'file.filename': originalname,
+      distinataire: category
+    });
+
+    // Si un document avec les mêmes attributs existe déjà, renvoyez une réponse indiquant l'échec de l'ajout
+    if (existingDoc) {
+      return res.status(400).json({ message: 'Un document avec le même titre, nom de fichier et destinataire existe déjà.' });
+    }
+
+    // Si aucun document avec les mêmes attributs n'existe, créez et sauvegardez le nouveau document
+    const newDoc = new docsModel({
+      titre: title,
+      distinataire: category,
+      file: {
+        data: buffer,
+        contentType: mimetype,
+        filename: originalname
+      }
+    });
+
+    await newDoc.save();
+
+    res.status(201).json({ message: 'success' });
+  } catch (error) {
+    console.error('Erreur lors du téléchargement du document:', error);
+    res.status(500).json({ message: 'error' });
+  }
+});
+
+//display les documentes
+router.get('/get-docs',(req,res)=>{
+  docsModel.find()
+  .then(data=>res.json(data))
+  .catch(err=>console.log(err));
+})
+
+//modifier un document
+router.put('/docs-modif/:id', upload.single('file'),(req,res)=>{
+  const id=req.params.id;
+  const { title, category } = req.body;
+  const file = req.file;
+
+  docsModel.findByIdAndUpdate(id,{titre:title,distinataire:category,'file.filename':file.originalname})
+  .then(response=>{
+    res.json({message:'success'})
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json({error: 'Une erreur s\'est produite lors de la suppression du document.'});
+  });
+})
+
+//supprimer un document
+router.delete('/docs-supp/:filename',upload.single('file'),(req,res)=>{
+  const filename=req.params.filename
+  docsModel.findOneAndDelete({'file.filename':filename})
+  .then(response=>{
+    res.json({message:'success'})
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json({error: 'Une erreur s\'est produite lors de la suppression du document.'});
+  });
+})
+/*************************************************** */
 module.exports = router

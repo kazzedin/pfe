@@ -130,7 +130,7 @@ console.log(messages)
        
 
     return (
-        <div className="container bg-gray-800 bg-opacity-10 flex flex-col items-center relative">
+        <div className="container bg-gray-500 bg-opacity-5 flex flex-col items-center relative">
             <div className='absolute left-0 top-0 flex items-center'>
                 <div className='flex items-center '>
                     <Link onClick={returnAdmin} className='hover:text-red-500 text-black rounded return-admin flex items-center'>

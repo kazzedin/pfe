@@ -1,21 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { BsQuestionCircle } from 'react-icons/bs';
 
-export default function DetailsMessages({ show, showFunc, msg,updateMessageState }) {
+export default function DetailsMessages({ show, showFunc, msg, updateMessageState }) {
   const [replyMessage, setReplyMessage] = useState("");
   const [foundStudent, setFoundStudent] = useState(false);
-  const [buttonVisible, setButtonVisible] = useState(false);
   const [typeEmail, setTypeEmail] = useState('');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [instructionVisible, setInstructionVisible] = useState(false);
 
   const handleClose = () => {
     showFunc(false);
   };
 
-  const handleRadioChange = (e) => {
-    setFoundStudent(e.target.value === 'oui');
-    setButtonVisible(true);
-    setTypeEmail(e.target.value === 'oui' ? 'verification' : 'attente');
+  useEffect(() => {
+    setButtonDisabled(!(foundStudent === 'oui' || foundStudent === 'non'));
+  }, [foundStudent]);
+
+  const handleCheckChange = (value) => {
+    if (value === 'oui') {
+      setFoundStudent('oui');
+      setTypeEmail('verification');
+    } else if (value === 'non') {
+      setFoundStudent('non');
+      setTypeEmail('attente');
+    } else {
+      setFoundStudent(false);
+      setTypeEmail('');
+    }
   };
 
   const handleReply = (e) => {
@@ -105,37 +118,52 @@ export default function DetailsMessages({ show, showFunc, msg,updateMessageState
             <div className="flex items-center mt-1">
               <input
                 id="foundYes"
-                type="radio"
+                type="checkbox"
                 className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                checked={foundStudent}
-                value="oui"
-                onChange={handleRadioChange}
+                checked={foundStudent === 'oui'}
+                onChange={() => handleCheckChange('oui')}
               />
               <label htmlFor="foundYes" className="ml-3 block text-sm text-gray-700">Oui</label>
               <input
                 id="foundNo"
-                type="radio"
+                type="checkbox"
                 className="ml-8 focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                checked={!foundStudent}
-                value="non"
-                onChange={handleRadioChange}
+                checked={foundStudent === 'non'}
+                onChange={() => handleCheckChange('non')}
               />
               <label htmlFor="foundNo" className="ml-3 block text-sm text-gray-700">Non</label>
             </div>
           </div>
           <div className='flex flex-row gap-1 items-center justify-center'>
             <button onClick={handleClose} className="mr-2 text-white px-4 py-2 rounded-md bg-blue-500">Fermer</button>
-            {buttonVisible && <button onClick={handleNotFound} className="ml-2 text-white px-4 py-2 rounded-md bg-red-500">Envoyer email</button>}
+            <button onClick={handleNotFound} disabled={buttonDisabled} className={`ml-2 text-white px-4 py-2 rounded-md bg-red-500 ${buttonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}>Envoyer email</button>
           </div>
         </div>
       </>
     );
   }
 
+  const DisplayInstruction = () => {
+    return (
+      <div className="fixed top-24  mb-2 p-4 bg-gray-100 border border-gray-300 rounded-md shadow-md w-96 ins">
+        <p className="text-sm font-medium text-gray-700 mb-2">Instructions :</p>
+        <ul className="list-disc list-inside text-sm text-gray-600">
+          <li>Si vous cliquez sur "Oui", cela veut dire que l'étudiant a déjà reçu les informations de login. Envoyez un mail pour lui demander de vérifier.</li>
+          <li>Si vous cliquez sur "Non", cela veut dire que l'étudiant avec les informations fournies ne correspond à aucun étudiant. Envoyez un mail pour lui dire qu'il doit attendre jusqu'à la mise à jour de la liste des étudiants.</li>
+        </ul>
+      </div>
+    );
+  };
+
   return (
     <div className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center ${show ? '' : 'hidden'}`}>
       <div className="bg-white p-6 rounded-lg shadow-md w-96">
-        <h2 className="text-lg font-semibold mb-4">Détails de l'étudiant</h2>
+        {msg.type==='contact'? <h2 className="text-lg font-semibold mb-4">Détails de Message</h2>:<div className='flex flex-row items-center '>
+        <h2 className="text-lg font-semibold mb-4">Détails de Message</h2>
+        <BsQuestionCircle className='ml-36 mb-5 hover:text-blue-700' onClick={(e)=>setInstructionVisible(!instructionVisible)}/>
+          </div>}
+       
+        {instructionVisible && <DisplayInstruction />}
         {msg.type === 'contact' ? <>
           <div className="mb-4">
             <label htmlFor="sender" className="block text-sm font-medium text-gray-700">Expéditeur:</label>
@@ -160,5 +188,5 @@ export default function DetailsMessages({ show, showFunc, msg,updateMessageState
         </> : <TypeLoginInfo />}
       </div>
     </div>
-  )
+  );
 }

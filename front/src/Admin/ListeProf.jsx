@@ -189,7 +189,7 @@ export default function ListeProf() {
   
 
   return (
-    <div className='page-professeur relative bg-gray-800 bg-opacity-10'>
+    <div className='page-professeur relative bg-gray-500 bg-opacity-5'>
       <div className='top-0 left-0 absolute flex items-center'>
         <div className='flex items-center'>
           <Link onClick={returnAdmin} className='hover:text-red-500 text-black rounded flex items-center ml-4 mt-4'>

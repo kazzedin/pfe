@@ -111,24 +111,26 @@
 
 .page-etudiant{
     margin-top: 4rem;
-    width: 90rem;
-    height: 40rem;
+    width: 95rem;
+    height:40rem;
+    backdrop-filter: blur(4px);
+    z-index: 0;
 }  
 .page-professeur{
     margin-top: 4rem;
-    width: 90rem;
+    width: 95rem;
     height: 40rem;
-}  
-.table-etudiant{
-    width: 80rem;
-    height: 30rem;
-    margin-left: 1rem;
-}
-.table-prof{
-    width: 89rem;
-    height: 37rem;
     backdrop-filter: blur(4px);
     z-index: 0;
+}  
+.table-etudiant{
+    width: 94rem;
+    height: 37rem;
+    margin-left: 0.5rem;
+}
+.table-prof{
+    width: 94rem;
+    height: 37rem;
     margin-left: 0.5rem;
 }
 .file-upload-button {
@@ -139,7 +141,9 @@
     border-radius: 5px;
     cursor: pointer;
   }
- 
+.ajouter{
+    margin-left: 4rem;
+}
 .search{
  text-indent: 2rem;
 margin-left: 1rem;
@@ -153,9 +157,9 @@ border-radius: 8px;
 }
 
 .container {
-    width: 90rem;
-    margin-top: 2rem;
-    height: 37rem;
+    width: 95rem;
+    margin-top: 4rem;
+    height: 40rem;
     backdrop-filter: blur(4px);
     z-index: 0;
 }
@@ -166,12 +170,12 @@ border-radius: 8px;
 .message-container2 {
     max-height: 25rem;
     margin-top: 4rem;
-    width: 89rem;
+    width: 95rem;
 
 }
 
 .table-message{
-    width: 89rem;
+    width: 94rem;
 }
 
 .relative.overflow-x-auto::-webkit-scrollbar {
@@ -221,6 +225,13 @@ thead th {
 }
 .unread-dot{
     display: block;
+}
+#title{
+    text-indent: 0.3rem;
+}
+.ins{
+    margin-left: 20rem;
+    margin-top: 1.5rem;
 }
 
 /* Media Query */

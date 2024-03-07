@@ -44,22 +44,22 @@ export default function ListePfe() {
     const filteredPFEList = filter ? pfeList.filter(pfe => pfe.type.toLowerCase().includes(filter.toLowerCase())) : pfeList;
 
     return (
-        <div className="container mx-auto px-4 py-8 bg-gray-800 bg-opacity-30">
-            <h1 className="text-3xl font-bold mb-6 text-white">Liste des PFE</h1>
+        <div className="container mx-auto px-4 py-8 bg-gray-500 bg-opacity-5">
+            <h1 className="text-3xl font-bold mb-6 text-Black">Liste des PFE</h1>
             <div className="mb-4">
-                <label htmlFor="filter" className="block text-sm font-medium text-white">Filtrer par type de projet :</label>
+                <label htmlFor="filter" className="block text-sm font-medium text-black">Filtrer par type de projet :</label>
                 <input
                     type="text"
                     id="filter"
                     name="filter"
-                    className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm"
+                    className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-72 sm:text-sm"
                     value={filter}
                     onChange={handleFilterChange}
                     placeholder="Entrez un type de projet (ex: Développement web)"
                 />
             </div>
             {selectedPFE ? (
-                <div className="border hover:bg-gray-300 bg-gray-100 p-4 rounded-lg mb-6">
+                <div className="border hover:bg-gray-300 bg-white p-4 rounded-lg mb-6">
                     <h2 className="text-xl font-semibold mb-2">{selectedPFE.title}</h2>
                     <p className="text-gray-600 mb-4">{selectedPFE.description}</p>
                     <p className="text-gray-600 mb-2">Encadreur: {selectedPFE.supervisor}</p>

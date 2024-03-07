@@ -203,10 +203,10 @@ const Window = showModal && studentDetails &&(
   
 
   return (
-    <div className='page-etudiant relative bg-gray-800 bg-opacity-40'>
+    <div className='page-etudiant relative bg-gray-500 bg-opacity-5'>
       <div className='top-0 left-0 absolute flex items-center'>
         <div className='flex items-center'>
-          <Link onClick={returnAdmin} className='hover:text-red-700 text-black rounded flex items-center ml-4 mt-4'>
+          <Link onClick={returnAdmin} className='hover:text-red-500 text-black rounded flex items-center ml-4 mt-4'>
             <IoIosArrowBack className='mr-2' />
             Retourner à la page d'administration
           </Link>
@@ -241,7 +241,7 @@ const Window = showModal && studentDetails &&(
         <div className='relative'>
           <div className='absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none'>
             <svg
-              className='w-4 h-4 ml-6 text-gray-500 dark:text-gray-400'
+              className='w-4 h-4 ml-2 text-gray-500 dark:text-gray-400'
               aria-hidden='true'
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
@@ -252,7 +252,7 @@ const Window = showModal && studentDetails &&(
           <input
             type='text'
             id='table-search'
-            className='ml-4 bg-white text-black text-sm w-64 h-9 rounded-md border-none search'
+            className='ml-4 bg-gray-800 text-white text-sm w-64 h-9 rounded-md border-none search'
             placeholder='Chercher étudiant'
             onChange={HandelSearch}
             value={search}
@@ -262,15 +262,15 @@ const Window = showModal && studentDetails &&(
 
       <div className='table-container'>
         <div className='relative overflow-x-auto shadow-md sm:rounded-lg table-etudiant mt-4' style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
-          <table className='w-full text-sm text-left rtl:text-right bg-white text-black '>
-            <thead className='text-xs text-gray-700 uppercase bg-white dark:bg-gray-700 dark:text-gray-400'>
+          <table className='w-full text-sm text-left rtl:text-right  text-white '>
+            <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
               <tr>
-                <th scope='col' className='p-4 bg-white text-black'>
+                <th scope='col' className='p-4 '>
                   <div className='flex items-center '>
                     <input
                       id='checkbox-all-search'
                       type='checkbox'
-                      className='w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
+                      className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
                       onChange={handleSelectAll}
                       checked={selectAll}
                     />
@@ -279,22 +279,22 @@ const Window = showModal && studentDetails &&(
                     </label>
                   </div>
                 </th>
-                <th scope='col' className='px-6 py-3 bg-white text-black '>
+                <th scope='col' className='px-6 py-3 '>
                   Nom/Prenom
                 </th>
-                <th scope='col' className='px-6 py-3 bg-white text-black'>
+                <th scope='col' className='px-6 py-3 '>
                   Email
                 </th>
-                <th scope='col' className='px-6 py-3 bg-white text-black'>
+                <th scope='col' className='px-6 py-3 '>
                   Matricule
                 </th>
-                <th scope='col' className='px-6 py-3 bg-white text-black'>
+                <th scope='col' className='px-6 py-3 '>
                   Filier
                 </th>
-                <th scope='col' className='px-6 py-3 bg-white text-black'>
+                <th scope='col' className='px-6 py-3 '>
                   Section
                 </th>
-                <th scope='col' className='px-6 py-3 bg-white text-black'>
+                <th scope='col' className='px-6 py-3 '>
                   Etat
                 </th>
                 
@@ -314,7 +314,7 @@ const Window = showModal && studentDetails &&(
                   <tr
                     key={index}
                     className='bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'>
-                    <td className='w-4 p-4 bg-white text-black'>
+                    <td className='w-4 p-4 '>
                       <div className='flex items-center'>
                         <input
                           id={`checkbox-table-search-${index}`}
@@ -340,11 +340,11 @@ const Window = showModal && studentDetails &&(
                     </td>
                    
                     {Object.values(row).map((value, index) => (
-                      <td key={index} className='px-6 py-4 bg-white text-black' onClick={(e) => OpenWindow(e,row)}>
+                      <td key={index} className='px-6 py-4 ' onClick={(e) => OpenWindow(e,row)}>
                         {value}
                       </td>
                     ))}
-                    <td className='bg-white text-black'>
+                    <td className=''>
                       {envoyer && envoyeEtudiant.includes(row['email']) ||  Verification(row['email']) ? ( // Condition pour afficher le check icon
                         <div>
                           <p>Envoyé</p>
@@ -361,9 +361,14 @@ const Window = showModal && studentDetails &&(
                   </tr>
                 ))}
             </tbody>
+            <tr>
+              <td colSpan="7" className="px-6 py-4 text-center">
+            {students.length === 0 ? <h4 className='font-bold text-black'>Pas de fichier selectionner ?</h4> : ''}
+            </td>
+            </tr>
           </table>
           {Window}
-          <div>{students.length === 0 ? <h4>Pas de fichier selectionner ?</h4> : ''}</div>
+          
         </div>
       </div>
     </div>

@@ -101,17 +101,17 @@ export default function Profile() {
 
   // Render the Profile component
   return (
-    <div className={`flex flex-col bg-gray-800 bg-opacity-70 ${change ? 'expanded' : 'transition-form'} profile-page`}>
+    <div className={`flex flex-col bg-gray-500 bg-opacity-5 ${change ? 'expanded' : 'transition-form'} profile-page`}>
     {/* Return to Admin page link */}
     <div className='flex items-center return'>
-      <Link onClick={returnAdmin} className='hover:text-red-700 text-white rounded return-admin flex items-center'>
+      <Link onClick={returnAdmin} className='hover:text-red-500 text-black rounded return-admin flex items-center'>
         <IoIosArrowBack className="mr-2" />
         Retourner à la page d'administration
       </Link>
     </div>
     {/* Section d'informations de profil */}
-    <div className='flex items-start justify-center flex-col w-1/2 ml-20 mt-3'>
-      <div className='bg-white rounded-full w-44 h-44 flex items-center justify-center overflow-hidden ml-7'>
+    <div className='flex items-start justify-center flex-col w-1/2 ml-20 mt-3 mb-7'>
+      <div className='bg-white rounded-full w-44 h-44 flex items-center justify-center overflow-hidden ml-5'>
         {selectedImage ? (
           <img src={selectedImage} alt='Sélectionné' className='h-full w-full object-cover' />
         ) : (
@@ -119,7 +119,7 @@ export default function Profile() {
         )}
       </div>
       {/* Bouton d'ajout d'image */}
-      <label htmlFor='fileInput' className='bg-gray-800 bg-opacity-50 opacity-9 text-white rounded-md px-2 py-1 cursor-pointer hover:text-blue-500 mt-2 ml-20'>
+      <label htmlFor='fileInput' className='bg-blue-500  text-white rounded-md px-2 py-1 cursor-pointer hover:bg-blue-700 mt-2 ajouter'>
         + Ajouter
         <input
           id='fileInput'
@@ -135,30 +135,30 @@ export default function Profile() {
       {/* Afficher les informations de profil actuelles */}
       <form className='flex flex-col items-start gap-3 first-input '>
         <div className='flex gap-2 flex-col items-center'>
-          <label htmlFor='Email' className='text-gray-300 font-semibold mt-2 mr-16'>Email :</label>
-          <input type='text' key='email' readOnly className='px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white ml-24' value={adminUserEmail} />
+          <label htmlFor='Email' className='text-black font-semibold mt-2 mr-16'>Email :</label>
+          <input type='text' key='email' readOnly className='px-3 py-2 border border-gray-600 bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-black ml-24 placeholder-gray-500' value={adminUserEmail} />
         </div>
         <div className='flex flex-col gap-2 items-center relative'> {/* Ajouter la classe relative ici */}
-          <label htmlFor='password' className='text-gray-300 font-semibold mt-2'>Mot de passe :</label>
+          <label htmlFor='password' className='text-black font-semibold mt-2'>Mot de passe :</label>
           <div className='flex flex-row items-center '>
             <input
               type={`${showPassword1 ? 'text' : 'password'}`}
               key='password'
               readOnly
               value={passwordAdmin}
-              className='px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white ml-24' /* Ajouter pr-12 pour le padding-right afin de faire de la place pour l'icône de l'œil */
+              className='px-3 py-2 border border-gray-600 bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-black ml-24 placeholder-gray-500' /* Ajouter pr-12 pour le padding-right afin de faire de la place pour l'icône de l'œil */
             />
             <button
               className='absolute right-0 mr-3' /* Positionner le bouton de manière absolue à droite du champ de saisie */
               onClick={(e) => handleShowPassword('current', e)}
             >
-              {showPassword1 ? <FaEyeSlash style={{ color: 'white' }} /> : <FaEye style={{ color: 'white' }} />}
+              {showPassword1 ? <FaEyeSlash style={{ color: 'black' }} /> : <FaEye style={{ color: 'black' }} />}
             </button>
           </div>
         </div>
         {/* Bouton de modification des informations */}
         {!change && (
-          <button onClick={() => setChange(true)} className='text-white hover:text-blue-500 text-bold ml-24 mt-2 font-bold'>Modifier les informations ?</button>
+          <button onClick={() => setChange(true)} className='text-blue-500 hover:text-blue-700 text-bold ml-24 mt-2 font-bold'>Modifier les informations ?</button>
         )}
       </form>
       {/* Formulaire pour changer les informations de profil */}
@@ -166,19 +166,19 @@ export default function Profile() {
         <form onSubmit={handleSave} className={`flex flex-col gap-4 items-start  rounded-md p-6    `}>
           <div className='flex flex-col gap-6'>
             <div className='flex flex-col'>
-              <label htmlFor='nv-Email' className='text-gray-300 font-semibold'>Nouveau Email:</label>
+              <label htmlFor='nv-Email' className='text-black font-semibold'>Nouveau Email:</label>
               <input
                 type='text'
                 key='newEmail'
                 name='email'
                 value={inputs.email || ''}
                 onChange={handleInputs}
-                className='px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white placeholder-gray-400'
+                className='px-3 py-2 border border-gray-600 bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500'
                 placeholder='Entrer Votre Email'
               />
             </div>
             <div className='flex flex-col'>
-              <label htmlFor='nv-Password' className='text-gray-300 font-semibold'>Nouveau Mot de Passe:</label>
+              <label htmlFor='nv-Password' className='text-black font-semibold'>Nouveau Mot de Passe:</label>
               <div className='relative'>
                 <input
                   type={`${showPassword2 ? 'text' : 'password'}`}
@@ -186,11 +186,11 @@ export default function Profile() {
                   name='password'
                   value={inputs.password || ''}
                   onChange={handleInputs}
-                  className='px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white placeholder-gray-400 pr-12'
+                  className='px-3 py-2 border bg-transparent border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12'
                   placeholder='Entrer Le Nouveau Mot de Passe'
                 />
                 <button
-                  className='absolute right-0 mr-3 top-1/2 transform -translate-y-1/2 focus:outline-none text-gray-300'
+                  className='absolute right-0 mr-3 top-1/2 transform -translate-y-1/2 focus:outline-none text-black'
                   onClick={(e) => handleShowPassword('new', e)}
                 >
                   {showPassword2 ? <FaEyeSlash /> : <FaEye />}
@@ -199,7 +199,7 @@ export default function Profile() {
             </div>
             
            <div className='flex flex-col'>
-  <label htmlFor='nv-Password' className='text-gray-300 font-semibold'>Confirmer Mot de Passe:</label>
+  <label htmlFor='nv-Password' className='text-black font-semibold'>Confirmer Mot de Passe:</label>
   <div className='relative'>
     <input
       type={`${showPassword3 ? 'text' : 'password'}`}
@@ -207,18 +207,18 @@ export default function Profile() {
       name='confirmPassword'
       value={inputs.confirmPassword || ''}
       onChange={handleInputs}
-      className='px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-white placeholder-gray-400 pr-12'
+      className='px-3 py-2 border bg-transparent border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12'
       placeholder='Retaper Le Mot de Passe'
     />
     <button
-      className='absolute right-0 mr-3 top-1/2 transform -translate-y-1/2 focus:outline-none text-gray-300'
+      className='absolute right-0 mr-3 top-1/2 transform -translate-y-1/2 focus:outline-none text-black'
       onClick={(e) => handleShowPassword('confirm', e)}
     >
       {showPassword3 ? <FaEyeSlash /> : <FaEye />}
     </button>
   </div>
   {inputs.confirmPassword && (
-              <div className='flex items-center text-white  bg-opacity-45 p-1 rounded-md '>
+              <div className='flex items-center text-black  bg-opacity-45 p-1 rounded-md '>
                 {inputs.confirmPassword === inputs.password ? (
                   <>
                     <p className='mr-2 text-green-600 font-bold'>Mot de Passe Correct</p>
