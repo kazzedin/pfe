@@ -16,7 +16,7 @@ export default function Admin() {
     
         <Dashboard sidebar={sideBar} sidebareFunc={setSideBar}/>
 
-        <div className="content-container flex-grow flex justify-center items-center  ">
+        <div className=" flex-grow flex justify-center items-center relative  ">
           
           <Outlet/>
         </div>

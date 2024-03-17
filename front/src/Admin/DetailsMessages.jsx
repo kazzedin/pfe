@@ -164,36 +164,40 @@ export default function DetailsMessages({ show, showFunc, msg, updateMessageStat
 
   return (
     <div className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center ${show ? '' : 'hidden'}`}>
-      <div className="bg-white p-6 rounded-lg shadow-md w-96">
-        {msg.type==='contact'? <h2 className="text-lg font-semibold mb-4">Détails de Message</h2>:<div className='flex flex-row items-center '>
-        <h2 className="text-lg font-semibold mb-4">Détails de Message</h2>
-        <BsQuestionCircle className='ml-36 mb-5 hover:text-blue-700' onClick={(e)=>setInstructionVisible(!instructionVisible)}/>
-          </div>}
-       
-        {instructionVisible && <DisplayInstruction />}
-        {msg.type === 'contact' ? <>
-          <div className="mb-4">
-            <label htmlFor="sender" className="block text-sm font-medium text-gray-700">Expéditeur:</label>
-            <input type="text" id="sender" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={msg.sender} readOnly />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="type" className="block text-sm font-medium text-gray-700">Type:</label>
-            <input type="text" id="type" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={msg.type} readOnly />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message:</label>
-            <textarea id="message" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={msg.message} readOnly />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="replyMessage" className="block text-sm font-medium text-gray-700">Répondre:</label>
-            <textarea id="replyMessage" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} />
-          </div>
-          <div className="flex justify-center">
-            <button onClick={handleClose} className="mr-2 text-white px-4 py-2 rounded-md bg-blue-500">Fermer</button>
-            <button onClick={handleReply} className="ml-2 text-white px-4 py-2 rounded-md bg-green-500">Répondre</button>
-          </div>
-        </> : <TypeLoginInfo />}
+  <div className="bg-white p-6 rounded-lg shadow-md w-96">
+    {msg.type==='contact'? <h2 className="text-lg font-semibold mb-4">Détails de Message</h2>:<div className='flex flex-row items-center '>
+    <h2 className="text-lg font-semibold mb-4">Détails de Message</h2>
+    <BsQuestionCircle 
+      className='ml-36 mb-5 hover:text-blue-700' 
+      onMouseEnter={() => setInstructionVisible(true)}
+      onMouseLeave={() => setInstructionVisible(false)}
+    />
+      </div>}
+   
+    {instructionVisible && <DisplayInstruction />}
+    {msg.type === 'contact' ? <>
+      <div className="mb-4">
+        <label htmlFor="sender" className="block text-sm font-medium text-gray-700">Expéditeur:</label>
+        <input type="text" id="sender" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={msg.sender} readOnly />
       </div>
-    </div>
+      <div className="mb-4">
+        <label htmlFor="type" className="block text-sm font-medium text-gray-700">Type:</label>
+        <input type="text" id="type" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={msg.type} readOnly />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message:</label>
+        <textarea id="message" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={msg.message} readOnly />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="replyMessage" className="block text-sm font-medium text-gray-700">Répondre:</label>
+        <textarea id="replyMessage" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} />
+      </div>
+      <div className="flex justify-center">
+        <button onClick={handleClose} className="mr-2 text-white px-4 py-2 rounded-md bg-blue-500">Fermer</button>
+        <button onClick={handleReply} className="ml-2 text-white px-4 py-2 rounded-md bg-green-500">Répondre</button>
+      </div>
+    </> : <TypeLoginInfo />}
+  </div>
+</div>
   );
 }

@@ -23,7 +23,6 @@ export default function CheckEtudiant() {
                     setValid(true);
                     setEtudiantUserEmail(res.data.User_Email);
                     setPasswordEtudiant(res.data.User_Password);
-                    console.log("Verification Success");
                 } else {
                     console.log(res.data.message);
                 }

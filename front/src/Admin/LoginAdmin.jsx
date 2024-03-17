@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function LoginAdmin() {
     const [inputs, setInputs] = useState({ email: '', password: '' });
     const [pwdError, setPwdError] = useState(false);
     const [emailError, setEmailError] = useState(false);
+    const [showPassword, setShowPassword] = useState(false); // État pour indiquer si le mot de passe est affiché ou non
     const navigate = useNavigate();
 
     const handleInputChange = (e) => {
@@ -14,7 +15,9 @@ export default function LoginAdmin() {
         setInputs({ ...inputs, [name]: value });
     };
 
-    axios.defaults.withCredentials = true;
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword); // Inversion de l'état pour afficher ou cacher le mot de passe
+    };
 
     const handleVerification = (e) => {
         e.preventDefault();
@@ -55,7 +58,10 @@ export default function LoginAdmin() {
                         </div>
                         <div className="mb-6">
                             <label htmlFor="password" className="block text-gray-700 font-semibold mb-2">Mot de passe :</label>
-                            <input type="password" id="password" name="password" className={`w-full px-3 py-2 border ${pwdError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-400`} placeholder="Entrez votre mot de passe" value={inputs.password} onChange={handleInputChange} />
+                            <div className="relative">
+                                <input type={showPassword ? "text" : "password"} id="password" name="password" className={`w-full px-3 py-2 border ${pwdError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-400`} placeholder="Entrez votre mot de passe" value={inputs.password} onChange={handleInputChange} />
+                                {showPassword ? <FaEyeSlash className="absolute top-3  right-2 cursor-pointer" onClick={togglePasswordVisibility} /> : <FaEye className="absolute top-3 right-2 cursor-pointer" onClick={togglePasswordVisibility} />}
+                            </div>
                             {pwdError && <FaTimes className='text-red-500 absolute top-2 right-2' />}
                         </div>
                         {pwdError && <p className="text-red-500 text-sm mb-2">Mot de passe incorrect</p>}

@@ -27,7 +27,13 @@ import Homepage from './Etudiant/components/Etudiant';
 import CheckEtudiant from './Etudiant/CheckEtudiant';
 import ProfileEtudiant from './Etudiant/ProfileEtudiant';
 import DocsEtudiant from './Etudiant/DocsEtudiant';
-
+import {DataAdminProvider} from './Admin/DataAdminProvider'
+import EtuDates from './Etudiant/EtuDates'
+import ChatEtudiant from './Etudiant/ChatEtudiant'
+import InboxEtu from './Etudiant/InboxEtu';
+import Pfe from './Etudiant/Pfe';
+import Encadreur from './Etudiant/Encadreur';
+import Binome from './Etudiant/Binome';
 export default function App() {
   return (
     <div>
@@ -37,6 +43,7 @@ export default function App() {
         <MessageProvider>
           <EtudiantUserProvider>
             <DataProvider>
+              <DataAdminProvider>
             <Routes>
               <Route path='/' element={<HomePage />} />
               {/* Routes de Admin */}
@@ -59,6 +66,13 @@ export default function App() {
                 <Route path='/Etudiant' element={<Homepage />}>
                   <Route path='Profile' element={<ProfileEtudiant/>}/>
                   <Route path='Docs' element={<DocsEtudiant/>}/>
+                  <Route path='Dates' element={<EtuDates/>}/>
+                  <Route path='Chat' element={<ChatEtudiant/>}/>
+                  <Route path='Inbox' element={<InboxEtu/>}/>
+                  <Route path='Pfe' element={<Pfe/>}/>
+                  <Route path='Encadreur' element={<Encadreur/>}/>
+                  <Route path='Binomes' element={<Binome/>}/>
+                 
                 </Route>
               </Route>
               {/* Routes Generale */}
@@ -69,6 +83,7 @@ export default function App() {
               <Route path='/InfoPrf' element={<InfoPrf />} />
               <Route path='*' element={<ErrorPage/>}/>
             </Routes>
+            </DataAdminProvider>
             </DataProvider>
           </EtudiantUserProvider>
         </MessageProvider>

@@ -19,7 +19,7 @@ export default function EndSessionEtu() {
           <FaExclamationTriangle style={{color:'red'}} />
           </div>
           <div className='flex flex-row justify-center items-center gap-24 mt-2'>
-          <Link to='/' className='flex flex-row items-center justify-center border rounded-md bg-blue-500 text-white p-1 hover:bg-blue-700'>  <IoIosArrowBack/> Retourner home page et fait login</Link>
+          <Link to='/' className='flex flex-row items-center justify-center border rounded-md bg-blue-500 text-white p-2 hover:bg-blue-700'>  <IoIosArrowBack/> Retourner home page et fait login</Link>
           </div>
         </div>
       </div>

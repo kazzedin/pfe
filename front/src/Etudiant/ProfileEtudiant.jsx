@@ -5,17 +5,18 @@ import { IoIosArrowBack } from 'react-icons/io';
 import { EtudiantUserContext } from './EtudiantUserProvider';
 import { DataContext } from './DataProvider';
 import Switch from '@mui/material/Switch';
+import { BsQuestionCircle } from 'react-icons/bs';
 import axios from 'axios';
-
 
 export default function ProfileEtudiant() {
   const [change, setChange] = useState(false);
-  const [inputs, setInputs] = useState({email:'',password:'',confirmPassword:''});
+  const [inputs, setInputs] = useState({ email:'', password:'', confirmPassword:'' });
   const [showPassword, setShowPassword] = useState({ current: false, new: false, confirm: false });
-  const [memeEmail,setMemeEmail]=useState(false);
+  const [memeEmail, setMemeEmail] = useState(false);
+  const [showPasswordTooltip, setShowPasswordTooltip] = useState(false); // État pour afficher l'info-bulle
   const navigate = useNavigate();
   const { EtudiantUserEmail, passwordEtudiant } = useContext(EtudiantUserContext);
-  const { setStatus, status, image, setImage, setRep,rep } = useContext(DataContext);
+  const { setStatus, status, image, setImage, setRep, rep } = useContext(DataContext);
   const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
@@ -103,25 +104,21 @@ export default function ProfileEtudiant() {
       })
       .catch(err => console.log(err));
   }
-  
 
   const HandeChangeInfomration=(e)=>{
       e.preventDefault();
-      
       axios.put(`http://localhost:3001/etudiant/changement-info/${EtudiantUserEmail}`,{nvemail:inputs.email,nvpwd:inputs.password})
       .then(res=>{
         if(res.data.message==='success'){
-          alert("Changement des informations fait avec succes vous ete redirecitionner vers le home page pour refaire le login avec les nouveaux inforamtion")
-          navigate('/')
-        }else{
-          alert('Information mal changer ')
+          alert("Changement des informations fait avec succès. Vous allez être redirigé vers la page d'accueil pour refaire le login avec les nouveaux informations.")
+          navigate('/');
+        } else {
+          alert(res.data.message);
         }
       })
       .catch(err=>console.log(err));
-    
   }
 
-  console.log(rep);
   return (
     <div className="mx-auto my-8 profile-etu bg-gray-500 bg-opacity-5">
       <div className="flex items-center">
@@ -136,20 +133,16 @@ export default function ProfileEtudiant() {
             <div className="flex justify-center">
               <div className="w-32 h-32 bg-gray-300 rounded-full overflow-hidden">
                 {image ? (
-  <img id="profile-image" src={imageUrl || `http://localhost:3001/images/${image}`} alt="Sélectionné" className="h-full w-full object-cover" />
-) : (
-  <img src="" alt="Par défaut" className="h-full w-full object-cover" />
-)}
+                  <img id="profile-image" src={imageUrl || `http://localhost:3001/images/${image}`} alt="Sélectionné" className="h-full w-full object-cover" />
+                ) : (
+                  <img src="" alt="Par défaut" className="h-full w-full object-cover" />
+                )}
               </div>
             </div>
             <p className="text-center mt-4">Photo de profil</p>
             {change && (
-
-            
-               
               <label htmlFor="fileInput" className="bg-blue-500 text-white rounded-md px-2 py-1 cursor-pointer hover:bg-blue-700 mt-2 block w-max mx-auto">
                 Modifier
-                
                 <input
                   id="fileInput"
                   type="file"
@@ -157,10 +150,7 @@ export default function ProfileEtudiant() {
                   onChange={handleImageChange}
                   className="sr-only"
                 />
-               
               </label>
-             
-             
             )}
           </div>
           <div className="col-span-2">
@@ -250,10 +240,10 @@ export default function ProfileEtudiant() {
               <div className='flex flex-col gap-6 w-full'>
                 <div className='flex flex-col  w-full'>
                   <div className='flex flex-row justify-between items-center'>
-                  <label htmlFor='nv-Email' className='text-black font-semibold '>Nouveau Email:</label>
-                  <button className={`${memeEmail ? 'text-red-500 hover:text-red-700' : 'text-blue-500 hover:text-blue-700'}`} onClick={(e) => HandelSame(e)}>
-  {!memeEmail ? "Garder le meme?" : "Changer l'email"}
-</button>
+                    <label htmlFor='nv-Email' className='text-black font-semibold '>Nouveau Email:</label>
+                    <button className={`${memeEmail ? 'text-red-500 hover:text-red-700' : 'text-blue-500 hover:text-blue-700'}`} onClick={(e) => HandelSame(e)}>
+                      {!memeEmail ? "Garder le meme?" : "Changer l'email"}
+                    </button>
                   </div>
                   <input
                     type='text'
@@ -266,7 +256,18 @@ export default function ProfileEtudiant() {
                   />
                 </div>
                 <div className='flex flex-col '>
-                  <label htmlFor='nv-Password' className='text-black font-semibold'>Nouveau Mot de Passe:</label>
+                  <div className='flex flex-row justify-between items-center'>
+                    <label htmlFor='nv-Password' className='text-black font-semibold'>Nouveau Mot de Passe:</label>
+                    <div className="relative">
+                      <BsQuestionCircle 
+                        onMouseEnter={() => setShowPasswordTooltip(true)}
+                        onMouseLeave={() => setShowPasswordTooltip(false)}
+                      className='hover:text-blue-500'/>
+                      {showPasswordTooltip && (
+                        <div className="absolute bg-gray-700 text-white px-2 py-1 rounded-md text-xs bottom-8 left-0">Le mot de passe doit comporter au moins 6 caractères.</div>
+                      )}
+                    </div>
+                  </div>
                   <div className='relative '>
                     <input
                       type={`${showPassword.new ? 'text' : 'password'}`}
@@ -322,16 +323,15 @@ export default function ProfileEtudiant() {
                 </div>
               </div>
               <div className="flex justify-end">
-  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-md py-2 px-4 mr-2" onClick={(e)=>handleCancel(e)}>Annuler</button>
-  <button
-  className={`bg-green-500 hover:bg-green-700 text-white font-bold rounded-md py-2 px-4 ${inputs.confirmPassword === inputs.password && inputs.confirmPassword !== '' && inputs.password !=='' && inputs.email !== '' ? '' : 'opacity-50 cursor-not-allowed'}`}
-  onClick={(e) => HandeChangeInfomration(e)}
-  disabled={inputs.password === '' || inputs.confirmPassword === '' || inputs.confirmPassword !== inputs.password || inputs.email === ''}
->
-  Enregistrer
-</button>
-
-</div>
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-md py-2 px-4 mr-2" onClick={(e)=>handleCancel(e)}>Annuler</button>
+                <button
+                  className={`bg-green-500 hover:bg-green-700 text-white font-bold rounded-md py-2 px-4 ${inputs.confirmPassword === inputs.password && inputs.confirmPassword !== '' && inputs.password !=='' && inputs.email !== '' ? '' : 'opacity-50 cursor-not-allowed'}`}
+                  onClick={(e) => HandeChangeInfomration(e)}
+                  disabled={inputs.password === '' || inputs.confirmPassword === '' || inputs.confirmPassword !== inputs.password || inputs.email === ''}
+                >
+                  Enregistrer
+                </button>
+              </div>
             </form>
           </div>
         )}

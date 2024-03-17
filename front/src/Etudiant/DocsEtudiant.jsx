@@ -4,7 +4,6 @@ import { FaFileDownload } from 'react-icons/fa';
 
 export default function Docs() {
   const [docs, setDocs] = useState([]);
-  const [image,setImage]=useState('');
 
   useEffect(() => {
     axios.get('http://localhost:3001/etudiant/get-docs')
@@ -14,7 +13,6 @@ export default function Docs() {
       .catch(err => {
         console.log(err);
       });
-      setImage("http://localhost:3001/etudiant/get-thumbnail/notes (2).pdf")
   }, []);
 
   const downloadDocument = (filename) => {
@@ -23,15 +21,18 @@ export default function Docs() {
   };
 
   return (
-    <div className=" mx-auto p-6">
+    <div className="mx-auto p-6">
       <h1 className="text-3xl font-semibold mb-6">Documents Disponibles</h1>
       {docs.length > 0 ? (
         <div className="grid gap-4">
           {docs.map(item => (
             <div key={item._id} className="border p-4 rounded-lg shadow-md flex flex-col">
-              {/* Insérez ici l'élément d'image miniature */}
-              <img src={`http://localhost:3001/etudiant/get-thumbnail/${item.file.filename}`} alt={item.titre} className="mb-4 rounded-md" style={{ maxWidth: '200px',maxHeight:"200px" }} />
-
+              <img
+                src={`http://localhost:3001/etudiant/get-thumbnail/${encodeURIComponent(item.file.filename)}`}
+                alt={item.titre}
+                className="mb-4 rounded-md"
+                style={{ maxWidth: '200px', maxHeight: '200px' }}
+              />
               <div>
                 <h3 className="font-semibold">Titre:</h3>
                 <p className="text-lg">{item.titre}</p>

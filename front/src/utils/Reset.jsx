@@ -3,6 +3,7 @@ import Footer from './Footer';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { FaExclamationTriangle } from 'react-icons/fa';
+import { BsQuestionCircle } from 'react-icons/bs'
 
 export default function ForgotPassword() {
   const [newPassword, setNewPassword] = useState('');
@@ -11,6 +12,7 @@ export default function ForgotPassword() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const email = searchParams.get('email');
+  const [showPasswordTooltip, setShowPasswordTooltip] = useState(false); // État pour afficher l'info-bulle
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -23,7 +25,7 @@ export default function ForgotPassword() {
             setNewPassword('');
             setConfirmPassword('');
           } else {
-            alert("Une erreur est survenue.");
+            alert(res.data.message);
             setNewPassword('');
             setConfirmPassword('');
           }
@@ -55,7 +57,18 @@ export default function ForgotPassword() {
           <form className="bg-gray-100 bg-opacity-70 p-8 rounded shadow-lg" onSubmit={handleSave}>
             <h2 className="text-2xl font-bold mb-4 text-center text-black">Réinitialiser le mot de passe</h2>
             <div className="mb-4">
+              <div className='flex flex-row justify-between items-center'>
               <label htmlFor="newPassword" className="block text-black font-semibold mb-2">Nouveau mot de passe :</label>
+              <div className="relative">
+                      <BsQuestionCircle 
+                        onMouseEnter={() => setShowPasswordTooltip(true)}
+                        onMouseLeave={() => setShowPasswordTooltip(false)}
+                      />
+                      {showPasswordTooltip && (
+                        <div className="absolute bg-gray-700 text-white px-2 py-1 rounded-md text-xs bottom-8 left-0">Le mot de passe doit comporter au moins 6 caractères.</div>
+                      )}
+                    </div>
+              </div>
               <input
                 type="password"
                 id="newPassword"

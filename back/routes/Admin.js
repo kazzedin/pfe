@@ -18,6 +18,7 @@ const {dateModel} =require('../Db/Date')
 const path = require('path');
 
 router.use(cookieParser());
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'public/docs'); // Répertoire où les fichiers seront stockés
@@ -29,8 +30,20 @@ const storage = multer.diskStorage({
   }
 });
 
+const storage2 = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/images'); // Répertoire où les fichiers seront stockés
+  },
+  filename: function (req, file, cb) {
+    const extension = path.extname(file.originalname); // Extraire l'extension du fichier
+    const filename = path.basename(file.originalname, extension); // Extraire le nom du fichier sans l'extension
+    cb(null, `${filename}${extension}`); // Nom de fichier unique avec l'extension d'origine et le timestamp
+  }
+});
+
 
 const upload = multer({ storage: storage })
+const upload2=multer({ storage: storage2})
 
 // la creation d'un trasporter pour envoyer des emails
 const transporter = nodemailer.createTransport({
@@ -141,10 +154,10 @@ router.post('/verification',   [
                 if (user) {
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (result) {
-                            const access_token = jwt.sign({ email: user.email,password:password }, process.env.ACCESS_TOKEN, { expiresIn: '20m' });
-                            const refresh_token = jwt.sign({ email: user.email,password:password  }, process.env.REFRESH_TOKEN, { expiresIn: '1h' });
-                            res.cookie("access_token", access_token, { maxAge: 1200000, httpOnly: true, secure: true, sameSite: 'strict' });
-                            res.cookie("refresh_token", refresh_token, { maxAge: 60000000, httpOnly: true, secure: true, sameSite: 'strict' }); 
+                            const admin_access_token = jwt.sign({ email: user.email,password:password }, process.env.ACCESS_TOKEN, { expiresIn: '20m' });
+                            const admin_refresh_token = jwt.sign({ email: user.email,password:password  }, process.env.REFRESH_TOKEN, { expiresIn: '1h' });
+                            res.cookie("admin_access_token", admin_access_token, { maxAge: 1200000, httpOnly: true, secure: true, sameSite: 'strict' });
+                            res.cookie("admin_refresh_token", admin_refresh_token, { maxAge: 60000000, httpOnly: true, secure: true, sameSite: 'strict' }); 
                             res.json({ message: "Success" });
                         } else {
                           res.json({ message: "Password Wrong" });
@@ -205,8 +218,8 @@ router.put('/profil', [
   
   // Log Out
 router.get('/logout', (req, res) => {
-  res.clearCookie('access_token');
-  res.clearCookie('refresh_token');
+  res.clearCookie('admin_access_token');
+  res.clearCookie('admin_refresh_token');
   res.json({response:true});
   })
 //*****************************************************************/
@@ -702,4 +715,32 @@ router.get('/get-usr', async (req, res) => {
       res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération du nombre d\'utilisateurs.' });
   }
 });
+
+router.put('/changePhoto/:adminUserEmail', upload2.single('image'), (req, res) => {
+  const { adminUserEmail } = req.params;
+  const image = req.file.filename;
+   // Remplacer les contre-obliques par des barres obliques
+  adminModel.findOneAndUpdate({ email: adminUserEmail }, {
+          $set: {
+              photo_profile: image
+          }
+      })
+      .then(user => {
+          if (user) {
+              res.json({ message: 'success', imageUrl:image });
+          } else {
+              res.json({ message: 'error' });
+          }
+      })
+      .catch(err => console.log(err));
+});
+
+router.get('/fetch-profile/:adminUserEmail',(req,res)=>{
+  const { adminUserEmail } = req.params;
+  adminModel.findOne({email:adminUserEmail})
+  .then(response=>{
+      res.json({image:response.photo_profile});
+  })
+  .catch(err=>console.log(err))
+})
 module.exports = router

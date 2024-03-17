@@ -1,31 +1,56 @@
-// Import necessary libraries
-import React, { useState, useContext } from 'react';
+// Importer les bibliothèques nécessaires
+import React, { useState, useContext,useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { IoIosArrowBack } from 'react-icons/io';
 import { AdminUserContext } from './AdminUserProvider';
+import { DataAdminContext } from './DataAdminProvider';
+import { BsQuestionCircle } from 'react-icons/bs';
 
-// Define the Profile component
+// Définir le composant Profile
 export default function Profile() {
-  // Define state variables
+  // Définir les variables d'état
   const [change, setChange] = useState(false);
   const [inputs, setInputs] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
-  const [showPassword1, setShowPassword1] = useState(false);
-  const [showPassword2, setShowPassword2] = useState(false);
-  const [showPassword3, setShowPassword3] = useState(false);
+  const [showPassword, setShowPassword] = useState({ current: false, new: false, confirm: false });
   const navigate = useNavigate();
-  const { adminUserEmail } = useContext(AdminUserContext);
-  const { passwordAdmin } = useContext(AdminUserContext);
+  const { adminUserEmail, passwordAdmin } = useContext(AdminUserContext);
+  const [memeEmail, setMemeEmail] = useState(false);
+  const [showPasswordTooltip, setShowPasswordTooltip] = useState(false);
+  const { image, setImage} = useContext(DataAdminContext);
 
-  // Define function to return to Admin page
+  useEffect(() => {
+    axios.get(`http://localhost:3001/admin/fetch-profile/${adminUserEmail}`)
+      .then(response => {
+        setImage(response.data.image);
+      })
+      .catch(err => console.log(err));
+  }, []);
+
+  const LogOut = (e) => {
+    e.preventDefault();
+    axios.get('http://localhost:3001/admin/logout')
+      .then(res => {
+        if (res.data.response) {
+          alert('Logged out');
+          navigate('/');
+        } else {
+          alert('Failed to logout');
+        }
+      })
+      .catch(err => console.log(err));
+  }
+
+
+  // Fonction pour retourner à la page d'administration
   const returnAdmin = (e) => {
     e.preventDefault();
     navigate('/Admin/Setting');
   };
 
-  // Define function to handle inputs
+  // Fonction pour gérer les saisies
   const handleInputs = (e) => {
     e.preventDefault();
     const name = e.target.name;
@@ -33,224 +58,260 @@ export default function Profile() {
     setInputs((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Set default axios configurations
+  // Configuration par défaut d'axios
   axios.defaults.withCredentials = true;
 
-  // Define function to handle save action
+  // Fonction pour gérer l'enregistrement
   const handleSave = (e) => {
     e.preventDefault();
-    if (inputs.password === inputs.confirmPassword) {
       axios.put('http://localhost:3001/admin/profil', { email: inputs.email, password: inputs.password, find: adminUserEmail })
         .then((res) => {
           if (res.data.message === 'Success') {
-            setChange(false);
-            alert('Your information has been successfully updated. You are being redirected to the login page.');
+            alert('Vos informations ont été mises à jour avec succès. Vous allez être redirigé vers la page de connexion.');
             axios.get('http://localhost:3001/admin/logout')
               .then(res => {
                 navigate('/LoginAdmin');
-                console.log(res);
+               
               })
               .catch(err => console.log(err));
           } else {
-            alert('An error occurred');
+            alert('Une erreur est survenue');
           }
         })
         .catch((err) => {
           console.log(err);
         });
-    } else {
-      setPasswordMatch(false);
-    }
+    
   };
 
-  // Define function to handle image change
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Define function to toggle password visibility
-  const handleShowPassword = (passwordType, e) => {
+  // Fonction pour basculer la visibilité du mot de passe
+  const handleShowPassword = (e, type) => {
     e.preventDefault();
-    switch (passwordType) {
-      case 'current':
-        setShowPassword1(!showPassword1);
-        break;
-      case 'new':
-        setShowPassword2(!showPassword2);
-        break;
-      case 'confirm':
-        setShowPassword3(!showPassword3);
-        break;
-      default:
-        break;
-    }
+    setShowPassword(prevState => ({ ...prevState, [type]: !prevState[type] }));
   };
 
-  // Define function to cancel changes
+  // Fonction pour annuler les modifications
   const handleCancel = () => {
     setChange(false);
-    setInputs('')
+    setInputs({});
   };
 
-  // Render the Profile component
+  // Fonction pour gérer l'email identique
+  const HandelSame = (e) => {
+    e.preventDefault();
+    setMemeEmail(!memeEmail);
+    if (!memeEmail) {
+      setInputs(prev => ({ ...prev, email: adminUserEmail }));
+    } else {
+      setInputs(prev => ({ ...prev, email: '' }));
+    }
+  };
+
+  // Fonction pour gérer le changement d'image
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('image', file);
+      try {
+        const response = await axios.put(`http://localhost:3001/admin/changePhoto/${adminUserEmail}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        if (response.data.message === "success") {
+          alert("Image changée avec succès !");
+          const newImageUrl = `http://localhost:3001/images/${response.data.imageUrl}`;
+          setSelectedImage(newImageUrl);
+        }
+      } catch (error) {
+        console.error('Erreur lors du téléchargement de l\'image:', error);
+      }
+    }
+  };
+
+  // Rendre le composant Profile
   return (
-    <div className={`flex flex-col bg-gray-500 bg-opacity-5 ${change ? 'expanded' : 'transition-form'} profile-page`}>
-    {/* Return to Admin page link */}
-    <div className='flex items-center return'>
-      <Link onClick={returnAdmin} className='hover:text-red-500 text-black rounded return-admin flex items-center'>
-        <IoIosArrowBack className="mr-2" />
-        Retourner à la page d'administration
-      </Link>
-    </div>
-    {/* Section d'informations de profil */}
-    <div className='flex items-start justify-center flex-col w-1/2 ml-20 mt-3 mb-7'>
-      <div className='bg-white rounded-full w-44 h-44 flex items-center justify-center overflow-hidden ml-5'>
-        {selectedImage ? (
-          <img src={selectedImage} alt='Sélectionné' className='h-full w-full object-cover' />
-        ) : (
-          <img src='/public/profil.jpg' alt='Par défaut' className='h-full w-full object-cover' />
-        )}
+    <div className="mx-auto my-16 profile-etu bg-gray-500 bg-opacity-5  ">
+      {/* Lien pour revenir à la page d'administration */}
+      <div className='flex items-center return'>
+        <Link onClick={returnAdmin} className='hover:text-red-500 text-black rounded return-admin flex items-center'>
+          <IoIosArrowBack className="mr-2" />
+          Retourner à la page d'administration
+        </Link>
       </div>
-      {/* Bouton d'ajout d'image */}
-      <label htmlFor='fileInput' className='bg-blue-500  text-white rounded-md px-2 py-1 cursor-pointer hover:bg-blue-700 mt-2 ajouter'>
-        + Ajouter
-        <input
-          id='fileInput'
-          type='file'
-          accept='image/*'
-          onChange={handleImageChange}
-          className='sr-only'
-        />
-      </label>
-    </div>
-    {/* Section de formulaire de profil */}
-    <div className='grid grid-cols-2 h-64 '>
-      {/* Afficher les informations de profil actuelles */}
-      <form className='flex flex-col items-start gap-3 first-input '>
-        <div className='flex gap-2 flex-col items-center'>
-          <label htmlFor='Email' className='text-black font-semibold mt-2 mr-16'>Email :</label>
-          <input type='text' key='email' readOnly className='px-3 py-2 border border-gray-600 bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-black ml-24 placeholder-gray-500' value={adminUserEmail} />
-        </div>
-        <div className='flex flex-col gap-2 items-center relative'> {/* Ajouter la classe relative ici */}
-          <label htmlFor='password' className='text-black font-semibold mt-2'>Mot de passe :</label>
-          <div className='flex flex-row items-center '>
-            <input
-              type={`${showPassword1 ? 'text' : 'password'}`}
-              key='password'
-              readOnly
-              value={passwordAdmin}
-              className='px-3 py-2 border border-gray-600 bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-black ml-24 placeholder-gray-500' /* Ajouter pr-12 pour le padding-right afin de faire de la place pour l'icône de l'œil */
-            />
-            <button
-              className='absolute right-0 mr-3' /* Positionner le bouton de manière absolue à droite du champ de saisie */
-              onClick={(e) => handleShowPassword('current', e)}
-            >
-              {showPassword1 ? <FaEyeSlash style={{ color: 'black' }} /> : <FaEye style={{ color: 'black' }} />}
-            </button>
-          </div>
-        </div>
-        {/* Bouton de modification des informations */}
-        {!change && (
-          <button onClick={() => setChange(true)} className='text-blue-500 hover:text-blue-700 text-bold ml-24 mt-2 font-bold'>Modifier les informations ?</button>
-        )}
-      </form>
-      {/* Formulaire pour changer les informations de profil */}
-      {change && (
-        <form onSubmit={handleSave} className={`flex flex-col gap-4 items-start  rounded-md p-6    `}>
-          <div className='flex flex-col gap-6'>
-            <div className='flex flex-col'>
-              <label htmlFor='nv-Email' className='text-black font-semibold'>Nouveau Email:</label>
-              <input
-                type='text'
-                key='newEmail'
-                name='email'
-                value={inputs.email || ''}
-                onChange={handleInputs}
-                className='px-3 py-2 border border-gray-600 bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500'
-                placeholder='Entrer Votre Email'
-              />
+      {/* Section d'informations de profil */}
+      <div className="rounded-lg p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="col-span-1">
+          <div className="flex justify-center">
+            <div className='w-32 h-32 bg-gray-300 rounded-full overflow-hidden'>
+              {image ? (
+                <img src={selectedImage || `http://localhost:3001/images/${image}` } alt='Sélectionné' className='h-full w-full object-cover' />
+              ) : (
+                <img src='/public/profil.jpg' alt='Par défaut' className='h-full w-full object-cover' />
+              )}
             </div>
-            <div className='flex flex-col'>
-              <label htmlFor='nv-Password' className='text-black font-semibold'>Nouveau Mot de Passe:</label>
-              <div className='relative'>
+            </div>
+            <p className="text-center mt-4">Photo de profil</p>
+            {change && (
+              <label htmlFor="fileInput" className="bg-blue-500 text-white rounded-md px-2 py-1 cursor-pointer hover:bg-blue-700 mt-2 block w-max mx-auto">
+                Modifier
                 <input
-                  type={`${showPassword2 ? 'text' : 'password'}`}
-                  key='newPassword'
-                  name='password'
-                  value={inputs.password || ''}
-                  onChange={handleInputs}
-                  className='px-3 py-2 border bg-transparent border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12'
-                  placeholder='Entrer Le Nouveau Mot de Passe'
+                  id="fileInput"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="sr-only"
                 />
-                <button
-                  className='absolute right-0 mr-3 top-1/2 transform -translate-y-1/2 focus:outline-none text-black'
-                  onClick={(e) => handleShowPassword('new', e)}
-                >
-                  {showPassword2 ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              </div>
-            </div>
-            
-           <div className='flex flex-col'>
-  <label htmlFor='nv-Password' className='text-black font-semibold'>Confirmer Mot de Passe:</label>
-  <div className='relative'>
-    <input
-      type={`${showPassword3 ? 'text' : 'password'}`}
-      key='confirmPassword'
-      name='confirmPassword'
-      value={inputs.confirmPassword || ''}
-      onChange={handleInputs}
-      className='px-3 py-2 border bg-transparent border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12'
-      placeholder='Retaper Le Mot de Passe'
-    />
-    <button
-      className='absolute right-0 mr-3 top-1/2 transform -translate-y-1/2 focus:outline-none text-black'
-      onClick={(e) => handleShowPassword('confirm', e)}
-    >
-      {showPassword3 ? <FaEyeSlash /> : <FaEye />}
-    </button>
+              </label>
+            )}
+          </div>
+          <div className="col-span-2">
+  <div className="grid grid-cols-1 gap-4">
+    <p className="text-xl font-bold"><u>Information Personnelle</u></p>
+    <div className="flex flex-col">
+      <label htmlFor="Email" className="text-black font-semibold mt-2 mr-4">Email :</label>
+      <input
+        type="text"
+        key="email"
+        readOnly
+        className="px-3 py-2 border border-gray-600 bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500"
+        value={adminUserEmail}
+      />
+    </div>
+    <div className="flex flex-col">
+      <label htmlFor="password" className="text-black font-semibold mt-2 mr-4">Mot de passe :</label>
+      <div className="relative flex items-center">
+        <input
+          type={`${showPassword.current ? 'text' : 'password'}`}
+          key="password"
+          readOnly
+          value={passwordAdmin}
+          className="px-3 py-2 border border-gray-600 bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 w-full"
+        />
+        <button
+          className="absolute right-0 mr-3 top-1/2 transform -translate-y-1/2 focus:outline-none"
+          onClick={(e) => handleShowPassword(e, 'current')}
+        >
+          {showPassword.current ? <FaEyeSlash style={{ color: 'black' }} /> : <FaEye style={{ color: 'black' }} />}
+        </button>
+      </div>
+    </div>
   </div>
-  {inputs.confirmPassword && (
-              <div className='flex items-center text-black  bg-opacity-45 p-1 rounded-md '>
-                {inputs.confirmPassword === inputs.password ? (
-                  <>
-                    <p className='mr-2 text-green-600 font-bold'>Mot de Passe Correct</p>
-                    <FaCheck className='text-green-500' />
-                  </>
-                ) : (
-                  <>
-                    <p className='mr-2 text-red-600 font-bold'>Mot de Passe Incorrect</p>
-                    <FaTimes className='text-red-500' />
-                  </>
+</div>
+        </div>
+      </div>
+
+      {!change && (
+        <div className="flex justify-end mt-4">
+          <button onClick={() => setChange(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-md py-2 px-4 mr-2">Mettre à jour</button>
+          <button className="bg-red-500 hover:bg-red-700 text-white font-bold rounded-md py-2 px-4" onClick={(e) => LogOut(e)}>Logout</button>
+        </div>
+      )}
+
+      {change && (
+        <div className="mt-8 ml-3 mr-3">
+          <h1 className="text-xl font-semibold mb-4"><u>Modifier les informations</u></h1>
+          <form className={`flex flex-col gap-4 items-center justify-center rounded-md`}>
+            <div className='flex flex-col gap-6 w-full'>
+              <div className='flex flex-col  w-full'>
+                <div className='flex flex-row justify-between items-center'>
+                  <label htmlFor='nv-Email' className='text-black font-semibold '>Nouveau Email:</label>
+                  <button className={`${memeEmail ? 'text-red-500 hover:text-red-700' : 'text-blue-500 hover:text-blue-700'}`} onClick={(e) => HandelSame(e)}>
+                    {!memeEmail ? "Garder le meme?" : "Changer l'email"}
+                  </button>
+                </div>
+                <input
+                  type='text'
+                  key='newEmail'
+                  name='email'
+                  value={memeEmail ? adminUserEmail : inputs.email || ''}
+                  onChange={handleInputs}
+                  className='px-3 py-2 border border-gray-600 bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 '
+                  placeholder='Entrer Votre Email'
+                />
+              </div>
+              <div className='flex flex-col '>
+                <div className='flex flex-row justify-between items-center'>
+                  <label htmlFor='nv-Password' className='text-black font-semibold'>Nouveau Mot de Passe:</label>
+                  <div className="relative">
+                    <BsQuestionCircle
+                      onMouseEnter={() => setShowPasswordTooltip(true)}
+                      onMouseLeave={() => setShowPasswordTooltip(false)}
+                     className='hover:text-blue-500'/>
+                    {showPasswordTooltip && (
+                      <div className="absolute bg-gray-700 text-white px-2 py-1 rounded-md text-xs bottom-8 left-0">Le mot de passe doit comporter au moins 6 caractères.</div>
+                    )}
+                  </div>
+                </div>
+                <div className='relative '>
+                  <input
+                    type={`${showPassword.new ? 'text' : 'password'}`}
+                    key='newPassword'
+                    name='password'
+                    value={inputs.password || ''}
+                    onChange={handleInputs}
+                    className='px-3 py-2 border bg-white border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12 w-full'
+                    placeholder='Entrer Le Nouveau Mot de Passe'
+                  />
+                  <button
+                    className='absolute right-0 mr-3 top-1/2 transform -translate-y-1/2 focus:outline-none text-black '
+                    onClick={(e) => handleShowPassword(e, 'new')}
+                  >
+                    {showPassword.new ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+              <div className='flex flex-col w-full '>
+                <label htmlFor='nv-Password' className='text-black font-semibold'>Confirmer Mot de Passe:</label>
+                <div className='relative w-full'>
+                  <input
+                    type={`${showPassword.confirm ? 'text' : 'password'}`}
+                    key='confirmPassword'
+                    name='confirmPassword'
+                    value={inputs.confirmPassword || ''}
+                    onChange={handleInputs}
+                    className='px-3 py-2 border bg-white border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500  w-full'
+                    placeholder='Retaper Le Mot de Passe'
+                  />
+                  <button
+                    className='absolute right-0 mr-3 top-1/2 transform -translate-y-1/2 focus:outline-none text-black'
+                    onClick={(e) => handleShowPassword(e, 'confirm')}
+                  >
+                    {showPassword.confirm ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+                {inputs.confirmPassword && (
+                  <div className='flex items-center text-black bg-opacity-45 p-1 rounded-md'>
+                    {inputs.confirmPassword === inputs.password ? (
+                      <>
+                        <p className='mr-2 text-green-600 '>Mot de Passe Correct</p>
+                        <FaCheckCircle className='text-green-600' />
+                      </>
+                    ) : (
+                      <>
+                        <p className='mr-2 text-red-600 '>Mot de Passe Incorrect</p>
+                        <FaTimesCircle className='text-red-600' />
+                      </>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-  
-</div>
-          </div>
-          {/* Boutons Enregistrer et Annuler */}
-          <div className='flex justify-center'>
-            <button className={`bg-blue-500 hover:bg-blue-700 text-white font-bold rounded w-24 mr-4 ${inputs.confirmPassword === inputs.password ? '' : 'opacity-50 cursor-not-allowed'}`} 
-              type="button" 
-              onClick={handleSave}
-              disabled={!(inputs.confirmPassword === inputs.password)}>
-                Enregistrer
-            </button>
-            <button className='bg-red-500 hover:bg-red-700 text-white font-bold rounded w-24' type="button" onClick={handleCancel}>
-              Annuler
-            </button>
-          </div>
-        </form>
+            </div>
+            <div className="flex justify-end">
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-md py-2 px-4 mr-2" onClick={(e) => handleCancel(e)}>Annuler</button>
+              <button
+  className={`bg-green-500 hover:bg-green-700 text-white font-bold rounded-md py-2 px-4 ${!inputs.email || !inputs.password || !inputs.confirmPassword || inputs.confirmPassword !== inputs.password ? 'opacity-50 cursor-not-allowed' : ''}`}
+  onClick={(e) => handleSave(e)}
+  disabled={!inputs.email || !inputs.password || !inputs.confirmPassword || inputs.confirmPassword !== inputs.password}
+>
+  Enregistrer
+</button>
+            </div>
+          </form>
+        </div>
       )}
     </div>
-  </div>
-  
   );
 }

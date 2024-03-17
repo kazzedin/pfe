@@ -15,9 +15,19 @@ const { docsModel } =require('../Db/Docs')
 const {dateModel} =require('../Db/Date')
 const path = require('path');
 const fs = require('fs');
-const { fromPath } = require('pdf2pic');
+const pdfThumbnail = require('pdf-thumbnail');
+const {fromPath} = require("pdf2pic");
 
 router.use(cookieParser());
+
+const options = {
+    density: 100,           // Densité en DPI (plus la densité est élevée, meilleure sera la qualité)
+    saveFilename: "thumbnail",   // Nom du fichier de sortie (sans extension)
+    savePath: "public/thumbnails", // Répertoire où les miniatures seront sauvegardées
+    format: "jpeg",         // Format de l'image de sortie (jpeg, png)
+    size: "600x600"         // Taille de l'image de sortie (largeur x hauteur)
+};
+const converter = fromPath(options);
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -94,40 +104,47 @@ router.post('/reset',[
 
 
 
-router.put('/reset-pwd', (req, res) => {
+router.put('/reset-pwd',[
+    check("newPassword","Please enter a valid email address").isLength({ min: 6 })
+  ],(req, res) => {
     const { email, newPassword } = req.body;
     let userType = '';
-    // Hash du nouveau mot de passe
-    bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
-        if (err) {
-            console.error('Erreur lors du hashage du mot de passe:', err);
-            res.status(500).json({ message: 'failed' });
-            return;
-        }
-
-        etudiantModel.findOne({ email: email })
-            .then(etudiant => {
-                if (etudiant) {
-                    userType = 'etudiant';
-                    return etudiantModel.findOneAndUpdate({ email: email }, { password: hashedPassword }, { new: true });
-                } else {
-                    return encadreurModel.findOne({ email: email });
-                }
-            })
-            .then(encadreur => {
-                if (encadreur) {
-                    userType = 'encadreur';
-                    return encadreurModel.findOneAndUpdate({ email: email }, { password: hashedPassword }, { new: true });
-                }
-            })
-            .then(() => {
-                res.json({ message: 'success' });
-            })
-            .catch(err => {
-                console.error('Erreur lors de la mise à jour du mot de passe:', err);
+    const errors=validationResult(req);
+    if(errors.isEmpty()){
+        bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
+            if (err) {
+                console.error('Erreur lors du hashage du mot de passe:', err);
                 res.status(500).json({ message: 'failed' });
-            });
-    });
+                return;
+            }
+    
+            etudiantModel.findOne({ email: email })
+                .then(etudiant => {
+                    if (etudiant) {
+                        userType = 'etudiant';
+                        return etudiantModel.findOneAndUpdate({ email: email }, { password: hashedPassword }, { new: true });
+                    } else {
+                        return encadreurModel.findOne({ email: email });
+                    }
+                })
+                .then(encadreur => {
+                    if (encadreur) {
+                        userType = 'encadreur';
+                        return encadreurModel.findOneAndUpdate({ email: email }, { password: hashedPassword }, { new: true });
+                    }
+                })
+                .then(() => {
+                    res.json({ message: 'success' });
+                })
+                .catch(err => {
+                    console.error('Erreur lors de la mise à jour du mot de passe:', err);
+                    res.status(500).json({ message: 'failed' });
+                });
+        });
+    }else{
+        res.json({message:'Entrer un mot de passe valid !!!'})
+    }
+   
 });
 
 
@@ -142,10 +159,10 @@ router.post('/login-etu',[
                 if (user) {
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (result) {
-                            const access_token = jwt.sign({ email: user.email,password:password }, process.env.ETU_ACCESS_TOKEN, { expiresIn: '20m' });
-                            const refresh_token = jwt.sign({ email: user.email,password:password  }, process.env.ETU_REFRESH_TOKEN, { expiresIn: '1h' });
-                            res.cookie("access_token", access_token, { maxAge: 1200000, httpOnly: true, secure: true, sameSite: 'strict' });
-                            res.cookie("refresh_token", refresh_token, { maxAge: 60000000, httpOnly: true, secure: true, sameSite: 'strict' }); 
+                            const etu_access_token = jwt.sign({ email: user.email,password:password }, process.env.ETU_ACCESS_TOKEN, { expiresIn: '20m' });
+                            const etu_refresh_token = jwt.sign({ email: user.email,password:password  }, process.env.ETU_REFRESH_TOKEN, { expiresIn: '1h' });
+                            res.cookie("etu_access_token", etu_access_token, { maxAge: 1200000, httpOnly: true, secure: true, sameSite: 'strict' });
+                            res.cookie("etu_refresh_token", etu_refresh_token, { maxAge: 60000000, httpOnly: true, secure: true, sameSite: 'strict' }); 
                             res.json({ message: "success" });
                         } else if (err) {
                             // Gérer les erreurs de bcrypt
@@ -230,15 +247,25 @@ router.get('/getUser/:EtudiantUserEmail',(req,res)=>{
     .catch(err=>console.log(err))
 })
 router.get('/logout', (req, res) => {
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
+    res.clearCookie('etu_access_token');
+    res.clearCookie('etu_refresh_token');
     res.json({response:true});
     })
 
-    router.put('/changement-info/:EtudiantUserEmail', async (req, res) => {
+    router.put('/changement-info/:EtudiantUserEmail',[
+        check("email","Please enter a valid email address").isEmail(),
+        // Ajouter une vérification pour le mot de passe
+        check('nvpwd', 'Password must be at least 6 characters').isLength({ min: 6 })
+    ], async (req, res) => {
         const { EtudiantUserEmail } = req.params;
         const { nvemail, nvpwd } = req.body;
-        
+    
+        // Vérifier s'il y a des erreurs de validation
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    
         try {
             // Hacher le nouveau mot de passe
             const hashedPwd = await bcrypt.hash(nvpwd, 10);
@@ -259,7 +286,7 @@ router.get('/logout', (req, res) => {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });
         }
-    });   
+    }); 
 
 
     router.get('/get-docs', (req, res) => {
@@ -272,51 +299,20 @@ router.get('/logout', (req, res) => {
             });
     }); 
 
-    router.get('/download-doc/:filename', (req, res) => {
+    router.get('/get-thumbnail/:filename', async (req, res) => {
         const filename = req.params.filename;
-        const filePath = path.join(__dirname, '../public/docs/', filename); // Chemin vers le fichier
-      
-        // Vérifier si le fichier existe
-        if (fs.existsSync(filePath)) {
-          // Si le fichier existe, envoyer le fichier en tant que réponse
-          res.download(filePath);
-        } else {
-          // Si le fichier n'existe pas, envoyer une réponse avec un code 404
-          res.status(404).send("Fichier introuvable");
-        }
-      });
-
-      router.get('/get-thumbnail/:filename', async (req, res) => {
+        const pdfPath = path.join(__dirname, '..', 'public', 'docs', filename);
+        
         try {
-            const filename = req.params.filename;
-            const doc = await docsModel.findOne({ 'file.filename': filename });
-    
-            if (!doc) {
-                return res.status(404).send('Document not found');
-            }
-    
-           
-            const Path = path.join(__dirname, `../public/docs/${filename}`);
-           
-            const options = {
-                density: 100,           // Output image quality
-                saveFilename: 'thumbnail',   // File name of the result image
-                savePath: '../public/thumbnails',    // Output directory for the result image
-                format: "png",          // Output image format
-                width: 600,             // Width of the result image
-                height: 600,            // Height of the result image
-                pages: "1"              // Page number(s) to convert (first page)
-            };
-    
-            const instance = fromPath(Path, options);
-            instance.bulk()
-            .then(result=>{
-                res.json(result);
-            })
-            .catch(err=>console.log(err));
+            // Convertir la première page du PDF en image
+            const thumbnails = await converter.convert(pdfPath, 1);
+            
+            // Envoyer la miniature en tant que réponse
+            res.sendFile(thumbnails[0]);
         } catch (error) {
             console.error('Error generating thumbnail:', error);
             res.status(500).send('Error generating thumbnail');
         }
     });
-module.exports = router;
+    
+module.exports = router; 

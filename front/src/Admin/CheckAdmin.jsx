@@ -23,7 +23,6 @@ export default function CheckAdmin() {
                     setValid(true);
                     setAdminUserEmail(res.data.User_Email);
                     setPasswordAdmin(res.data.User_Password);
-                    console.log("Verification Success");
                 } else {
                     console.log(res.data.message);
                 }
