@@ -67,9 +67,15 @@ const Window = showModal && studentDetails &&(
                 <label htmlFor="file" className="block text-sm font-medium text-gray-700">Email:</label>
                 <input type="text" id="email" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails['email']} />
               </div>
+              <div>
               <div className="mb-4">
                 <label htmlFor="file" className="block text-sm font-medium  text-red-600">Etat d'envoi:</label>
                 <input type="text" id="email" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={Verification(studentDetails['email'])?"Envoyer":"Non envoyer"} />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="file" className="block text-sm font-medium  text-red-600">Etat de Binom:</label>
+                <input type="text" id="email" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={'plus tard....'} />
+              </div>
               </div>
               <div className="flex justify-center">
                 <button onClick={CLoseWindow} className="ml-2 text-white  px-4 py-2 rounded-md bg-blue-500">Annuler</button>
@@ -110,7 +116,7 @@ const Window = showModal && studentDetails &&(
   const navigate = useNavigate();
   const returnAdmin = (e) => {
     e.preventDefault();
-    navigate('/Admin');
+    navigate('/Admin/Setting');
   };
 
   // Fonction pour effectuer une recherche
@@ -179,9 +185,8 @@ const Window = showModal && studentDetails &&(
       ...student,
       loginInfo: selectedStudents.some((selected) => selected['email'] === student['email']),
     }));
-  
-    axios
-      .post('http://localhost:3001/admin/login-info-etu', { info: updatedInfoEtu })
+     console.log(updatedInfoEtu)
+    axios.post('http://localhost:3001/admin/login-info-etu', { info: updatedInfoEtu })
       .then((res) => {
         if (res.status === 200 || res.status === 201) {
           if (res.data.message === 'failed') {
@@ -241,7 +246,7 @@ const Window = showModal && studentDetails &&(
         <div className='relative'>
           <div className='absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none'>
             <svg
-              className='w-4 h-4 ml-2 text-gray-500 dark:text-gray-400'
+              className='w-4 h-4 ml-2  dark:text-gray-400 text-black'
               aria-hidden='true'
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
@@ -252,7 +257,7 @@ const Window = showModal && studentDetails &&(
           <input
             type='text'
             id='table-search'
-            className='ml-4 bg-gray-800 text-white text-sm w-64 h-9 rounded-md border-none search'
+            className='ml-4 bg-white text-black text-sm w-64 h-9 rounded-md border-none search placeholder:text-black'
             placeholder='Chercher étudiant'
             onChange={HandelSearch}
             value={search}
@@ -263,9 +268,9 @@ const Window = showModal && studentDetails &&(
       <div className='table-container'>
         <div className='relative overflow-x-auto shadow-md sm:rounded-lg table-etudiant mt-4' style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
           <table className='w-full text-sm text-left rtl:text-right  text-white '>
-            <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
+            <thead className='text-xs text-gray-700 uppercase bg-gray-300 dark:bg-gray-700 dark:text-gray-400'>
               <tr>
-                <th scope='col' className='p-4 '>
+                <th scope='col' className='p-4 bg-gray-300 text-black'>
                   <div className='flex items-center '>
                     <input
                       id='checkbox-all-search'
@@ -279,22 +284,22 @@ const Window = showModal && studentDetails &&(
                     </label>
                   </div>
                 </th>
-                <th scope='col' className='px-6 py-3 '>
+                <th scope='col' className='px-6 py-3 bg-gray-300 text-black'>
                   Nom/Prenom
                 </th>
-                <th scope='col' className='px-6 py-3 '>
+                <th scope='col' className='px-6 py-3 bg-gray-300 text-black'>
                   Email
                 </th>
-                <th scope='col' className='px-6 py-3 '>
+                <th scope='col' className='px-6 py-3 bg-gray-300 text-black'>
                   Matricule
                 </th>
-                <th scope='col' className='px-6 py-3 '>
+                <th scope='col' className='px-6 py-3 bg-gray-300 text-black'>
                   Filier
                 </th>
-                <th scope='col' className='px-6 py-3 '>
+                <th scope='col' className='px-6 py-3 bg-gray-300 text-black'>
                   Section
                 </th>
-                <th scope='col' className='px-6 py-3 '>
+                <th scope='col' className='px-6 py-3 bg-gray-300 text-black'>
                   Etat
                 </th>
                 
@@ -313,7 +318,7 @@ const Window = showModal && studentDetails &&(
                 .map((row, index) => (
                   <tr
                     key={index}
-                    className='bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'>
+                    className='bg-white border-b transition duration-300 hover:bg-gray-50  '>
                     <td className='w-4 p-4 '>
                       <div className='flex items-center'>
                         <input
@@ -340,11 +345,11 @@ const Window = showModal && studentDetails &&(
                     </td>
                    
                     {Object.values(row).map((value, index) => (
-                      <td key={index} className='px-6 py-4 ' onClick={(e) => OpenWindow(e,row)}>
+                      <td key={index} className='px-6 py-4  text-black cursor-pointer   ' onClick={(e) => OpenWindow(e,row)}>
                         {value}
                       </td>
                     ))}
-                    <td className=''>
+                    <td className='text-black bg-white '>
                       {envoyer && envoyeEtudiant.includes(row['email']) ||  Verification(row['email']) ? ( // Condition pour afficher le check icon
                         <div>
                           <p>Envoyé</p>

@@ -5,6 +5,7 @@ const cors=require('cors');
 const cookieParser=require('cookie-parser');
 require('dotenv').config();
 const adminRouter=require('./routes/Admin');
+const etudiantRouter=require('./routes/Etudiant');
 const insertDefaultAdmin =require('./Middleware/AdminMiddleware/DefaultAdmin')
 const port=process.env.PORT
 const connection_db=process.env.MONGO_URL
@@ -13,11 +14,14 @@ const connection_db=process.env.MONGO_URL
 //utils
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static('public'));
 app.use(cors({
     origin:["http://localhost:5173"],
     methods:["GET", "POST","PUT","DELETE"],
     credentials:true
 }));
+app.use('/admin',adminRouter); 
+app.use('/etudiant',etudiantRouter);
 
 
 
@@ -36,13 +40,14 @@ mongoose.connection.on('error', (err) => {
   });
 
 
-// middlewares
-insertDefaultAdmin()
+ // middlewares
+insertDefaultAdmin(); 
 
-
+ 
   
 // la partie des routes
-app.use('/admin',adminRouter);
+
+
 
 
 

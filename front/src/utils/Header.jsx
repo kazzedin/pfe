@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+
 import { FaUser } from 'react-icons/fa';
 
 
@@ -26,8 +27,8 @@ function Header() {
                             <li><a href="#Contact" className={`hover:text-blue-500  hover:border hover:border-blue-500 rounded-2xl p-1`}>Contact</a></li>
                             <li><a href="#About" className={`hover:text-blue-500  hover:border hover:border-blue-500 rounded-2xl p-1`}>A propos</a></li>
                             <li className={`hover:text-blue-500  hover:border hover:border-blue-500 rounded-2xl p-1`}>
-                                <Link to='/Admin' className='flex flex-row items-center'>
-                                    <FaUser className="mr-1" />Admin
+                                <Link to='/Admin/Setting' className='flex flex-row items-center gap-1'>
+                                <FaUser className='mb-1' /> Admin
                                 </Link>
                             </li>
                             

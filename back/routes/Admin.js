@@ -14,12 +14,23 @@ const genrateurpwd=require('../Middleware/AdminMiddleware/GerateurMotdePasse')
 const {etudiantModel} = require('../Db/Acteurs/Etudiant')
 const {encadreurModel} = require('../Db/Acteurs/Encadreur')
 const { docsModel } =require('../Db/Docs')
+const {dateModel} =require('../Db/Date')
+const path = require('path');
 
 router.use(cookieParser());
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/docs'); // Répertoire où les fichiers seront stockés
+  },
+  filename: function (req, file, cb) {
+    const extension = path.extname(file.originalname); // Extraire l'extension du fichier
+    const filename = path.basename(file.originalname, extension); // Extraire le nom du fichier sans l'extension
+    cb(null, `${filename}${extension}`); // Nom de fichier unique avec l'extension d'origine et le timestamp
+  }
+});
 
 
-
-const upload = multer();
+const upload = multer({ storage: storage })
 
 // la creation d'un trasporter pour envoyer des emails
 const transporter = nodemailer.createTransport({
@@ -57,7 +68,7 @@ router.post('/contact',[
 
 
 // envoyer les informations pour les etudiant (login-info)
-router.post('/Login-info-etu', [
+router.post('/Login-info-etu-message', [
     check("sender", "Please enter a valid email address").isEmail(),
     check("matricule", "Matricule must be 12 characters long").isLength({ min: 12, max: 12 })
 ], (req, res) => {
@@ -67,8 +78,9 @@ router.post('/Login-info-etu', [
     }
     
     const { sender, nom, prenom, section, filiere, matricule, message } = req.body;
+    console.log(sender, nom, prenom, section, filiere, matricule, message )
     const nomPrenom = nom + ' ' + prenom;
-    messageModel.findOne({ sender: sender, "info.nomPrenom": nom +""+prenom, "info.section": section, "info.filier": filiere, "info.matricule": matricule, type: 'login-info-etu' })
+    messageModel.findOne({ sender: sender, "info.nomPrenom":nomPrenom , "info.section": section, "info.filier": filiere, "info.matricule": matricule, type: 'login-info-etu' })
         .then(msg => {
             if (msg) {
                 res.json({ message: 'failed' });
@@ -82,7 +94,7 @@ router.post('/Login-info-etu', [
 });
 
 // envoyer les informations pour les prof (login-info)
-router.post('/Login-info-prf', [
+router.post('/Login-info-prf-message', [
     check("sender", "Please enter a valid email address").isEmail(),
 ], (req, res) => {
     const errors = validationResult(req);
@@ -93,7 +105,7 @@ router.post('/Login-info-prf', [
     const nomPrenom = nom + ' ' + prenom;
     const Section=section.join(',');
     const Filier=filiere.join(',');
-    messageModel.findOne({ sender: sender, "info.nomPrenom": nom +""+prenom, "info.section": Section, "info.filier": Filier,type: 'login-info-prf' })
+    messageModel.findOne({ sender: sender, "info.nomPrenom": nomPrenom, "info.section": Section, "info.filier": Filier,type: 'login-info-prf' })
         .then(msg => {
             if (msg) {
                 res.json({ message: 'failed' });
@@ -129,10 +141,10 @@ router.post('/verification',   [
                 if (user) {
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (result) {
-                            const access_token = jwt.sign({ email: user.email,password:password }, process.env.ACCESS_TOKEN, { expiresIn: '2m' });
-                            const refresh_token = jwt.sign({ email: user.email,password:password  }, process.env.REFRESH_TOKEN, { expiresIn: '10m' });
-                            res.cookie("access_token", access_token, { maxAge: 120000, httpOnly: true, secure: true, sameSite: 'strict' });
-                            res.cookie("refresh_token", refresh_token, { maxAge: 600000, httpOnly: true, secure: true, sameSite: 'strict' }); 
+                            const access_token = jwt.sign({ email: user.email,password:password }, process.env.ACCESS_TOKEN, { expiresIn: '20m' });
+                            const refresh_token = jwt.sign({ email: user.email,password:password  }, process.env.REFRESH_TOKEN, { expiresIn: '1h' });
+                            res.cookie("access_token", access_token, { maxAge: 1200000, httpOnly: true, secure: true, sameSite: 'strict' });
+                            res.cookie("refresh_token", refresh_token, { maxAge: 60000000, httpOnly: true, secure: true, sameSite: 'strict' }); 
                             res.json({ message: "Success" });
                         } else {
                           res.json({ message: "Password Wrong" });
@@ -497,24 +509,23 @@ router.get('/information-prf',(req,res)=>{
 router.post('/docs', upload.single('file'), async (req, res) => {
   try {
     const { buffer, mimetype, originalname } = req.file;
-    const { title, category } = req.body;
+    const { title, category,description } = req.body;
 
     // Vérifiez si un document avec le même titre, nom de fichier et destinataire existe déjà
     const existingDoc = await docsModel.findOne({
-      titre: title,
       'file.filename': originalname,
-      distinataire: category
     });
 
     // Si un document avec les mêmes attributs existe déjà, renvoyez une réponse indiquant l'échec de l'ajout
     if (existingDoc) {
-      return res.status(400).json({ message: 'Un document avec le même titre, nom de fichier et destinataire existe déjà.' });
+      return res.json({ message: 'Un document avec le même nom de fichier existe déjà.Verifier votre informations' });
     }
 
     // Si aucun document avec les mêmes attributs n'existe, créez et sauvegardez le nouveau document
     const newDoc = new docsModel({
       titre: title,
       distinataire: category,
+      description:description,
       file: {
         data: buffer,
         contentType: mimetype,
@@ -541,10 +552,10 @@ router.get('/get-docs',(req,res)=>{
 //modifier un document
 router.put('/docs-modif/:id', upload.single('file'),(req,res)=>{
   const id=req.params.id;
-  const { title, category } = req.body;
+  const { title, category,description } = req.body;
   const file = req.file;
 
-  docsModel.findByIdAndUpdate(id,{titre:title,distinataire:category,'file.filename':file.originalname})
+  docsModel.findByIdAndUpdate(id,{titre:title,distinataire:category,'file.filename':file.originalname,description:description})
   .then(response=>{
     res.json({message:'success'})
   })
@@ -555,16 +566,140 @@ router.put('/docs-modif/:id', upload.single('file'),(req,res)=>{
 })
 
 //supprimer un document
-router.delete('/docs-supp/:filename',upload.single('file'),(req,res)=>{
-  const filename=req.params.filename
-  docsModel.findOneAndDelete({'file.filename':filename})
-  .then(response=>{
-    res.json({message:'success'})
-  })
-  .catch(err => {
-    console.log(err);
-    res.status(500).json({error: 'Une erreur s\'est produite lors de la suppression du document.'});
-  });
+router.delete('/docs-supp/:filename', upload.single('file'), (req, res) => {
+  const { filename } = req.params;
+  console.log(filename);
+  docsModel.findOneAndDelete({ 'file.filename': filename })
+    .then(response => {
+      if (!response) {
+        // Si aucun document n'est trouvé avec ce nom de fichier, renvoyer une réponse d'erreur
+        return res.status(404).json({ error: 'Le document n\'existe pas ou a déjà été supprimé.' });
+      }
+      // Si le document est supprimé avec succès, renvoyer une réponse de succès
+      res.json({ message: 'success' });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: 'Une erreur s\'est produite lors de la suppression du document.' });
+    });
+});
+
+//****************************************************/
+
+//***********************************ROUTES DES DATE**********/
+//dispaly des dates
+// Récupérer toutes les dates
+router.get('/date', (req, res) => {
+  dateModel.find()
+      .then(response => res.json(response))
+      .catch(err => console.log(err));
+});
+
+// Ajouter une date
+router.post('/ajout-date', (req, res) => {
+  const { date, title,definition } = req.body;
+  dateModel.findOne({ date: date, title: title,description: definition})
+      .then(existingDate => {
+          if (existingDate) {
+              res.json({ message: 'failed' });
+          } else {
+              dateModel.create({ date: date, title: title })
+                  .then(response => res.json({ message: 'success' }))
+                  .catch(err => console.log(err));
+          }
+      })
+      .catch(err => console.log(err));
+});
+
+// Supprimer une date
+router.delete('/supp-date/:id', (req, res) => {
+  const { id } = req.params; // Pas besoin de "req.params.id.id"
+  dateModel.findByIdAndDelete(id)
+      .then(response => res.json({ message: "success" }))
+      .catch(err => console.log(err));
+});
+
+// Modifier une date
+router.put('/modif-date/:id', (req, res) => {
+  const { id } = req.params; // Pas besoin de "req.params.id.id"
+  const { date, title,definition } = req.body;
+  dateModel.findByIdAndUpdate(id, { title: title, date: date,description: definition})
+      .then(response => res.json({ message: "success" }))
+      .catch(err => console.log(err));
+});
+//******************************ROUTES DE DATA****************************/
+router.get('/get-date', async (req, res) => {
+  try {
+      const counter = await dateModel.countDocuments();
+      res.json({ count: counter }); // Renvoyer le nombre de documents sous forme d'objet JSON avec la clé 'count'
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération du nombre de dates.' });
+  }
+});
+router.get('/get-msg', async (req, res) => {
+  try {
+      const condition1 = { type: 'contact' };
+      const condition2 = { type: 'login-info-etu' };
+      const condition3 = { type: 'login-info-prf' };
+      const condition4 = { etat: true };
+      const condition5 = { etat: false };
+
+      const contactIndex = await messageModel.countDocuments(condition1);
+      const etuIndex = await messageModel.countDocuments(condition2);
+      const prfIndex = await messageModel.countDocuments(condition3);
+      const repIndex = await messageModel.countDocuments(condition4);
+      const nrepIndex = await messageModel.countDocuments(condition5);
+      const totalIndex = await messageModel.countDocuments();
+
+      res.json({
+          total: totalIndex,
+          rep: repIndex,
+          nrep: nrepIndex,
+          prf: prfIndex,
+          etu: etuIndex,
+          contact: contactIndex
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération du nombre de messages.' });
+  }
+});
+
+router.get('/get-docs',async (req,res)=>{
+  try {
+    const counter = await docsModel.countDocuments();
+    res.json({ count: counter }); // Renvoyer le nombre de documents sous forme d'objet JSON avec la clé 'count'
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération du nombre de dates.' });
+}
 })
-/*************************************************** */
+
+router.get('/get-usr', async (req, res) => {
+  try {
+      const condition1 = { etat: true };
+      const condition2 = { etat: false };
+
+      const eturec = await etudiantModel.countDocuments(condition1);
+      const etunrec = await etudiantModel.countDocuments(condition2);
+      const prfrec = await encadreurModel.countDocuments(condition1);
+      const prfnrec = await encadreurModel.countDocuments(condition2);
+
+      const total1 = eturec + prfrec;
+      const total2 = etunrec + prfnrec;
+
+      res.json({
+          totalrec: total1,
+          totalnrec: total2,
+          prfn: prfnrec,
+          prf: prfrec,
+          etun: etunrec,
+          etu: eturec
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération du nombre d\'utilisateurs.' });
+  }
+});
 module.exports = router

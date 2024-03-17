@@ -1,6 +1,7 @@
 import React from 'react';
-import { FaUserGraduate, FaChalkboardTeacher, FaInbox, FaCog, FaBookOpen, FaFileAlt } from 'react-icons/fa';
+import { FaUserGraduate, FaChalkboardTeacher, FaInbox, FaBookOpen, FaFileAlt,FaUsers,FaInfoCircle,FaCalendar } from 'react-icons/fa';
 import {Link} from 'react-router-dom'
+
 
 
 export default function Sidebar(props) {
@@ -9,14 +10,7 @@ export default function Sidebar(props) {
     props.sidebareFunc(!props.sidebar);
   };
   return (
-    <div className={`sidebar transition-transform duration-500 ${props.sidebar ? '-translate-x-full' : 'translate-x-0'} fixed left-0 top-0 bottom-0 w-64 bg-white px-4 py-2 z-50`}>
-
-      <div className='my-2 mb-4'>
-        <h1 className='text-2x text-black font-bold'>Admin Dashboard</h1>
-      </div>
-
-      <hr />
-
+    <div className={`sidebar transition-transform duration-500 ${props.sidebar ? '-translate-x-full' : 'translate-x-0'} fixed left-0 top-14 bottom-0 w-64 bg-white px-4 py-2 z-50 border-r shadow-md`}>
       <ul className='mt-3 text-black '>
         
         <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2' onClick={toggleSidebar}>
@@ -56,8 +50,21 @@ export default function Sidebar(props) {
 
         <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2' onClick={toggleSidebar}>
           <Link to="/Admin/Setting" className='px-3' >
-            <FaCog className='inline-block w-6 h-6 mr-2 -mt-2'></FaCog>
-            Settings
+            <FaInfoCircle className='inline-block w-6 h-6 mr-2 -mt-2'></FaInfoCircle>
+            Information 
+          </Link>
+        </li>
+
+        <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2' onClick={toggleSidebar}>
+          <Link to="/Admin/Date" className='px-3' >
+            <FaCalendar className='inline-block w-6 h-6 mr-2 -mt-2'></FaCalendar>
+            Dates
+          </Link>
+        </li>
+        <li className='mb-2 rounded hover:shadow hover:text-blue-500 py-2' onClick={toggleSidebar}>
+          <Link to="/Admin/Binom-Monom" className='px-3' >
+            <FaUsers className='inline-block w-6 h-6 mr-2 -mt-2'></FaUsers>
+            Binomes/Monoms
           </Link>
         </li>
       </ul>

@@ -3,6 +3,7 @@ import Footer from './Footer';
 import axios from 'axios';
 import MessageContext from '../Admin/MessageProvider';
 import {Link} from 'react-router-dom'
+import { FiInfo } from 'react-icons/fi';
 
 export default function InfoEtu() {
   
@@ -24,7 +25,7 @@ export default function InfoEtu() {
       setError(true);
       return;
     }
-    axios.post('http://localhost:3001/admin/Login-info-etu', {
+    axios.post('http://localhost:3001/admin/Login-info-etu-message', {
       sender: info.email,
       message: "Pas de Message",
       nom: info.nom,
@@ -46,15 +47,24 @@ export default function InfoEtu() {
   }
 
   const check = () => {
-   
-
-    if (info.email && info.nom && info.prenom && info.matricule && info.filiere==='GTR'?true : info.section) {
-      if (info.matricule.length === 12) {
-        return true;
+    // Vérifie si tous les champs obligatoires sont remplis
+    if (info.email && info.nom && info.prenom && info.matricule && info.filiere) {
+      // Vérifie si le matricule comporte 12 chiffres
+      if (info.matricule.length === 12 ) {
+        // Vérifie si la filière est GTR
+        if (info.filiere === 'GTR') {
+          // Si la filière est GTR, aucun besoin de vérifier la section
+          return true;
+        } else {
+          // Si la filière n'est pas GTR, vérifie si la section est sélectionnée
+          return info.section ? true : false;
+        }
       } else {
+        // Si le matricule ne comporte pas 12 chiffres, renvoie false
         return false;
       }
     } else {
+      // S'il manque des champs obligatoires, renvoie false
       return false;
     }
   };
@@ -78,19 +88,19 @@ export default function InfoEtu() {
             <div className="col-span-1">
               <div className="mb-4">
                 <label htmlFor="email" className="block text-black font-semibold mb-2">Email :</label>
-                <input type="text" id="email" name="email" className={`w-full px-3 py-2 border ${error && !info.email && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre email" value={info.email || ''} onChange={handleInfo} />
+                <input type="text" id="email" name="email" className={`w-full px-3 py-2 border  bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre email" value={info.email || ''} onChange={handleInfo} />
               </div>
 
               <div className="mb-4">
                 <label htmlFor="nom" className="block text-black font-semibold mb-2">Nom :</label>
-                <input type="text" id="nom" name="nom" className={`w-full px-3 py-2 border ${error && !info.nom && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre nom" value={info.nom || ''} onChange={handleInfo} />
+                <input type="text" id="nom" name="nom" className={`w-full px-3 py-2 border bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre nom" value={info.nom || ''} onChange={handleInfo} />
               </div>
             </div>
 
             <div className="col-span-1">
               <div className="mb-4">
                 <label htmlFor="prenom" className="block text-black font-semibold mb-2">Prénom :</label>
-                <input type="text" id="prenom" name="prenom" className={`w-full px-3 py-2 border ${error && !info.prenom && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre prénom" value={info.prenom || ''} onChange={handleInfo} />
+                <input type="text" id="prenom" name="prenom" className={`w-full px-3 py-2 border  bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} placeholder="Entrez votre prénom" value={info.prenom || ''} onChange={handleInfo} />
               </div>
 
               <div className="mb-4">
@@ -99,15 +109,14 @@ export default function InfoEtu() {
                   type="text" 
                   id="matricule" 
                   name="matricule" 
-                  className={`w-full px-3 py-2 border ${error && !info.matricule && 'border-red-500'} ${error && info.matricule && info.matricule.length < 12 && 'input-error'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} 
+                  className={`w-full px-3 py-2 border  ${error && info.matricule && info.matricule.length < 12 && 'input-error'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`} 
                   placeholder="Entrez votre matricule" 
                   value={info.matricule || ''} 
                   onChange={handleInfo} 
                   maxLength={12} 
                 />
-                {error && info.matricule && info.matricule.length < 13 && (
-                  <div className="text-red-600 font-bold mb-2">Le matricule doit comporter exactement 13 caractères.</div>
-                )}
+                
+                  <div className="text-red-600 text-sm mb-2 flex flex-row items-center gap-1 "><FiInfo className='mb-5' style={{fontSize: '24px'}}/>Le matricule doit comporter exactement 12 caractères.</div>
               </div>
             </div>
 
@@ -119,7 +128,7 @@ export default function InfoEtu() {
                   name="filiere"
                   value={info.filiere || ''}
                   onChange={handleInfo}
-                  className={`w-full px-3 py-2 border ${error && !info.filiere && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`}
+                  className={`w-full px-3 py-2 border  bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`}
                 >
                   <option value="" className='text-black'>Sélectionner votre filière</option>
                   <option value="ACAD" className='text-black'>ACAD</option>
@@ -136,8 +145,9 @@ export default function InfoEtu() {
                     name="section"
                     value={info.section || ''}
                     onChange={handleInfo}
-                    className={`w-full px-3 py-2 border ${error && !info.section && 'border-red-500'} bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`}
+                    className={`w-full px-3 py-2 border  bg-transparent rounded-md focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-600 border-gray-300`}
                   >
+                  
                     <option value="">Sélectionner votre section</option>
                     {info.filiere === 'ACAD' && (
                       <>

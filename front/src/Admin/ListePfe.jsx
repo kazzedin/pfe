@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-
+import { useNavigate,Link } from 'react-router-dom';
+import { IoIosArrowBack } from 'react-icons/io';
 export default function ListePfe() {
     const [pfeList, setPFEList] = useState([
         {
@@ -23,6 +24,12 @@ export default function ListePfe() {
 
     const [selectedPFE, setSelectedPFE] = useState(null);
     const [filter, setFilter] = useState('');
+    const navigate = useNavigate();
+
+    const returnAdmin = (e) => {
+        e.preventDefault();
+        navigate('/Admin/Setting');
+    }
 
     const handleDecision = (id, decision) => {
         // Vous pouvez implémenter la logique d'envoi de la décision à l'API ici
@@ -46,6 +53,14 @@ export default function ListePfe() {
     return (
         <div className="container mx-auto px-4 py-8 bg-gray-500 bg-opacity-5">
             <h1 className="text-3xl font-bold mb-6 text-Black">Liste des PFE</h1>
+            <div className='absolute left-0 top-0 flex items-center'>
+                <div className='flex items-center '>
+                    <Link onClick={returnAdmin} className='hover:text-red-500 text-black rounded return-admin flex items-center'>
+                        <IoIosArrowBack className="mr-2" />
+                        Retourner à la page d'administration
+                    </Link>
+                </div>
+            </div>
             <div className="mb-4">
                 <label htmlFor="filter" className="block text-sm font-medium text-black">Filtrer par type de projet :</label>
                 <input

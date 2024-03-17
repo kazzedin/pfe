@@ -12,7 +12,7 @@ function verifyToken(req, res, next) {
             return res.status(401).json({ Valide:false,message: "NON REFRESHING" });
         }
     } else {
-        jwt.verify(access_token, process.env.ACCESS_TOKEN, (err, decoded) => {
+        jwt.verify(access_token, process.env.ETU_ACCESS_TOKEN, (err, decoded) => {
             if (err) {
                 
                 return res.json({ Valide:false ,message: "Token is invalid or expired" });
@@ -38,13 +38,13 @@ function refrech_access_token(req, res) {
        return res.json({Valide:false,message: 'Refresh token dont exist '})
       
     } else {
-        jwt.verify(refresh_token, process.env.REFRESH_TOKEN, (err, decoded) => {
+        jwt.verify(refresh_token, process.env.ETU_REFRESH_TOKEN, (err, decoded) => {
             if (err) {
                 
                 return res.json({ Valide:false ,message: "Token is invalid or expired" });
             }
             else{
-                const access_token=jwt.sign({email:decoded.email},process.env.ACCESS_TOKEN,{expiresIn:'20m'})
+                const access_token=jwt.sign({email:decoded.email},process.env.ETU_ACCESS_TOKEN,{expiresIn:'20m'})
                 res.cookie("access_token", access_token, { maxAge: 1200000, httpOnly: true, secure: true, sameSite: 'strict' });
                 req.email=decoded.email;
                 req.password=decoded.password;

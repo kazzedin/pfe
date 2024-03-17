@@ -22,7 +22,7 @@ export default function Profile() {
   // Define function to return to Admin page
   const returnAdmin = (e) => {
     e.preventDefault();
-    navigate('/Admin');
+    navigate('/Admin/Setting');
   };
 
   // Define function to handle inputs

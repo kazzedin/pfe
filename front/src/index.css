@@ -74,6 +74,12 @@
     background-size: cover;
     background-image: url('../public/home2.jpg');
 }
+.etudiant-page{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('../public/home2.jpg');
+}
 .form-info{
     width: 35rem;
 }
@@ -93,15 +99,31 @@
     background-size: cover;
     background-image: url('./home.jpg');
 }
-
+.image-profile{
+   
+    margin-bottom: 13rem;
+    margin-left: 5rem;
+    height: 49rem;
+    width: 55rem;
+    border:1px solid black;
+}
+.profile{
+    width: 50rem;
+    height: 40rem;
+    margin-bottom: 8rem;
+}
 .profile-page{
     margin-top: 2rem;
     height: 40rem;
     width: 25rem;
 }
 .profile-page.expanded{
-    transition: 0.4s ease-out;
     width: 45rem;
+    transition: 0.6s ease-in-out;
+}
+.profile-etu{
+    width: 40rem;
+    backdrop-filter: blur(4px);
 }
 
 .profile-page.transition-form {
@@ -122,12 +144,19 @@
     height: 40rem;
     backdrop-filter: blur(4px);
     z-index: 0;
+}
+.page-setting{
+    backdrop-filter: blur(4px);
 }  
+.page-date{
+    backdrop-filter: blur(4px);
+}
 .table-etudiant{
     width: 94rem;
     height: 37rem;
     margin-left: 0.5rem;
 }
+
 .table-prof{
     width: 94rem;
     height: 37rem;
@@ -135,11 +164,15 @@
 }
 .file-upload-button {
     background-color: transparent;
-    border:1px solid  #33d13b;
+    border:1px solid  rgb(69, 189, 253);
     color: black;
     padding: 8px 10px;
     border-radius: 5px;
     cursor: pointer;
+  }
+.file-upload-button:hover {
+   
+    border:1px solid  rgb(69, 115, 253);
   }
 .ajouter{
     margin-left: 4rem;
@@ -155,11 +188,20 @@ border-radius: 8px;
 .fenetre{
     width: 25rem;
 }
+.profile-etudiant{
+    width: 40rem;
+}
 
 .container {
     width: 95rem;
     margin-top: 4rem;
     height: 40rem;
+    backdrop-filter: blur(4px);
+    z-index: 0;
+}
+.container2 {
+    width: 95rem;
+    height: 45rem;
     backdrop-filter: blur(4px);
     z-index: 0;
 }
@@ -176,6 +218,7 @@ border-radius: 8px;
 
 .table-message{
     width: 94rem;
+   
 }
 
 .relative.overflow-x-auto::-webkit-scrollbar {
@@ -183,12 +226,12 @@ border-radius: 8px;
 }
 
 .relative.overflow-x-auto::-webkit-scrollbar-thumb {
-    background-color: #4b5563; /* Couleur de fond de la partie déplaçable */
+    background-color: #7a8798; /* Couleur de fond de la partie déplaçable */
     border-radius: 6px; /* Bordure arrondie */
 }
 
 .relative.overflow-x-auto::-webkit-scrollbar-thumb:hover {
-    background-color: #2d3748; /* Couleur de fond de la partie déplaçable au survol */
+    background-color: #4c576a; /* Couleur de fond de la partie déplaçable au survol */
 }
 
 .relative.overflow-x-auto::-webkit-scrollbar-track {
@@ -233,7 +276,9 @@ thead th {
     margin-left: 20rem;
     margin-top: 1.5rem;
 }
-
+.image-error{
+    width: 40rem;
+}
 /* Media Query */
 @media screen and (min-width: 1024px) {
     .nav-page {

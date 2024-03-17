@@ -21,7 +21,7 @@ export default function LoginAdmin() {
         axios.post('http://localhost:3001/admin/verification', { email: inputs.email, password: inputs.password })
             .then(res => {
                 if (res.data.message === "Success") {
-                    navigate('/Admin');
+                    navigate('/Admin/Setting');
                 } else if (res.data.message === "Password Wrong" && res.data.message === "User not found") {
                     setPwdError(true);
                     setEmailError(true);

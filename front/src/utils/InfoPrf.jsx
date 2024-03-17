@@ -36,7 +36,7 @@ export default function InfoPrf() {
       setError(true);
       return;
     }
-    axios.post('http://localhost:3001/admin/Login-info-prf', {
+    axios.post('http://localhost:3001/admin/Login-info-prf-message', {
       sender: email,
       message: "Pas de Message",
       nom: nom,
@@ -123,30 +123,30 @@ export default function InfoPrf() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-black font-semibold mb-2">Sections :</label>
-                <div className="flex flex-wrap">
-                  <label className="inline-flex items-center mr-4 mb-2">
-                    <input type="checkbox" name="section" value="ACAD_A" onChange={handleInfo} className="form-checkbox text-blue-500 h-5 w-5" />
-                    <span className="ml-2 text-gray-700">ACAD A</span>
-                  </label>
-                  <label className="inline-flex items-center mr-4 mb-2">
-                    <input type="checkbox" name="section" value="ACAD_B" onChange={handleInfo} className="form-checkbox text-blue-500 h-5 w-5" />
-                    <span className="ml-2 text-gray-700">ACAD B</span>
-                  </label>
-                  <label className="inline-flex items-center mr-4 mb-2">
-                    <input type="checkbox" name="section" value="ACAD_C" onChange={handleInfo} className="form-checkbox text-blue-500 h-5 w-5" />
-                    <span className="ml-2 text-gray-700">ACAD C</span>
-                  </label>
-                  <label className="inline-flex items-center mr-4 mb-2">
-                    <input type="checkbox" name="section" value="ISIL_A" onChange={handleInfo} className="form-checkbox text-blue-500 h-5 w-5" />
-                    <span className="ml-2 text-gray-700">ISIL A</span>
-                  </label>
-                  <label className="inline-flex items-center mb-2">
-                    <input type="checkbox" name="section" value="ISIL_B" onChange={handleInfo} className="form-checkbox text-blue-500 h-5 w-5" />
-                    <span className="ml-2 text-gray-700">ISIL B</span>
-                  </label>
-                </div>
-              </div>
+  <label className="block text-black font-semibold mb-2">Sections :</label>
+  <div className="flex flex-wrap">
+    <label className="inline-flex items-center mr-4 mb-2">
+      <input type="checkbox" name="section" value="ACAD_A" onChange={handleInfo} className="form-checkbox text-blue-500 h-5 w-5" disabled={(filiere.length === 1 && filiere[0] === 'GTR')||filiere.includes('ISIL')&&!filiere.includes('ACAD')} />
+      <span className={`ml-2 text-gray-700 ${(filiere.length === 1 && filiere[0] === 'GTR'||filiere.includes('ISIL')&&!filiere.includes('ACAD')) && 'opacity-50'}`}>ACAD A</span>
+    </label>
+    <label className="inline-flex items-center mr-4 mb-2">
+      <input type="checkbox" name="section" value="ACAD_B" onChange={handleInfo} className="form-checkbox text-blue-500 h-5 w-5" disabled={(filiere.length === 1 && filiere[0] === 'GTR')||filiere.includes('ISIL')&&!filiere.includes('ACAD')} />
+      <span className={`ml-2 text-gray-700 ${(filiere.length === 1 && filiere[0] === 'GTR'||filiere.includes('ISIL')&&!filiere.includes('ACAD')) && 'opacity-50'}`}>ACAD B</span>
+    </label>
+    <label className="inline-flex items-center mr-4 mb-2">
+      <input type="checkbox" name="section" value="ACAD_C" onChange={handleInfo} className="form-checkbox text-blue-500 h-5 w-5" disabled={(filiere.length === 1 && filiere[0] === 'GTR')||filiere.includes('ISIL')&&!filiere.includes('ACAD')} />
+      <span className={`ml-2 text-gray-700 ${(filiere.length === 1 && filiere[0] === 'GTR'||filiere.includes('ISIL')&&!filiere.includes('ACAD')) && 'opacity-50'}`}>ACAD C</span>
+    </label>
+    <label className="inline-flex items-center mr-4 mb-2">
+      <input type="checkbox" name="section" value="ISIL_A" onChange={handleInfo} className="form-checkbox text-blue-500 h-5 w-5" disabled={(filiere.length === 1 && filiere[0] === 'GTR')||filiere.includes('ACAD')&&!filiere.includes('ISIL')} />
+      <span className={`ml-2 text-gray-700 ${(filiere.length === 1 && filiere[0] === 'GTR'||filiere.includes('ACAD')&&!filiere.includes('ISIL')) && 'opacity-50'}`}>ISIL A</span>
+    </label>
+    <label className="inline-flex items-center mb-2">
+      <input type="checkbox" name="section" value="ISIL_B" onChange={handleInfo} className="form-checkbox text-blue-500 h-5 w-5" disabled={(filiere.length === 1 && filiere[0] === 'GTR')||filiere.includes('ACAD')&&!filiere.includes('ISIL')} />
+      <span className={`ml-2 text-gray-700 ${(filiere.length === 1 && filiere[0] === 'GTR'||filiere.includes('ACAD')&&!filiere.includes('ISIL')) && 'opacity-50'}`}>ISIL B</span>
+    </label>
+  </div>
+</div>
 
               {error && (
                 <div className="text-red-600 font-bold mb-4">Veuillez remplir tous les champs.</div>

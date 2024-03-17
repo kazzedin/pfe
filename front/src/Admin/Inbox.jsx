@@ -34,10 +34,10 @@ export default function Inbox() {
     }, []);
 
     const navigate = useNavigate();
-console.log(messages)
+
     const returnAdmin = (e) => {
         e.preventDefault();
-        navigate('/Admin');
+        navigate('/Admin/Setting');
     }
 
     const VerificationEtat = (email, type, message) => {
@@ -87,17 +87,17 @@ console.log(messages)
 
     const Affichage_Message = Filtered_Message.length > 0 ? (
         Filtered_Message.map((message, index) => (
-            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700" key={index}>
-                <td scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <tr className="bg-white border-b " key={index}>
+                <td scope="row" className="px-6 py-4 font-medium  bg-white text-black ">
                     {message.sender}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 text-black bg-white">
                     {message.type}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 text-black bg-white">
                     {message.message.split(' ').slice(0, 5).join(' ')}{message.message.split(' ').length > 5 ? '...' : ''}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 text-black bg-white">
                     {message.type === 'login-info-etu' || message.type === 'login-info-prf' && message.info ? (
                         <>
                             <p>{message.info.nomPrenom}</p>
@@ -109,19 +109,18 @@ console.log(messages)
                             <p>Non-exister</p>
                         )}
                 </td>
-                <td className="px-6 py-4 flex flex-row items-center mt-1 gap-2">
-                    <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline" onClick={(e) => AfficherDetails(e, message.sender, message.type, message.message, message.info ? message.info.nomPrenom : "", message.info ? message.info.matricule : "", message.info ? message.info.section : "", message.info ? message.info.filier : "")}>Voir</button>
-                    <button className="font-medium text-red-600 dark:text-red-500 hover:underline" onClick={(e) => handleDelete(e, message.sender, message.message,message.id, message.type,message.info ? message.info.nomPrenom : "", message.info ? message.info.matricule : "")}>Delete</button>
+                <td className="px-6 py-4 flex flex-row items-center mt-1 gap-2 text-black bg-white">
+                    <button className="font-medium text-blue-500 dark:text-blue-500 hover:underline" onClick={(e) => AfficherDetails(e, message.sender, message.type, message.message, message.info ? message.info.nomPrenom : "", message.info ? message.info.matricule : "", message.info ? message.info.section : "", message.info ? message.info.filier : "")}>Voir</button>
+                    <button className="font-medium text-red-500 dark:text-red-500 hover:underline" onClick={(e) => handleDelete(e, message.sender, message.message,message.id, message.type,message.info ? message.info.nomPrenom : "", message.info ? message.info.matricule : "")}>Delete</button>
                 </td>
-                <td>
+                <td className='text-black bg-white'>
                     {VerificationEtat(message.sender, message.type, message.message) ? <div className='flex flex-row items-center gap-1'>Repondu <FaCheckCircle color="green" /></div> : <div className='flex flex-row items-center gap-1'>Non repondu<FaTimesCircle color="red" /></div>}
                 </td>
             </tr>)
         )) : (
-            <tr>
-                
-                <td colSpan="6" className="px-6 py-4 text-center">
-                    <h2 className="text-black font-bold ">No messages ?{setUnreadMessages(false)}</h2>
+            <tr> 
+                <td colSpan="6" className="px-6 py-4 text-center  bg-transparent">
+                   {messages.length===0 ? <h4 className="text-black font-bold ">No messages ?{setUnreadMessages(false)}</h4>:'' } 
                 </td>
             </tr>
         );
@@ -143,7 +142,8 @@ console.log(messages)
             <div className='filter absolute left-0 top-20 flex flex-row items-center justify-center gap-2 text-black mb-1 ml-2'>
                 <h4 className='font-bold text-black'>Filtre:</h4>
                 <Link to='?type=contact' className='border border-black bg-transparent rounded-2xl p-1 hover:border-blue-700 hover:text-blue-700'>Contact</Link>
-                <Link to='?type=login-info' className='border border-black bg-transparent rounded-2xl p-1 hover:border-blue-700 hover:text-blue-700'>Login-Info</Link>
+                <Link to='?type=login-info-etu' className='border border-black bg-transparent rounded-2xl p-1 hover:border-blue-700 hover:text-blue-700'>Login-Info-etudiant</Link>
+                <Link to='?type=login-info-prf' className='border border-black bg-transparent rounded-2xl p-1 hover:border-blue-700 hover:text-blue-700'>Login-Info-prof</Link>
                 {messageFilter ? <Link to='' className='bg-transparent rounded-2xl p-1 hover:border-blue-700 hover:text-blue-700'>Clear-Filter ?</Link> : ''}
             </div>
             {loading ? (
@@ -166,15 +166,15 @@ console.log(messages)
                     <div className="shadow-md sm:rounded-lg message-container2 flex flex-col justify-center items-center">
                         {show ? <DetailsMessages showFunc={setShow} show={show} msg={clickedMessage} updateMessageState={setMessages}  /> :
                             <div className=" relative overflow-x-auto">
-                                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-message">
-                                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <table className="w-full text-sm text-left rtl:text-right text-black  dark:text-gray-400 table-message">
+                                    <thead className="text-xs text-black uppercase bg-white dark:bg-gray-700 dark:text-gray-400">
                                         <tr>
-                                            <th scope="col" className="px-6 py-3">Emmeteur:</th>
-                                            <th scope="col" className="px-6 py-3">Type:</th>
-                                            <th scope="col" className="px-6 py-3">Message:</th>
-                                            <th scope="col" className="px-6 py-3">Info:</th>
-                                            <th scope="col" className="px-6 py-3">Action:</th>
-                                            <th scope="col" className="px-6 py-3">Etat:</th>
+                                            <th scope="col" className="px-6 py-3 bg-gray-300 text-black ">Emmeteur:</th>
+                                            <th scope="col" className="px-6 py-3 bg-gray-300 text-black">Type:</th>
+                                            <th scope="col" className="px-6 py-3 bg-gray-300 text-black">Message:</th>
+                                            <th scope="col" className="px-6 py-3 bg-gray-300 text-black">Info:</th>
+                                            <th scope="col" className="px-6 py-3 bg-gray-300 text-black">Action:</th>
+                                            <th scope="col" className="px-6 py-3 bg-gray-300 text-black">Etat:</th>
                                         </tr>
                                     </thead>
                                     <tbody className="max-h-96 overflow-y-auto">

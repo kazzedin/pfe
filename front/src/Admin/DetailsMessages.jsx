@@ -19,15 +19,22 @@ export default function DetailsMessages({ show, showFunc, msg, updateMessageStat
   }, [foundStudent]);
 
   const handleCheckChange = (value) => {
-    if (value === 'oui') {
+    if (value === 'oui' && foundStudent === 'oui') {
+      // Si la case "Oui" est déjà cochée, décochez-la
+      setFoundStudent(false);
+      setTypeEmail('');
+    } else if (value === 'non' && foundStudent === 'non') {
+      // Si la case "Non" est déjà cochée, décochez-la
+      setFoundStudent(false);
+      setTypeEmail('');
+    } else if (value === 'oui') {
+      // Sinon, cochez la case "Oui"
       setFoundStudent('oui');
       setTypeEmail('verification');
     } else if (value === 'non') {
+      // Sinon, cochez la case "Non"
       setFoundStudent('non');
       setTypeEmail('attente');
-    } else {
-      setFoundStudent(false);
-      setTypeEmail('');
     }
   };
 
@@ -148,8 +155,8 @@ export default function DetailsMessages({ show, showFunc, msg, updateMessageStat
       <div className="fixed top-24  mb-2 p-4 bg-gray-100 border border-gray-300 rounded-md shadow-md w-96 ins">
         <p className="text-sm font-medium text-gray-700 mb-2">Instructions :</p>
         <ul className="list-disc list-inside text-sm text-gray-600">
-          <li>Si vous cliquez sur "Oui", cela veut dire que l'étudiant a déjà reçu les informations de login. Envoyez un mail pour lui demander de vérifier.</li>
-          <li>Si vous cliquez sur "Non", cela veut dire que l'étudiant avec les informations fournies ne correspond à aucun étudiant. Envoyez un mail pour lui dire qu'il doit attendre jusqu'à la mise à jour de la liste des étudiants.</li>
+          <li>Si vous cliquez sur "Oui", cela veut dire que l'étudiant(le professeur) a déjà reçu les informations de login. Envoyez un mail pour lui demander de vérifier.</li>
+          <li>Si vous cliquez sur "Non", cela veut dire que l'étudiant(le professeur) avec les informations fournies ne correspond à aucun étudiant. Envoyez un mail pour lui dire qu'il doit attendre jusqu'à la mise à jour de la liste des étudiants.</li>
         </ul>
       </div>
     );
