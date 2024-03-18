@@ -117,12 +117,30 @@
     height: 40rem;
     width: 25rem;
 }
+.changement{
+    width: 50rem;
+    margin-right: 18rem;
+}
+.bt{
+    margin-top: 0.7rem;
+    margin-right: 54rem;
+}
+.date-container{
+    width: 94rem;
+    height: 80rem;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(4px);
+}
 .profile-page.expanded{
     width: 45rem;
     transition: 0.6s ease-in-out;
 }
 .profile-etu{
     width: 40rem;
+    backdrop-filter: blur(4px);
+}
+.profile-etu1{
+    width: 70rem;
     backdrop-filter: blur(4px);
 }
 
@@ -187,6 +205,9 @@ border-radius: 8px;
 }
 .fenetre{
     width: 25rem;
+}
+.fenetre2{
+    width: 52rem;
 }
 .profile-etudiant{
     width: 40rem;

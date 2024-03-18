@@ -125,10 +125,13 @@ function Dates() {
                             <BsCalendar className="text-blue-500 mr-2" />
                             <div>
                                 <h2 className="text-lg font-semibold mb-2">{date.title}</h2>
+                                <p>{date.description}</p>
+                                
                                 <p>{new Date(date.date).toLocaleDateString()}</p>
-                                <p>{date.definition}</p>
+
+                               
                                 <div className="flex gap-1">
-                                    <button onClick={() => openEditModal(date._id, date.date, date.title, date.definition)} className="text-white bg-blue-500 p-1 rounded-md hover:bg-blue-700">Modifier</button>
+                                    <button onClick={() => openEditModal(date._id, date.date, date.title, date.description)} className="text-white bg-blue-500 p-1 rounded-md hover:bg-blue-700">Modifier</button>
                                     <button onClick={() => handelSupprimer(date._id)} className="text-white bg-red-500 p-1 rounded-md hover:bg-red-700">Supprimer</button>
                                 </div>
                             </div>

@@ -194,7 +194,7 @@ router.get('/profile/:EtudiantUserEmail',(req,res)=>{
     .then(user=>{
         if(user){
           
-            res.json({image:user.photo_profile,status:user.etat_cnx})
+            res.json({image:user.photo_profile,status:user.etat_cnx,info:{'nom/prenom':user.nomPrenom,section:user.section,filier:user.filier,matricule:user.matricule}})
         }else{
            
             res.json({message:"user not found"})
@@ -253,17 +253,18 @@ router.get('/logout', (req, res) => {
     })
 
     router.put('/changement-info/:EtudiantUserEmail',[
-        check("email","Please enter a valid email address").isEmail(),
+        check("nvemail","Please enter a valid email address").isEmail(),
         // Ajouter une vérification pour le mot de passe
         check('nvpwd', 'Password must be at least 6 characters').isLength({ min: 6 })
     ], async (req, res) => {
         const { EtudiantUserEmail } = req.params;
         const { nvemail, nvpwd } = req.body;
-    
+        console.log(nvemail, nvpwd)
         // Vérifier s'il y a des erreurs de validation
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
+            
         }
     
         try {
@@ -297,22 +298,29 @@ router.get('/logout', (req, res) => {
                 console.log(error);
                 res.status(500).json({ message: "Une erreur s'est produite lors de la récupération des documents." });
             });
-    }); 
+    });
+    
+    router.get('/download-doc/:filename', (req, res) => {
+        const filename = req.params.filename;
+        const filePath = path.join(__dirname,'..', 'public', 'docs', filename);
+        res.download(filePath, (err) => {
+          if (err) {
+            console.log('Erreur lors du téléchargement du fichier :', err);
+            res.status(500).send('Erreur lors du téléchargement du fichier');
+          }
+        });
+      });
+      
 
     router.get('/get-thumbnail/:filename', async (req, res) => {
         const filename = req.params.filename;
         const pdfPath = path.join(__dirname, '..', 'public', 'docs', filename);
-        
-        try {
-            // Convertir la première page du PDF en image
-            const thumbnails = await converter.convert(pdfPath, 1);
-            
-            // Envoyer la miniature en tant que réponse
-            res.sendFile(thumbnails[0]);
-        } catch (error) {
-            console.error('Error generating thumbnail:', error);
-            res.status(500).send('Error generating thumbnail');
-        }
+        res.sendFile(pdfPath);
     });
-    
+
+router.get('/get-date',(req,res)=>{
+    dateModel.find()
+    .then(data=>res.json(data))
+    .catch(error=>console.log(err));
+    })    
 module.exports = router; 

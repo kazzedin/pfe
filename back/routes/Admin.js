@@ -616,7 +616,7 @@ router.post('/ajout-date', (req, res) => {
           if (existingDate) {
               res.json({ message: 'failed' });
           } else {
-              dateModel.create({ date: date, title: title })
+              dateModel.create({ date: date, title: title,description:definition })
                   .then(response => res.json({ message: 'success' }))
                   .catch(err => console.log(err));
           }

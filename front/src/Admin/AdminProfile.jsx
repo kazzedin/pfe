@@ -31,7 +31,9 @@ export default function Profile() {
 
   const LogOut = (e) => {
     e.preventDefault();
-    axios.get('http://localhost:3001/admin/logout')
+    const confirmLogout = window.confirm("Êtes-vous sûr de vouloir vous déconnecter ?");
+    if (confirmLogout) {
+      axios.get('http://localhost:3001/admin/logout')
       .then(res => {
         if (res.data.response) {
           alert('Logged out');
@@ -41,6 +43,8 @@ export default function Profile() {
         }
       })
       .catch(err => console.log(err));
+    }
+   
   }
 
 
@@ -204,7 +208,7 @@ export default function Profile() {
       </div>
 
       {!change && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-2 mb-2">
           <button onClick={() => setChange(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-md py-2 px-4 mr-2">Mettre à jour</button>
           <button className="bg-red-500 hover:bg-red-700 text-white font-bold rounded-md py-2 px-4" onClick={(e) => LogOut(e)}>Logout</button>
         </div>
