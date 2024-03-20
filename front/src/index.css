@@ -209,6 +209,10 @@ border-radius: 8px;
 .fenetre2{
     width: 52rem;
 }
+.binomes{
+    margin-bottom: 15rem;
+    backdrop-filter: blur(4px);
+}
 .profile-etudiant{
     width: 40rem;
 }

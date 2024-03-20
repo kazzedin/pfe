@@ -38,7 +38,7 @@ export default function EtuDates() {
     <div className=" mx-auto py-8 date-container relative ">
      <div className='absolute top-0 left-0 '>
      <div className='   flex justify-start items-start mb-2 '>
-          <Link to="/Etudiant" className='hover:bg-red-700 text-white bg-red-500 p-1 rounded flex items-center m-2 '>
+          <Link to="/Etudiant" className='hover:text-red-500 text-black  rounded flex items-center  '>
             <IoIosArrowBack className='mr-2' />
             Retourner à la page d'étudiant
           </Link>

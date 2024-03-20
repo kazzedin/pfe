@@ -14,6 +14,7 @@ const DocsPage = () => {
   const [docs, setDocs] = useState([]);
   const [category, setCategory] = useState('Etudiant');
   const [description, setDescription] = useState('');
+  const [selectedDocumentInfo, setSelectedDocumentInfo] = useState(null);
 
   useEffect(() => {
     axios.get('http://localhost:3001/admin/get-docs')
@@ -109,44 +110,43 @@ const DocsPage = () => {
     }
   };
 
-  const generateGoogleForm = () => {
-    const googleForm = new FormData();
-    googleForm.append('entry.1234567890', title);
-
-    window.location.href = `https://docs.google.com/forms/d/e/your_form_id/viewform?${new URLSearchParams(googleForm).toString()}`;
-  };
+  // Fonction pour générer un ID unique
+  
+  
 
   return (
     <div className="container mx-auto mt-8 overflow-auto">
       <div className="flex items-center">
-        <Link to="/Admin/Setting" className="text-black flex items-center hover:text-red-500 mt-2">
+        <Link to="/Admin/Setting" className="text-black rounded-md m-2 flex items-center hover:text-red-500 mt-2">
           <IoIosArrowBack className="mr-2" /> Retourner à la page d'administration
         </Link>
       </div>
       <h1 className="text-3xl font-bold mt-4 mb-8 text-center">Gestion des documents</h1>
       <button onClick={() => setShowAddModal(true)} className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md mb-4 inline-block ml-4">Ajouter un document +</button>
-      <button onClick={generateGoogleForm} className="bg-blue-500 hover:bg-blue-700 text-white  py-2 px-4 rounded-md mb-4 inline-block ml-4">Générer un formulaire Google +</button>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
         {docs.length > 0 ? docs.map((document) => (
-          <div key={document._id} className="max-w-sm rounded overflow-hidden shadow-lg">
-            <div className="px-6 py-4">
-              <div className="font-bold text-xl mb-2">{document.titre}</div>
-              <RiFileList3Line></RiFileList3Line>
-              <p className="text-gray-700 text-base">
-                <span className="font-semibold">Destinataire :</span> {document.distinataire}
-              </p>
-              <p className="text-gray-700 text-base">
-                <span className="font-semibold">Nom de fichier :</span> {document.file.filename}
-              </p>
-              <p className="text-gray-700 text-base">
-                <span className="font-semibold">Description :</span> {document.description}
-              </p>
-            </div>
-            <div className="px-6 py-4">
-              <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md mr-2" onClick={(e) => handleDeleteSubmit(e, document.file.filename)}>Supprimer</button>
-              <button onClick={() => handleEditModalOpen(document)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Modifier</button>
-            </div>
-          </div>
+         <div key={document._id} className="max-w-sm rounded border overflow-hidden shadow-lg cursor-pointer transform transition duration-300 hover:shadow-xl" onClick={() => setSelectedDocumentInfo(document)}>
+         <div className="px-6 py-4">
+           <div className="font-bold text-xl mb-2">{document.titre}</div>
+           <RiFileList3Line></RiFileList3Line>
+           <p className="text-gray-700 text-base">
+             <span className="font-semibold">Destinataire :</span> {document.distinataire}
+           </p>
+           <p className="text-gray-700 text-base">
+             <span className="font-semibold">Nom de fichier :</span> {document.file.filename}
+           </p>
+           <p className="text-gray-700 text-base">
+             <span className="font-semibold">Description :</span> {document.description.split(' ').slice(0, 6).join(' ')}...
+           </p>
+         </div>
+         <div className="px-6 py-4 flex justify-between items-center">
+           <div>
+             <button className="bg-red-500 hover:text-red-700 text-white font-bold py-2 px-4 rounded-md mr-2" onClick={(e) => handleDeleteSubmit(e, document.file.filename)}>Supprimer</button>
+             <button onClick={() => handleEditModalOpen(document)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Modifier</button>
+           </div>
+         </div>
+       </div>
         )) : <h4 className='font-bold text-md text-black ml-5'>Pas de documents!</h4>}
       </div>
 
@@ -161,7 +161,7 @@ const DocsPage = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-                <textarea id="description" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+                <textarea id="description" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md pl-2" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
               </div>
               <div className="mb-4">
                 <label htmlFor="category" className="block text-sm font-medium text-gray-700">Catégorie</label>
@@ -173,7 +173,7 @@ const DocsPage = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="file" className="block text-sm font-medium text-gray-700">Fichier</label>
-                <input type="file" id="file" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" onChange={handleFileChange} />
+                <input type="file" id="file" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 " onChange={handleFileChange} />
               </div>
               <div className="flex justify-end">
                 <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Ajouter</button>
@@ -223,6 +223,24 @@ const DocsPage = () => {
           </div>
         </div>
       )}
+      {selectedDocumentInfo && (
+  <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-800 bg-opacity-10">
+    <div className="bg-white w-96 p-8 rounded-lg shadow-lg flex flex-col gap-2 justify-center items-start">
+      <h2 className="text-xl font-semibold mb-4" style={{textDecoration:'underline'}}>{selectedDocumentInfo.titre}</h2>
+      <p className="text-gray-700 text-base">
+        <span className="font-semibold">Destinataire :</span> {selectedDocumentInfo.distinataire}
+      </p>
+      <p className="text-gray-700 text-base">
+        <span className="font-semibold">Nom de fichier :</span> {selectedDocumentInfo.file.filename}
+      </p>
+      <p className="text-gray-700 text-base">
+        <span className="font-semibold">Description :</span> {selectedDocumentInfo.description}
+      </p>
+      {/* Boutons pour fermer la fenêtre modale */}
+      <button onClick={() => setSelectedDocumentInfo(null)} className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md mt-4">Fermer</button>
+    </div>
+  </div>
+)}
     </div>
   );
 }

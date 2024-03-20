@@ -69,7 +69,10 @@ export default function Homepage() {
                   >
                     <span className="sr-only">Open user menu</span>
                     <div className="relative"> {/* Correction : Remplacez class par className */}
-                      <img className="w-9 h-9 rounded-full" src={`http://localhost:3001/images/${image}`} alt="profile"/> {/* Correction : Utilisez image au lieu de img */}
+                    {image ?<img className="w-9 h-9 rounded-full" src={`http://localhost:3001/images/${image}`} alt="profile"/> 
+                       :<img className="w-9 h-9 rounded-full" src='profile.jpg' alt="profile"/> 
+                    }
+                      {/* Correction : Utilisez image au lieu de img */}
                       <span className={`bottom-0 left-7 absolute w-3 h-3 ${status  ? 'bg-green-400' : 'bg-red-500'} border-2 border-white dark:border-gray-800 rounded-full`}></span> {/* Correction : Utilisez className au lieu de class */}
                     </div>
                   </Link>

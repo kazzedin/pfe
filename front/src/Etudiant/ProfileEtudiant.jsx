@@ -140,7 +140,7 @@ export default function ProfileEtudiant() {
               {image ? (
                 <img id="profile-image" src={imageUrl || `http://localhost:3001/images/${image}`} alt="Sélectionné" className="h-full w-full object-cover" />
               ) : (
-                <img src="" alt="Par défaut" className="h-full w-full object-cover" />
+                <img src="profile.jpg" alt="Par défaut" className="h-full w-full object-cover" />
               )}
             </div>
           </div>

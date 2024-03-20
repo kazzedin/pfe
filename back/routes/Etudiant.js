@@ -188,20 +188,50 @@ router.get('/check',verifyToken,(req,res)=>{
     res.json({Valide:true,User_Email:req.email,User_Password:req.password});
 })
 
-router.get('/profile/:EtudiantUserEmail',(req,res)=>{
-    const {EtudiantUserEmail}=req.params;
-    etudiantModel.findOne({email:EtudiantUserEmail})
-    .then(user=>{
-        if(user){
-          
-            res.json({image:user.photo_profile,status:user.etat_cnx,info:{'nom/prenom':user.nomPrenom,section:user.section,filier:user.filier,matricule:user.matricule}})
-        }else{
-           
-            res.json({message:"user not found"})
+router.get('/profile/:EtudiantUserEmail', async (req, res) => {
+    try {
+        const { EtudiantUserEmail } = req.params;
+
+        // Recherche de l'étudiant par son adresse e-mail
+        const user = await etudiantModel.findOne({ email: EtudiantUserEmail });
+
+        if (user) {
+            // Si l'utilisateur est trouvé, récupérez les informations du thème s'il est associé à un thème
+            if (user.theme) {
+                // Recherche du thème associé à l'utilisateur
+                const theme = await pfeModel.findById(user.theme);
+                if (theme) {
+                    // Si le thème est trouvé, incluez le titre du thème dans les informations de réponse
+                    const userInfo = {
+                        'nom/prenom': user.nomPrenom,
+                        section: user.section,
+                        filier: user.filier,
+                        matricule: user.matricule,
+                        theme: theme.titre // Récupération du titre du thème
+                    };
+                    res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
+                } else {
+                    res.json({ message: "Thème non trouvé" });
+                }
+            } else {
+                // Si l'utilisateur n'est associé à aucun thème, renvoyez les informations de base
+                const userInfo = {
+                    'nom/prenom': user.nomPrenom,
+                    section: user.section,
+                    filier: user.filier,
+                    matricule: user.matricule,
+                    theme: null // Aucun thème associé
+                };
+                res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
+            }
+        } else {
+            res.json({ message: "Utilisateur non trouvé" });
         }
-    })
-    .catch(err=>console.log(err));
-})
+    } catch (error) {
+        console.error("Une erreur s'est produite lors de la recherche de l'utilisateur:", error);
+        res.status(500).json({ message: "Erreur interne du serveur" });
+    }
+});
 
 
 router.put('/changeEtat/:EtudiantUserEmail',(req,res)=>{
@@ -290,6 +320,7 @@ router.get('/logout', (req, res) => {
     }); 
 
 
+    //route pour fetcher les documents
     router.get('/get-docs', (req, res) => {
         const destinataires = ["Etudiant", "Tout"]; // Liste des destinataires autorisés
         docsModel.find({ distinataire: { $in: destinataires } })
@@ -300,6 +331,7 @@ router.get('/logout', (req, res) => {
             });
     });
     
+    //route pour la possibilter de telecharger les documents
     router.get('/download-doc/:filename', (req, res) => {
         const filename = req.params.filename;
         const filePath = path.join(__dirname,'..', 'public', 'docs', filename);
@@ -311,16 +343,35 @@ router.get('/logout', (req, res) => {
         });
       });
       
-
+   //route pour retourner le path dun fichier pdf pour extraire le thumbnails dans ce fichier 
     router.get('/get-thumbnail/:filename', async (req, res) => {
         const filename = req.params.filename;
         const pdfPath = path.join(__dirname, '..', 'public', 'docs', filename);
         res.sendFile(pdfPath);
     });
 
+    //route pour fetcher les dates
 router.get('/get-date',(req,res)=>{
     dateModel.find()
     .then(data=>res.json(data))
     .catch(error=>console.log(err));
-    })    
+    })   
+
+    //route pour ajouter un etudiant dans la liste des binomes
+    router.put('/chercheBinome/:EtudiantUserEmail',(req,res)=>{
+        const {EtudiantUserEmail} = req.params;
+        etudiantModel.findOneAndUpdate({email: EtudiantUserEmail}, {$set: {etatChercheBinome: true}})
+        .then(result => {
+            res.json({message: 'success'});
+        })
+        .catch(err => console.log(err));
+    })
+    //route pour afficher les retourner les etudiant qui cherche un binome
+    router.get('/get-binomes',(req,res)=>{
+     etudiantModel.find({etatChercheBinome:true})
+     .then(result=>{
+        res.json(result);
+     })
+     .catch(err=>console.log(err));
+    })   
 module.exports = router; 

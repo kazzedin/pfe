@@ -61,7 +61,7 @@ export default function Navbar(props) {
           {image ? (
             <img className="w-9 h-9 rounded-full cursor-pointer" src={`http://localhost:3001/images/${image}`} alt="profile"/>
           ) : (
-            <img key="default-image" src='/public/profil.jpg' alt='Par défaut' className='h-full w-full object-cover' />
+            <img key="default-image" src='/public/profil.jpg' alt='Par défaut' />
           )}
         </div>
       </div>
