@@ -417,14 +417,17 @@ router.post('/login-info-etu', async (req, res) => {
 
           // Enregistrer l'étudiant dans la base de données avec le mot de passe haché
           await etudiantModel.create({
-              nomPrenom: student.nomPrenom,
-              password: hashedPwd,
-              email: student.email,
-              matricule: student.matricule,
-              filier: student.filier,
-              section: student.section,
-              etat:student.loginInfo,
-          });
+            nomPrenom: student.nomPrenom,
+            password: hashedPwd,
+            email: student.email,
+            matricule: student.matricule,
+            filier: student.filier,
+            section: student.section,
+            etat: student.loginInfo,
+            binome: null,
+            encadreur: null,
+            theme: null
+        });
       }
 
       res.status(201).json({ message: 'success' });
@@ -494,6 +497,7 @@ router.post('/login-info-prf', async (req, res) => {
               filier: prof.filier,
               section: prof.section,
               etat:prof.loginInfo,
+
           });
       }
 

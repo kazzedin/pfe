@@ -5,14 +5,15 @@ const pfeSchema = new mongoose.Schema({
     titre: String,
     valider: Boolean, 
     experties: String,
-    reference: {type: String,unique:true},
+    reference: {type: String,unique:true , default:null},
     encadreur: {
         type: mongoose.Types.ObjectId,
-        ref: "encadreur"
+        ref: "encadreur",
+        default: null
     },
     binome:{
-        membre1:{type: mongoose.Types.ObjectId,ref:'etudiant'},
-        membre2:{type:mongoose.Types.ObjectId,ref:'etudiant'},
+        membre1:{type: mongoose.Types.ObjectId,ref:'etudiant',default:null},
+        membre2:{type:mongoose.Types.ObjectId,ref:'etudiant',default:null},
     },
     file: {
         data: Buffer, // Données binaires du fichier

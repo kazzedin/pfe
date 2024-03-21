@@ -13,6 +13,7 @@ const {etudiantModel} = require('../Db/Acteurs/Etudiant')
 const {encadreurModel} = require('../Db/Acteurs/Encadreur')
 const { docsModel } =require('../Db/Docs')
 const {dateModel} =require('../Db/Date')
+const {pfeModel} = require('../Db/Pfe')
 const path = require('path');
 const fs = require('fs');
 const pdfThumbnail = require('pdf-thumbnail');
@@ -207,7 +208,8 @@ router.get('/profile/:EtudiantUserEmail', async (req, res) => {
                         section: user.section,
                         filier: user.filier,
                         matricule: user.matricule,
-                        theme: theme.titre // Récupération du titre du thème
+                        theme: theme.titre, // Récupération du titre du thème
+                        
                     };
                     res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
                 } else {
@@ -220,7 +222,8 @@ router.get('/profile/:EtudiantUserEmail', async (req, res) => {
                     section: user.section,
                     filier: user.filier,
                     matricule: user.matricule,
-                    theme: null // Aucun thème associé
+                    theme: null,
+                   
                 };
                 res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
             }
@@ -374,4 +377,39 @@ router.get('/get-date',(req,res)=>{
      })
      .catch(err=>console.log(err));
     })   
+  
+    //supprimer la demande de recher pour un binomes
+    router.put('/delete-search/:EtudiantUserEmail',(req,res)=>{
+        const {EtudiantUserEmail}=req.params
+        etudiantModel.findOneAndUpdate({email:EtudiantUserEmail},{$set:{etatChercheBinome:false}})
+        .then(response=>res.json({message:'success'}))
+        .catch(err=>console.log(err)); 
+    })
+
+    router.get('/get-theme-ref/:themeTitre', (req, res) => {
+        const { themeTitre } = req.params;
+    
+        // Check if themeTitre is null or 'null'
+        if (!themeTitre || themeTitre.toLowerCase() === 'null') {
+            res.json({ ref: 'Pas dinformation ?' });
+            return; // Return early to avoid further execution
+        }
+    
+        // If themeTitre is not null, attempt to find the document by ID
+        pfeModel.findById(themeTitre)
+            .then(find => {
+                if (find) {
+                    res.json({ ref: find.reference });
+                } else {
+                    res.json({  ref: 'Pas dinformation ?' });
+                }
+            })
+            .catch(err => console.log(err));
+    });
+
+ router.post('/envoi-demande-binome',(req,res)=>{
+   const {recever,sender_info,sender}=req.body;
+   console.log(sender_info,recever,sender)
+   res.json({message:'success'})
+ })   
 module.exports = router; 
