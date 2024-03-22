@@ -9,6 +9,7 @@ export default function Homepage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { status, image,setImage,setStatus,rep} = useContext(DataContext); // Correction : Destructurer correctement les valeurs de DataContext
   const { EtudiantUserEmail } = useContext(EtudiantUserContext);
+  const [imageUrl , setImageUrl] = useState('')
  
   
   const toggleSidebar = (e) => {
@@ -20,12 +21,13 @@ export default function Homepage() {
    axios.get(`http://localhost:3001/etudiant/getUser/${EtudiantUserEmail}`)
    .then(res=>{
     setImage(res.data.image)
+    setImageUrl(res.data.image)
     setStatus(res.data.status)
    })
    .catch(err=>console.log(err))
   },[rep])
 
-  
+ 
   return (
     <div className='etudiant-page min-h-screen flex items-center justify-center flex-col'>
       <nav className="fixed top-0 z-50 w-full bg-white shadow-md text-black">
@@ -69,7 +71,7 @@ export default function Homepage() {
                   >
                     <span className="sr-only">Open user menu</span>
                     <div className="relative"> {/* Correction : Remplacez class par className */}
-                    {image ?<img className="w-9 h-9 rounded-full" src={`http://localhost:3001/images/${image}`} alt="profile"/> 
+                    {image ?<img className="w-9 h-9 rounded-full" src={imageUrl||`http://localhost:3001/images/${image}`} alt="profile"/> 
                        :<img className="w-9 h-9 rounded-full" src='profile.jpg' alt="profile"/> 
                     }
                       {/* Correction : Utilisez image au lieu de img */}

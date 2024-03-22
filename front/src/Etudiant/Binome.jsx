@@ -48,14 +48,8 @@ export default function Binome() {
     e.preventDefault();
   
     const name = e.target.name;
-    let value;
+    const value = e.target.value;
   
-    // Si l'élément est une case à cocher, utilisez la propriété checked pour obtenir sa valeur
-    if (e.target.type === 'checkbox') {
-      value = e.target.checked ? e.target.value : ''; // Utilisez la valeur uniquement si la case est cochée
-    } else {
-      value = e.target.value;
-    }
   
     // Si le champ est 'matricule' et la longueur est déjà égale à 12, ne mettez pas à jour l'état
     if (name === 'matricule' && value.length > 12) {
@@ -68,7 +62,8 @@ export default function Binome() {
     }));
   };
   const handleRadioChange = (e) => {
-    const { name, value } = e.target;
+    const name=e.target.name;
+    const value=e.target.value;
     setInputs((prevInputs) => ({
       ...prevInputs,
       [name]: value,
@@ -90,7 +85,8 @@ console.log(inputs.section)
   const handleOpenSecondModal = () => {
     setShowSecondModal(true);
   };
-  const handleOpenTheardModal = () => { // Correction ici : handleOpenTheardModal au lieu de handleOpenSTheardModal
+  const handleOpenTheardModal = (e) => {
+    e.preventDefault();
     setShowTheardModal(true);
   };
   const handleCloseSecondModal = () => {
@@ -98,6 +94,7 @@ console.log(inputs.section)
   };
   const handleCloseTheardModal = () => {
     setShowTheardModal(false);
+    setInputs({})
   };
   const handleOpenWindow = (e, info) => {
     e.preventDefault();
@@ -120,25 +117,50 @@ console.log(inputs.section)
         alert('vous etes ajouter dans la liste des binome pour chercher un binome')
         setShowSecondModal(false)
       }else{
-        alert('error')
+        alert('error probleme dinforamtions')
       }
     })
     .catch(err=>console.log(err));
   }
   
  
+// la fcontion pour envoyer une invitation letudiant tu connai  
 const HandelEnvoi=(e)=>{
   e.preventDefault()
   axios.post('http://localhost:3001/etudiant/envoi-demande-binome',{recever:inputs,sender_info:info,sender:EtudiantUserEmail})
   .then(res=>{
     if(res.data.message==='success'){
       alert('votre invitation de binome a ete bien envoyer')
+      setInputs({})
+      setShowTheardModal(false)
+    }else if(res.data.message==='failed'){
+      alert('Verifier vos informations (email ou matricule)!!!')
     }else{
-      alert('une erreur est servenue')
+      alert('letudiant avec les informations que avez donner nexiste pas verfier votre information')
     }
   })
   .catch(err=>console.log(err));
 }  
+
+// la fonction pour envoyer une invitation l'etudiant directement depuit le tableau (personne tu connais pas )
+const HandelEnvoi2=(e,etu_info)=>{
+  e.preventDefault();
+  axios.post('http://localhost:3001/etudiant/envoi-demande-binome2',{recever:etu_info,sender_info:info,sender:EtudiantUserEmail})
+  .then(res=>{
+    if(res.data.message==='success'){
+      alert('votre invitation de binome a ete bien envoyer')
+      setInputs({})
+      setShowTheardModal(false)
+    }else if(res.data.message==='failed'){
+      alert('Verifier vos informations (email ou matricule)!!!')
+    }else{
+      alert('letudiant avec les informations que avez donner nexiste pas verfier votre information')
+    }
+  })
+  .catch(err=>console.log(err));
+ 
+}
+
 
   const Window = showModal && studentDetails && (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-10 flex justify-center items-center ">
@@ -259,11 +281,7 @@ const HandelEnvoi=(e)=>{
     </div>
   );
 
-  function isValidEmail(email) {
-    // Expression régulière pour valider l'adresse e-mail
-    const emailRegex = /^[a-zA-Z0-9._%+-]{5,}@gmail\.com$/;
-    return emailRegex.test(email);
-  }
+ 
 
   const getSectionOptions = (selectedFilier) => {
     switch (selectedFilier.toLowerCase()) {
@@ -282,7 +300,7 @@ const HandelEnvoi=(e)=>{
       <div className="bg-white p-6 rounded-lg shadow-md w-96 fenetre">
         <h2 className="text-lg font-semibold mb-4">Formulaire des informations</h2>
         <div className='flex flex-col gap-2 items-start justify-center'>
-          <div className="flex flex-col items-start justify-center gap-1 w-full">
+           <div className="flex flex-col items-start justify-center gap-1 w-full">
             <label htmlFor="">Nom/Prenom:</label>
             <input
               type="text"
@@ -293,7 +311,7 @@ const HandelEnvoi=(e)=>{
             />
           </div>
   
-          <div className='flex flex-col items-start justify-center gap-1 w-full'>
+        <div className='flex flex-col items-start justify-center gap-1 w-full'>
             <label htmlFor="">Matricule:</label>
             <input type="text" name='matricule' className={`px-3 py-2  bg-white  rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12 w-full border border-gray-600`} value={inputs.matricule} onChange={(e) => HandelInputs(e)} />
           </div>
@@ -301,17 +319,19 @@ const HandelEnvoi=(e)=>{
           <div className='flex flex-col items-start justify-center gap-1 w-full'>
             <label htmlFor="">Filier: </label>
             <input type="text" name='filier' className={`px-3 py-2 border bg-white border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12 w-full`} value={inputs.filier} onChange={(e) => HandelInputs(e)} />
-          </div>
+            </div>
   
           {inputs.filier && (
-            <div className='flex flex-row items-center justify-start gap-1 w-full'>
-              <label htmlFor="">Section: </label>
+            <div className='flex flex-col items-start justify-start gap-1 w-full'>
+              {inputs.filier==='acad'||inputs.filier==='ACAD'||inputs.filier==='ISIL'||inputs.filier==='isil'?<label htmlFor="">Section: </label>:<></>}
+              <div className='flex flex-row items-start justify-center gap-2'>
               {getSectionOptions(inputs.filier).map((option, index) => (
-                <div key={index} className="flex items-center gap-2">
+                <div key={index} className="flex flex-row items-center gap-2">
                   <label htmlFor={option} className="ml-2">{option}</label>
                   <input type="radio" id={option} name="section" value={option} checked={inputs.section === option} onChange={handleRadioChange} />
                 </div>
               ))}
+              </div>
             </div>
           )}
   
@@ -324,23 +344,33 @@ const HandelEnvoi=(e)=>{
               value={inputs.email}
               onChange={(e) => HandelInputs(e)}
             />
-            {inputs.email === '' && (
-              <span className="text-red-500">Ce champ est requis</span>
-            )}
-            {!isValidEmail(inputs.email) && inputs.email !== '' && (
-              <span className="text-red-500">Veuillez entrer une adresse email valide</span>
-            )}
+            
           </div>
   
         </div>
         <div className='flex flex-row items-center justify-center gap-1 mt-6'>
           <button onClick={handleCloseTheardModal} className="text-white px-4 py-2 rounded-md bg-red-500 hover:bg-red-700">Fermer</button>
-          <button className={` ${inputs.nom_prenom === '' || inputs.email === '' || inputs.section === '' || inputs.filier === '' || inputs.matricule === '' || inputs.matricule.length < 12 || inputs.filier !== info.filier ? "cursor-not-allowed text-white px-4 py-2 rounded-md bg-green-500 opacity-50" : "text-white px-4 py-2 rounded-md bg-green-500 hover:bg-green-700"} `}
-            onClick={(e) => HandelEnvoi(e)}
-            disabled={inputs.nom_prenom === '' || inputs.email === '' || inputs.matricule === '' || inputs.filier === '' || inputs.section === '' || inputs.matricule.length < 12 || inputs.filier !== info.filier}>
-            Envoyer invitation
-          </button>
-        </div>
+          <button  
+  className={`${
+    Object.values(inputs).every(value => value !== '') && 
+    (inputs.matricule && inputs.matricule.length >= 12) && 
+    info.filier && inputs.section && inputs.section.split(' ')[0].toLowerCase()===inputs.filier.toLowerCase()&&
+    inputs.filier.toLowerCase() === info.filier.toLowerCase() 
+    ? 
+    "text-white px-4 py-2 rounded-md bg-green-500 hover:bg-green-700" : 
+    "cursor-not-allowed text-white px-4 py-2 rounded-md bg-green-500 opacity-50"
+  }`} 
+  onClick={(e) => HandelEnvoi(e)}
+  disabled={
+    !Object.values(inputs).every(value => value !== '') || 
+    !(inputs.matricule && inputs.matricule.length >= 12) || 
+    !info.filier || !inputs.section || inputs.section.split(' ')[0].toLowerCase()!==inputs.filier.toLowerCase()||
+    inputs.filier.toLowerCase() !== info.filier.toLowerCase()
+  } 
+> 
+  Envoyer invitation
+</button>
+        </div> 
       </div>
     </div>
   ); 
@@ -445,9 +475,10 @@ const HandelEnvoi=(e)=>{
         <button className={chercher() ? "border shadow-md p-2 rounded-md bg-gray-500 text-white cursor-not-allowed" :"border shadow-md p-2 rounded-md bg-blue-500 hover:bg-blue-700 text-white" } onClick={handleOpenSecondModal}  disabled={chercher()} title={chercher() ? "Vous avez déjà ajouté vos informations dans la liste des binômes" : ""} >
           Chercher un binôme ?
         </button>
-        <button className='border shadow-md p-2 rounded-md bg-blue-500 hover:bg-blue-700 text-white mr-2' onClick={handleOpenTheardModal}>
-          Inviter un binôme ?
-        </button>
+        <button className='border shadow-md p-2 rounded-md bg-blue-500 hover:bg-blue-700 text-white mr-2' onClick={(e) =>handleOpenTheardModal(e)}>
+  Inviter un binôme ?
+</button>
+
         </div>
       </div>
       <div className='table-container'>
@@ -500,17 +531,17 @@ const HandelEnvoi=(e)=>{
           {row['email']}
         </td>
         <td className='px-6 py-4 text-black cursor-pointer text-center' onClick={(e) => handleOpenWindow(e, row)}>
-          {row['section']}
+          {row['filier']}
         </td>
         <td className='px-6 py-4 text-black cursor-pointer text-center' onClick={(e) => handleOpenWindow(e, row)}>
-          {row['filier']}
+        {row['section']}
         </td>
         <td className='px-6 py-4 text-black cursor-pointer text-center' onClick={(e) => handleOpenWindow(e, row)}>
           {row['theme']===null? 'Pas de theme': row['theme']}
         </td>
         <td className='px-6 py-4 text-black text-center'>
          
-          {row['email']===EtudiantUserEmail ? <button className='bg-red-500 hover:bg-red-700 rounded-md p-2 text-white' onClick={(e)=>HandleDeleteChercher(e)}>Annuler la recherche</button>:<button className='bg-green-500 hover:bg-green-700 text-white p-2 rounded-md'>Envoyer une demande</button>}
+          {row['email']===EtudiantUserEmail ? <button className='bg-red-500 hover:bg-red-700 rounded-md p-2 text-white' onClick={(e)=>HandleDeleteChercher(e)}>Annuler la recherche</button>:<button className='bg-green-500 hover:bg-green-700 text-white p-2 rounded-md' onClick={(e)=>HandelEnvoi2(e,row) }>Envoyer une demande</button>}
         </td>
       </tr>
     )):<h3>Pas de binomes </h3>}

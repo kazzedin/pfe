@@ -407,9 +407,118 @@ router.get('/get-date',(req,res)=>{
             .catch(err => console.log(err));
     });
 
- router.post('/envoi-demande-binome',(req,res)=>{
-   const {recever,sender_info,sender}=req.body;
-   console.log(sender_info,recever,sender)
-   res.json({message:'success'})
- })   
+    router.post('/envoi-demande-binome',[
+        check("recever.email","Please enter a valid email address").isEmail(),
+        check('recever.matricule', 'Password must be at least 6 characters').isLength({ min: 12 })
+    ], (req,res) => {
+        const { recever, sender_info, sender } = req.body;
+        const errors = validationResult(req);
+    
+        if (!errors.isEmpty()) {
+            return res.json({ message: 'failed' });
+        } else {
+            etudiantModel.findOne({
+                email: recever.email,
+                matricule: recever.matricule,
+                nomPrenom: recever.nom_prenom,
+                filier: recever.filier.toUpperCase(),
+                section: recever.section.split(' ')[1]
+            })
+            .then(etudiant => {
+                if (etudiant) {
+                    const newMessage = {
+                        sender: sender,
+                        recever: recever.email,
+                        message: 'Demande de faire binome',
+                        info: {
+                            nomPrenom: sender_info['nom/prenom'],
+                            filier: sender_info['filier'],
+                            section: sender_info['section'],
+                            matricule: sender_info['matricule']
+                        },
+                        type: 'invitations-binomes',
+                        etat: false
+                    };
+    
+                    messageModel.create(newMessage)
+                    .then(message => {
+                        res.json({ message: 'success' });
+                    })
+                    .catch(error => {
+                        res.json({ message: 'Erreur lors de l\'enregistrement du message' });
+                    });
+                } else {
+                    res.json({ message: 'Étudiant introuvable' });
+                }
+            })
+            .catch(error => {
+                res.status(500).json({ message: 'Erreur lors de la recherche de l\'étudiant' });
+            });
+        }
+    });
+
+   router.post('/envoi-demande-binome2',[
+        check("recever.email","Please enter a valid email address").isEmail(),
+        check('recever.matricule', 'Password must be at least 6 characters').isLength({ min: 12 })
+    ], (req,res) => {
+        const { recever, sender_info, sender } = req.body;
+        const errors = validationResult(req);
+    
+        if (!errors.isEmpty()) {
+            return res.json({ message: 'failed' });
+        } else {
+            etudiantModel.findOne({
+                email: recever.email,
+                matricule: recever.matricule,
+                nomPrenom: recever.nomPrenom,
+                filier: recever.filier,
+                section: recever.section
+            })
+            .then(etudiant => {
+                if (etudiant) {
+                    const newMessage = {
+                        sender: sender,
+                        recever: recever.email,
+                        message: 'Demande de faire binome',
+                        info: {
+                            nomPrenom: sender_info['nom/prenom'],
+                            filier: sender_info['filier'],
+                            section: sender_info['section'],
+                            matricule: sender_info['matricule']
+                        },
+                        type: 'invitations-binomes',
+                        etat: false
+                    };
+    
+                    messageModel.create(newMessage)
+                    .then(message => {
+                        res.json({ message: 'success' });
+                    })
+                    .catch(error => {
+                        res.json({ message: 'Erreur lors de l\'enregistrement du message' });
+                    });
+                } else {
+                    res.json({ message: 'Étudiant introuvable' });
+                }
+            })
+            .catch(error => {
+                res.status(500).json({ message: 'Erreur lors de la recherche de l\'étudiant' });
+            });
+        }
+    });
+
+//************************************************LES ROUTES DE INBOXES*********************************************/    
+    router.get('/inbox', (req, res) => {
+        messageModel.find({ type: 'invitations-binomes' }) // Utilisation des parenthèses au lieu des accolades
+            .then(result => res.json(result)) // Renvoyer directement le résultat sans utiliser result.data
+            .catch(err => console.log(err));
+    });
+
+    router.delete('/deletemessage', (req, res) => {
+        const {email,message}=req.body;
+        console.log(email,message);
+        messageModel.findOneAndDelete({ sender:email,message:message})
+          .then(response => res.json({ message: 'Deleted' }))
+          .catch(err => res.json(err)); 
+      });
 module.exports = router; 

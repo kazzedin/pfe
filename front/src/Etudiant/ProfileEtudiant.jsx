@@ -24,6 +24,7 @@ export default function ProfileEtudiant() {
     axios.get(`http://localhost:3001/etudiant/profile/${EtudiantUserEmail}`)
       .then(response => {
         setImage(response.data.image);
+        setImageUrl(response.data.image);
         setStatus(response.data.status);
         setInfo(response.data.info)
       })

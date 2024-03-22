@@ -9,7 +9,7 @@ const etudiantSchema = new mongoose.Schema({
     password: String,
     etat: Boolean,
     etat_cnx: { type: Boolean, default: false },
-    photo_profile: { type: String, default: "/public/other.jpg" },
+    photo_profile: { type: String, default: "/public/profil.jpg" },
     binome: { type: mongoose.Types.ObjectId, ref: 'etudiant', default: null },
     encadreur: { type: mongoose.Types.ObjectId, ref: 'encadreur', default: null },
     theme: { type: mongoose.Types.ObjectId, ref: 'pfe', default: null },

@@ -16,7 +16,7 @@ export default function InboxEtu() {
     const { setUnreadMessages } = useContext(MessageContext);
 
     useEffect(() => {
-        axios.get('http://localhost:3001/admin/inbox')
+        axios.get('http://localhost:3001/etudiant/inbox')
             .then(res => {
                 // Ajouter un identifiant unique à chaque message
                 const messagesWithId = res.data.messages.map((message, index) => ({
@@ -35,9 +35,9 @@ export default function InboxEtu() {
 
     const navigate = useNavigate();
 
-    const returnAdmin = (e) => {
+    const returnEtudiant = (e) => {
         e.preventDefault();
-        navigate('/Admin/Setting');
+        navigate('/Etudiant');
     }
 
     const VerificationEtat = (email, type, message) => {
@@ -48,20 +48,14 @@ export default function InboxEtu() {
     const AfficherDetails = (e, sender, type, message, nomPrenom, matricule, section, filier) => {
         e.preventDefault();
         let infoData = {};
-        if (type === 'login-info-etu') {
+        if (type === 'invitations-binomes') {
             infoData = {
                 nomPrenom: nomPrenom,
                 matricule: matricule,
                 section: section,
                 filier: filier
             };
-        } else if (type === 'login-info-prf') {
-            infoData = {
-                nomPrenom: nomPrenom,
-                section: section,
-                filier: filier
-            };
-        }
+        } 
         setClickedMessage({
             sender: sender,
             type: type,
@@ -74,7 +68,7 @@ export default function InboxEtu() {
 
     const handleDelete = (e, email, message,id) => {
         e.preventDefault();
-        axios.delete('http://localhost:3001/admin/deletemessage', { data: { message: message, email: email } })
+        axios.delete('http://localhost:3001/etudiant/deletemessage', { data: { message: message, email: email } })
             .then(res => {
                 alert('Message deleted successfully');
                 // Mettre à jour l'état messages en filtrant les messages qui ne sont pas du type actuel OU qui n'ont pas été répondus
@@ -141,10 +135,12 @@ export default function InboxEtu() {
             <h1 className="text-2xl font-bold mt-8 mb-4 text-black " style={{textDecoration:'underline'}}>Messages</h1>
             <div className='filter absolute left-0 top-20 flex flex-row items-center justify-center gap-2 text-black mb-1 ml-2'>
                 <h4 className='font-bold text-black'>Filtre:</h4>
-                <Link to='?type=contact' className='border border-black bg-transparent rounded-2xl p-1 hover:border-blue-700 hover:text-blue-700'>Contact</Link>
-                <Link to='?type=login-info-etu' className='border border-black bg-transparent rounded-2xl p-1 hover:border-blue-700 hover:text-blue-700'>Login-Info-etudiant</Link>
-                <Link to='?type=login-info-prf' className='border border-black bg-transparent rounded-2xl p-1 hover:border-blue-700 hover:text-blue-700'>Login-Info-prof</Link>
+                <div className='flex flex-row items-center justify-center gap-2'>
+                <Link to='?type=invitations-binomes' className={`${messageFilter === 'invitations-binomes' ? 'bg-blue-500 text-white border border-white' : 'bg-transparent border border-black '}border-black rounded-2xl p-1   w-44 flex items-center justify-center`}>invitations-binomes</Link>
+                <Link to='?type=login-info-etu' className={`${messageFilter === 'login-info-etu' ? 'bg-blue-500 text-white border border-white' : 'bg-transparent border border-black '}border-black rounded-2xl p-1   w-44 flex items-center justify-center`}>Login-Info-etudiant</Link>
+                <Link to='?type=login-info-prf' className={`${messageFilter === 'login-info-prf' ? 'bg-blue-500 text-white border border-white' : 'bg-transparent border border-black '}border-black rounded-2xl p-1   w-44 flex items-center justify-center`}>Login-Info-prof</Link>
                 {messageFilter ? <Link to='' className='bg-transparent rounded-2xl p-1 hover:border-blue-700 hover:text-blue-700'>Clear-Filter ?</Link> : ''}
+                </div>
             </div>
             {loading ? (
                 <div role="status" className=" p-3 space-y-5 divide-y divide-gray-200 rounded shadow animate-pulse dark:divide-gray-700 skelaton">
