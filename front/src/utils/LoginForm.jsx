@@ -47,9 +47,9 @@ export default function LoginForm(prop) {
           }
         })
         .catch((err) => console.log(err));
-    } else {
+    } else if(prop.type === 'Prf' ) {
       axios
-        .post('http://localhost:3001/etudiant/login-prf', {
+        .post('http://localhost:3001/encadreur/login-prf', {
           email: input.email,
           password: input.password,
         })
@@ -57,7 +57,9 @@ export default function LoginForm(prop) {
           if (res.data.message === 'success') {
             alert('Login successful');
             setInput({});
+            navigate('/Encadreur');
           } else {
+            console.log(res.data)
             alert('Login failed');
           }
         })
@@ -65,6 +67,7 @@ export default function LoginForm(prop) {
     }
   };
 
+  console.log(prop.type)
   return (
     <div className="flex justify-center items-center bg-transparent">
       <div className="max-w-lg mx-auto bg-white p-8 rounded shadow-lg">

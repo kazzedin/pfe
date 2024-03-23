@@ -60,7 +60,7 @@ export default function EtuDates() {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredDates.map(date => (
+        {dates ?  filteredDates.map(date => (
           <div
             key={date._id}
             className={`bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md cursor-pointer transform transition duration-300 hover:shadow-xl`}
@@ -74,7 +74,7 @@ export default function EtuDates() {
               <p className="text-red-500 font-bold"><span className='text-lg'>Date:</span>{new Date(date.date).toLocaleDateString()}</p>
             </div>
           </div>
-        ))}
+        )):<h3>Pas de dates !!</h3>}
       </div>
       {showModal && (
         <div className="fixed z-10 inset-0 overflow-y-auto">

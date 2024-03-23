@@ -4,7 +4,7 @@ const cookie = require('cookie-parser');
 
 
 function verifyToken(req, res, next) {
-    const access_token = req.cookies.etu_access_token;
+    const access_token = req.cookies.prf_access_token;
     if (!access_token) {
         if (refrech_access_token(req, res)) {
             next();
@@ -12,7 +12,7 @@ function verifyToken(req, res, next) {
             return res.status(401).json({ Valide:false,message: "NON REFRESHING" });
         }
     } else {
-        jwt.verify(access_token, process.env.ETU_ACCESS_TOKEN, (err, decoded) => {
+        jwt.verify(access_token, process.env.PRF_ACCESS_TOKEN, (err, decoded) => {
             if (err) {
                 
                 return res.json({ Valide:false ,message: "Token is invalid or expired" });
@@ -30,23 +30,21 @@ function verifyToken(req, res, next) {
 
 
 
-// la fonction qui va faire le refresh de access token
+
+// La fonction qui va faire le refresh du access token
 function refrech_access_token(req, res) {
-    const refresh_token = req.cookies.etu_refresh_token;
-    
+    const refresh_token = req.cookies.prf_refresh_token;
     let refresh=false;
     if (!refresh_token) {
-       return res.json({Valide:false,message: 'Refresh token dont exist '})
-      
+       return res.json({Valide:false,message: 'Refresh token does not exist '}) // Correction du message d'erreur
     } else {
-        jwt.verify(refresh_token, process.env.ETU_REFRESH_TOKEN, (err, decoded) => {
+        jwt.verify(refresh_token, process.env.PRF_REFRESH_TOKEN, (err, decoded) => {
             if (err) {
-                
-                return res.json({ Valide:false ,message: "Token is invalid or expired" });
+                return res.json({ Valide:false ,message: "Refresh token is invalid or expired" }); // Correction du message d'erreur
             }
             else{
-                const etu_access_token=jwt.sign({email:decoded.email},process.env.ETU_ACCESS_TOKEN,{expiresIn:'20m'})
-                res.cookie("etu_access_token",etu_access_token, { maxAge: 1200000, httpOnly: true, secure: true, sameSite: 'strict' });
+                const prf_access_token=jwt.sign({email:decoded.email, password: decoded.password}, process.env.PRF_ACCESS_TOKEN, {expiresIn:'20m'}); // Correction pour inclure le mot de passe dans le nouvel access token
+                res.cookie("prf_access_token",prf_access_token, { maxAge: 1200000, httpOnly: true, secure: true, sameSite: 'strict' });
                 req.email=decoded.email;
                 req.password=decoded.password;
                 refresh=true;
@@ -56,6 +54,7 @@ function refrech_access_token(req, res) {
     }
     return refresh;
 }
+
 
 
 module.exports=verifyToken;    

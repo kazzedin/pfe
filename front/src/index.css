@@ -216,6 +216,10 @@ border-radius: 8px;
 .profile-etudiant{
     width: 40rem;
 }
+.fenetre-pfe {
+   width: 40rem;
+   height: 45rem;
+}
 
 .container {
     width: 95rem;

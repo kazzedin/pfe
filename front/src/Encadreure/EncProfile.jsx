@@ -2,29 +2,28 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { IoIosArrowBack } from 'react-icons/io';
-import { EtudiantUserContext } from './EtudiantUserProvider';
-import { DataContext } from './DataProvider';
+import { EncadreurUserContext } from './EncadreurUserProvider';
+import { DataContext } from '../Etudiant/DataProvider';
 import Switch from '@mui/material/Switch';
 import { BsQuestionCircle } from 'react-icons/bs';
 import axios from 'axios';
 
-export default function ProfileEtudiant() {
+export default function EncProfile() {
   const [change, setChange] = useState(false);
   const [inputs, setInputs] = useState({ email:'', password:'', confirmPassword:'' });
   const [showPassword, setShowPassword] = useState({ current: false, new: false, confirm: false });
   const [memeEmail, setMemeEmail] = useState(false);
   const [showPasswordTooltip, setShowPasswordTooltip] = useState(false); // État pour afficher l'info-bulle
   const navigate = useNavigate();
-  const { EtudiantUserEmail, passwordEtudiant } = useContext(EtudiantUserContext);
+  const { EncadreurUserEmail, passwordEncadreur } = useContext(EncadreurUserContext);
   const { setStatus, status, image, setImage, setRep, rep } = useContext(DataContext);
   const [imageUrl, setImageUrl] = useState("");
-  const [info,setInfo]=useState({'nom/prenom':'',section:'',filier:'',matricule:''})
+  const [info,setInfo]=useState({'nom/prenom':'',section:'',filier:''})
 
   useEffect(() => {
-    axios.get(`http://localhost:3001/etudiant/profile/${EtudiantUserEmail}`)
+    axios.get(`http://localhost:3001/encadreur/profile/${EncadreurUserEmail}`)
       .then(response => {
         setImage(response.data.image);
-       
         setStatus(response.data.status);
         setInfo(response.data.info)
       })
@@ -33,16 +32,12 @@ export default function ProfileEtudiant() {
 
   const HandelSwitch = (e) => {
     setStatus(!status);
-    axios.put(`http://localhost:3001/etudiant/changeEtat/${EtudiantUserEmail}`, { state: !status })
+    axios.put(`http://localhost:3001/encadreur/changeEtat/${EncadreurUserEmail}`, { state: !status })
       .then(res =>console.log(res.data.message))
       .catch(err => console.log(err));
       setRep(!rep)
   };
 
-  const returnEtudiant = (e) => {
-    e.preventDefault();
-    navigate('/Etudiant');
-  };
 
   const handleInputs = (e) => {
     e.preventDefault();
@@ -57,7 +52,7 @@ export default function ProfileEtudiant() {
       const formData = new FormData();
       formData.append('image', file);
       try {
-        const response = await axios.put(`http://localhost:3001/etudiant/changePhoto/${EtudiantUserEmail}`, formData, {
+        const response = await axios.put(`http://localhost:3001/encadreur/changePhoto/${EncadreurUserEmail}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -88,7 +83,7 @@ export default function ProfileEtudiant() {
     e.preventDefault();
     setMemeEmail(!memeEmail);
     if (!memeEmail) {
-      setInputs(prev => ({ ...prev, email: EtudiantUserEmail }));
+      setInputs(prev => ({ ...prev, email: EncadreurUserEmail }));
     } else {
       setInputs(prev => ({ ...prev, email: '' }));
     }
@@ -98,7 +93,7 @@ export default function ProfileEtudiant() {
     e.preventDefault();
     const confirmLogout = window.confirm("Êtes-vous sûr de vouloir vous déconnecter ?");
     if (confirmLogout) {
-      axios.get('http://localhost:3001/etudiant/logout')
+      axios.get('http://localhost:3001/encadreur/logout')
         .then(res => {
           if (res.data.response) {
             alert('Logged out');
@@ -113,7 +108,7 @@ export default function ProfileEtudiant() {
 
   const HandeChangeInfomration=(e)=>{
       e.preventDefault();
-      axios.put(`http://localhost:3001/etudiant/changement-info/${EtudiantUserEmail}`,{nvemail:inputs.email,nvpwd:inputs.password})
+      axios.put(`http://localhost:3001/encadreur/changement-info/${EncadreurUserEmail}`,{nvemail:inputs.email,nvpwd:inputs.password})
       .then(res=>{
         if(res.data.message==='success'){
           alert("Changement des informations fait avec succès. Vous allez être redirigé vers la page d'accueil pour refaire le login avec les nouveaux informations.")
@@ -124,11 +119,10 @@ export default function ProfileEtudiant() {
       })
       .catch(err=>console.log(err));
   }
-
   return (
     <div className="mx-auto my-8 profile-etu1 bg-gray-500 bg-opacity-5 relative">
   <div className="flex items-center ">
-    <Link onClick={returnEtudiant} className="hover:text-red-500 text-black rounded return-admin flex items-center">
+    <Link to='/Encadreur' className="hover:text-red-500 text-black rounded return-admin flex items-center">
       <IoIosArrowBack className="mr-2" />
       Retourner à la page principale
     </Link>
@@ -164,7 +158,7 @@ export default function ProfileEtudiant() {
             <p className='text-xl font-bold '><u>Informations Personnelles</u></p>
           <div>
             <label htmlFor="email" className="text-black font-semibold">Email :</label>
-            <input type="text" id="email" readOnly value={EtudiantUserEmail} className="px-3 py-2 border border-gray-600 w-full bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500" />
+            <input type="text" id="email" readOnly value={EncadreurUserEmail} className="px-3 py-2 border border-gray-600 w-full bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500" />
           </div>
           <div>
             <label htmlFor="password" className="text-black font-semibold">Mot de passe :</label>
@@ -173,7 +167,7 @@ export default function ProfileEtudiant() {
                 type={showPassword.current ? 'text' : 'password'}
                 id="password"
                 readOnly
-                value={passwordEtudiant}
+                value={passwordEncadreur}
                 className="px-3 py-2 border border-gray-600 w-full bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500"
               />
               <button
@@ -196,10 +190,7 @@ export default function ProfileEtudiant() {
             <label htmlFor="Filier" className="text-black font-semibold">Filier:</label>
             <input type="text" name='Filier' readOnly className="px-3 py-2 border border-gray-600 w-full bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500" value={info.filier} />
           </div>
-          <div>
-            <label htmlFor="Matricule" className="text-black font-semibold">Matricule:</label>
-            <input type="text" name='matricule' readOnly className="px-3 py-2 border border-gray-600 w-full bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500" value={info.matricule} />
-          </div>
+         
         </div>
       </div>
       {/* Colonne pour le switch et les informations globales */}
@@ -224,16 +215,7 @@ export default function ProfileEtudiant() {
           <div className="grid grid-cols-1 gap-4">
             <h1 className='text-xl font-bold'><u>Information globale</u></h1>
           <div className='flex items-start flex-col gap-3'>
-            <div className='flex flex-col  w-full'>
-              <label htmlFor="binome" className='font-bold'>Binome:</label>
-              <input
-                type="text"
-                id="binome"
-                readOnly
-                value={"azzedin koudid"}
-                className="px-3 py-2 border border-gray-600 w-full bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500"
-              />
-            </div>
+            
             <div className='flex flex-col w-full'>
               <label htmlFor="chatnom" className='font-bold'>Nom de Chat group:</label>
               <input
@@ -245,12 +227,12 @@ export default function ProfileEtudiant() {
               />
             </div>
             <div className='flex flex-col w-full'>
-              <label htmlFor="enc" className='font-bold'>Encadreur:</label>
+              <label htmlFor="enc" className='font-bold'>Theme:</label>
               <input
                 type="text"
                 id="enc"
                 readOnly
-                value={"Medjadba Sanaa"}
+                value={info.theme ? info.theme:'Pas de Theme'}
                 className="px-3 py-2 border border-gray-600 w-full bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500"
               />
             </div>
@@ -280,7 +262,7 @@ export default function ProfileEtudiant() {
                 type='text'
                 key='newEmail'
                 name='email'
-                value={memeEmail ? EtudiantUserEmail : inputs.email || ''}
+                value={memeEmail ? EncadreurUserEmail : inputs.email || ''}
                 onChange={handleInputs}
                 className='px-3 py-2 border border-gray-600 bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 '
                 placeholder='Entrer Votre Email'

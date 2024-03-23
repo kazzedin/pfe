@@ -3,8 +3,11 @@ const mongoose = require('mongoose');
 const pfeSchema = new mongoose.Schema({
     description: String,
     titre: String,
-    valider: Boolean, 
+    valider:{type:String,  enum:['valider','non valider','a voir'], default:'non valider'}, 
     experties: String,
+    type:{type:String,
+        enum:['interne','extern']}, 
+    domain:String,
     reference: {type: String,unique:true , default:null},
     encadreur: {
         type: mongoose.Types.ObjectId,

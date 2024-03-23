@@ -34,6 +34,18 @@ import InboxEtu from './Etudiant/InboxEtu';
 import Pfe from './Etudiant/Pfe';
 import Encadreur from './Etudiant/Encadreur';
 import Binome from './Etudiant/Binome';
+import CheckEncadreur from './Encadreure/CheckEncadreur';
+import EncadreurHomePage from './Encadreure/components/EncadreurHomePage';
+import { EncadreurUserProvider } from './Encadreure/EncadreurUserProvider';
+import EncProfile from './Encadreure/EncProfile';
+import EncEncadreur from './Encadreure/EncEncadreur'
+import EncDocs from './Encadreure/EncDocs';
+import EncDates from './Encadreure/EncDates';
+import EncChat from './Encadreure/EncChat';
+import EncPfe from './Encadreure/EncPfe'
+import EncInbox from './Encadreure/EncInbox'
+
+
 export default function App() {
   return (
     <div>
@@ -42,6 +54,7 @@ export default function App() {
       <BrowserRouter>
         <MessageProvider>
           <EtudiantUserProvider>
+          <EncadreurUserProvider>
             <DataProvider>
               <DataAdminProvider>
             <Routes>
@@ -75,6 +88,19 @@ export default function App() {
                  
                 </Route>
               </Route>
+              
+              {/* Routes de Encadreurs */}
+              <Route element={<CheckEncadreur/>}>
+                <Route path='/Encadreur' element={<EncadreurHomePage/>}>
+                 <Route path='Profile' element={<EncProfile/>}/>
+                 <Route path='Encadreur' element={<EncEncadreur/>}/>
+                 <Route path='Pfe' element={<EncPfe/>}/>
+                 <Route path='Chat' element={<EncChat/>}/>
+                 <Route path='Dates' element={<EncDates/>}/>
+                 <Route path='Inbox' element={<EncInbox/>}/>
+                 <Route path='Docs' element={<EncDocs/>}/>
+                </Route>
+              </Route>
               {/* Routes Generale */}
               <Route path='/LoginAdmin' element={<LoginAdmin/>}/>
               <Route path='/ForgotPassword' element={<ForgotPassword/>}/>
@@ -85,6 +111,7 @@ export default function App() {
             </Routes>
             </DataAdminProvider>
             </DataProvider>
+            </EncadreurUserProvider>
           </EtudiantUserProvider>
         </MessageProvider>
       </BrowserRouter>

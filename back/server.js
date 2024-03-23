@@ -6,6 +6,7 @@ const cookieParser=require('cookie-parser');
 require('dotenv').config();
 const adminRouter=require('./routes/Admin');
 const etudiantRouter=require('./routes/Etudiant');
+const encadreurRouter=require('./routes/Encadreur')
 const insertDefaultAdmin =require('./Middleware/AdminMiddleware/DefaultAdmin')
 const port=process.env.PORT
 const connection_db=process.env.MONGO_URL
@@ -22,6 +23,8 @@ app.use(cors({
 }));
 app.use('/admin',adminRouter); 
 app.use('/etudiant',etudiantRouter);
+app.use('/encadreur',encadreurRouter);
+
 
 
 

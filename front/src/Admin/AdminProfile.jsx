@@ -153,7 +153,7 @@ export default function Profile() {
               {image ? (
                 <img src={selectedImage || `http://localhost:3001/images/${image}` } alt='Sélectionné' className='h-full w-full object-cover' />
               ) : (
-                <img src='/public/profil.jpg' alt='Par défaut' className='h-full w-full object-cover' />
+                <img src='/public/profil.jpg' alt='Par défaut' className='object-cover' />
               )}
             </div>
             </div>
