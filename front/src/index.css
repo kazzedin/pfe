@@ -220,7 +220,14 @@ border-radius: 8px;
    width: 40rem;
    height: 45rem;
 }
-
+.fenetre-pfe2 {
+   width: 40rem;
+   height: 40rem;
+   margin-bottom: 20rem;
+}
+.card-pfe{
+    width: 20rem;
+}
 .container {
     width: 95rem;
     margin-top: 4rem;

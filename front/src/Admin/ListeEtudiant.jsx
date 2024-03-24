@@ -92,7 +92,7 @@ const Window = showModal && studentDetails &&(
     setInfo(response.data);
    })
    .catch(err=>console.log(err));
-  },[])
+  },[envoyer])
 
 
   // Fonction pour charger le fichier XLSX
@@ -204,6 +204,7 @@ const Window = showModal && studentDetails &&(
       .catch((err) => console.error('Error sending information:', err));
   
     setInfoEtu(updatedInfoEtu);
+    setEnvoyer(false);
   };
   
 

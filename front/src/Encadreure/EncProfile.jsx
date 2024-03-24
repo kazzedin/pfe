@@ -19,6 +19,7 @@ export default function EncProfile() {
   const { setStatus, status, image, setImage, setRep, rep } = useContext(DataContext);
   const [imageUrl, setImageUrl] = useState("");
   const [info,setInfo]=useState({'nom/prenom':'',section:'',filier:''})
+  const [theme,setTheme] = useState([])
 
   useEffect(() => {
     axios.get(`http://localhost:3001/encadreur/profile/${EncadreurUserEmail}`)
@@ -30,6 +31,14 @@ export default function EncProfile() {
       .catch(err => console.log(err));
   }, [rep]);
 
+  useEffect(()=>{
+    axios.get(`http://localhost:3001/encadreur/get-theme-enc/${EncadreurUserEmail}`)
+    .then(response=>{
+      setTheme(response.data)
+    })
+    .catch(err=>console.log(err));
+  },[])
+console.log(theme)
   const HandelSwitch = (e) => {
     setStatus(!status);
     axios.put(`http://localhost:3001/encadreur/changeEtat/${EncadreurUserEmail}`, { state: !status })
@@ -227,14 +236,7 @@ export default function EncProfile() {
               />
             </div>
             <div className='flex flex-col w-full'>
-              <label htmlFor="enc" className='font-bold'>Theme:</label>
-              <input
-                type="text"
-                id="enc"
-                readOnly
-                value={info.theme ? info.theme:'Pas de Theme'}
-                className="px-3 py-2 border border-gray-600 w-full bg-white rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500"
-              />
+             
             </div>
           </div>
         </div>

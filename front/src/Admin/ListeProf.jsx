@@ -17,9 +17,11 @@ export default function ListeProf() {
   const [info, setInfo] = useState([]);
   const [ProfDetails, setProfDetails] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [etat,setEtat]=useState(false);
+
 
   const Verification = (email) => {
-    const exist = info.some((prof) => prof.email === email && prof.etat === true);
+    const exist = info.some((prof) => prof.email === email && prof.etat===true);
     if (exist) {
       return true;
     } else {
@@ -122,7 +124,9 @@ export default function ListeProf() {
         setInfo(response.data);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [envoyer]);
+
+  
 
   // Fonction pour charger le fichier XLSX
   const handleFileUpload = (e) => {
@@ -225,6 +229,7 @@ export default function ListeProf() {
       .catch((err) => console.log(err));
 
     setInfoPrf(updatedInfoPrf);
+    setEnvoyer(false);
   };
 
   return (

@@ -6,7 +6,11 @@ const pfeSchema = new mongoose.Schema({
     valider:{type:String,  enum:['valider','non valider','a voir'], default:'non valider'}, 
     experties: String,
     type:{type:String,
-        enum:['interne','extern']}, 
+        enum:['interne','externe']}, 
+    info:{
+        nomPrenom:String,
+        email:String
+    },    
     domain:String,
     reference: {type: String,unique:true , default:null},
     encadreur: {
@@ -22,7 +26,8 @@ const pfeSchema = new mongoose.Schema({
         data: Buffer, // Données binaires du fichier
         contentType: String, // Type MIME du fichier
         filename:String
-      }
+      },
+      etat:{type:String,enum:['pris','non-pris'], default:'non-pris'}
 });
 
 const pfeModel = mongoose.model('pfe', pfeSchema);

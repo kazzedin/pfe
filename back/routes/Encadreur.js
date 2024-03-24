@@ -127,7 +127,8 @@ router.get('/profile/:EncadreurUserEmail',async (req,res)=>{
                     'nom/prenom': user.nomPrenom,
                     section: user.section,
                     filier: user.filier,
-                    theme: theme.titre, // Récupération du titre du thème
+                    theme: theme.titre,
+                    id:user._id // Récupération du titre du thème
                     
                 };
                 res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
@@ -141,6 +142,7 @@ router.get('/profile/:EncadreurUserEmail',async (req,res)=>{
                 section: user.section,
                 filier: user.filier,
                 theme: null,
+                id:user._id
                
             };
             res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
@@ -244,8 +246,8 @@ router.get('/getUser/:EncadreurUserEmail',(req,res)=>{
 router.post('/propose_theme', upload2.single('file'), async (req, res) => {
   try {
     const { buffer, mimetype, originalname } = req.file;
-    const { email, titre, experties, domaine, description, type } = req.body;
-
+    const { email, titre, experties, domaine, description, type, nomPrenom } = req.body;
+    let newPfe;
     const ref = generateReference();
 
     const existingPfe = await pfeModel.findOne({
@@ -255,13 +257,13 @@ router.post('/propose_theme', upload2.single('file'), async (req, res) => {
 
     // Si un document avec les mêmes attributs existe déjà, renvoyez une réponse indiquant l'échec de l'ajout
     if (existingPfe) {
-      return res.json({ message: 'Un Theme avec le même titre existe déjà. Vérifiez vos informations.' });
+      return res.json({ message: 'Un thème avec le même titre existe déjà. Vérifiez vos informations.' });
     }
 
     const user = await encadreurModel.findOne({ email: email });
 
     if (user) {
-      const newPfe = new pfeModel({
+       newPfe = new pfeModel({
         titre: titre,
         description: description,
         experties: experties,
@@ -269,6 +271,10 @@ router.post('/propose_theme', upload2.single('file'), async (req, res) => {
         domain: domaine,
         reference: ref,
         encadreur: user._id,
+        info: {
+          nomPrenom: nomPrenom,
+          email: email,
+        },
         file: {
           data: buffer,
           contentType: mimetype,
@@ -277,13 +283,63 @@ router.post('/propose_theme', upload2.single('file'), async (req, res) => {
       });
 
       await newPfe.save();
-    }
 
-    res.status(201).json({ message: 'success' });
+      // Ajouter l'ID du nouveau thème à la liste des thèmes de l'encadreur
+      user.themes.push(newPfe._id);
+      await user.save();
+    } 
+
+    res.status(201).json({ message: 'success', newPfe: newPfe });
   } catch (error) {
     console.error('Erreur lors du téléchargement du document :', error);
     res.status(500).json({ message: 'error' });
   }
 });
 
+
+
+router.get('/get-pfes',(req,res)=>{
+  pfeModel.find()
+  .then(result=>res.json(result))
+  .catch(err=>console.log(err));
+})
+
+router.delete('/delete-pfe/:EncadreurUserEmail/:id',async(req,res)=>{
+  const  {EncadreurUserEmail,id}=req.params;
+ 
+  try {
+    // Supprimer le thème de la collection PFE
+    await pfeModel.findByIdAndDelete(id);
+
+    // Mettre à jour l'encadreur pour supprimer l'ID du thème
+    await encadreurModel.findOneAndUpdate({email:EncadreurUserEmail}, { $pull: { themes: id } });
+
+    res.json({ message: 'success' });
+  } catch (error) {
+    console.error('Erreur lors de la suppression du thème :', error);
+    res.status(500).json({ message: 'Une erreur est survenue lors de la suppression du thème.' });
+  }
+ 
+})
+
+router.get('/get-theme-enc/:EncadreurUserEmail',(req, res)=>{
+  const {EncadreurUserEmail}=req.params;
+  encadreurModel.findOne({email:EncadreurUserEmail})
+  .then(enc=>{
+    if(enc){
+      pfeModel.findById({_id:enc.themes})
+      .then(pfe=>{
+        if(pfe){
+          res.json(pfe.titre)
+        }else{
+          res.json({message:'pas de theme pour ce encadreur'})
+        }
+      })
+      .catch(err=>console.log(err));
+    }else{
+      res.json({message:'encadreur non trouver'})
+    }
+  })
+  .catch(err=>console.log(err))
+})
 module.exports = router;   
