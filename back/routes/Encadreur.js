@@ -109,52 +109,53 @@ router.get('/check',verifyToken,(req,res)=>{
     res.json({Valide:true,User_Email:req.email,User_Password:req.password});
 })  
 
-router.get('/profile/:EncadreurUserEmail',async (req,res)=>{
+router.get('/profile/:EncadreurUserEmail', async (req, res) => {
   try {
-    const { EncadreurUserEmail } = req.params;
+      const { EncadreurUserEmail } = req.params;
 
-    // Recherche de l'étudiant par son adresse e-mail
-    const user = await encadreurModel.findOne({ email: EncadreurUserEmail });
+      // Recherche de l'utilisateur par son adresse e-mail
+      const user = await encadreurModel.findOne({ email: EncadreurUserEmail });
 
-    if (user) {
-        // Si l'utilisateur est trouvé, récupérez les informations du thème s'il est associé à un thème
-        if (user.theme) {
-            // Recherche du thème associé à l'utilisateur
-            const theme = await pfeModel.findById(user.theme);
-            if (theme) {
-                // Si le thème est trouvé, incluez le titre du thème dans les informations de réponse
-                const userInfo = {
-                    'nom/prenom': user.nomPrenom,
-                    section: user.section,
-                    filier: user.filier,
-                    theme: theme.titre,
-                    id:user._id // Récupération du titre du thème
-                    
-                };
-                res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
-            } else {
-                res.json({ message: "Thème non trouvé" });
-            }
-        } else {
-            // Si l'utilisateur n'est associé à aucun thème, renvoyez les informations de base
-            const userInfo = {
-                'nom/prenom': user.nomPrenom,
-                section: user.section,
-                filier: user.filier,
-                theme: null,
-                id:user._id
-               
-            };
-            res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
-        }
-    } else {
-        res.json({ message: "Utilisateur non trouvé" });
-    }
-} catch (error) {
-    console.error("Une erreur s'est produite lors de la recherche de l'utilisateur:", error);
-    res.status(500).json({ message: "Erreur interne du serveur" });
-}
-})
+      if (user) {
+          // Si l'utilisateur est trouvé
+          if (user.themes && user.themes.length > 0) {
+              // Si l'utilisateur est associé à des thèmes
+              const themeIds = user.themes;
+              const themes = await pfeModel.find({ _id: { $in: themeIds } });
+
+              if (themes.length > 0) {
+                  // Si des thèmes sont trouvés
+                  const themeTitles = themes.map(theme => theme.titre);
+                  const userInfo = {
+                      'nom/prenom': user.nomPrenom,
+                      section: user.section,
+                      filier: user.filier,
+                      themes: themeTitles,
+                      id: user._id
+                  };
+                  res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
+              } else {
+                  res.json({ message: "Aucun thème trouvé pour cet utilisateur" });
+              }
+          } else {
+              // Si l'utilisateur n'est associé à aucun thème
+              const userInfo = {
+                  'nom/prenom': user.nomPrenom,
+                  section: user.section,
+                  filier: user.filier,
+                  themes: [],
+                  id: user._id
+              };
+              res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
+          }
+      } else {
+          res.json({ message: "Utilisateur non trouvé" });
+      }
+  } catch (error) {
+      console.error("Une erreur s'est produite lors de la recherche de l'utilisateur:", error);
+      res.status(500).json({ message: "Erreur interne du serveur" });
+  }
+});
 
 router.put('/changeEtat/:EncadreurUserEmail',(req,res)=>{
   const {EncadreurUserEmail}=req.params;
@@ -341,5 +342,18 @@ router.get('/get-theme-enc/:EncadreurUserEmail',(req, res)=>{
     }
   })
   .catch(err=>console.log(err))
+})
+
+router.put('/modif-theme/:id',upload2.single('file'),(req,res)=>{
+  const {id}=req.params;
+  const { buffer, mimetype, originalname } = req.file;
+  const { titre, experties, domaine, description} = req.body;
+  pfeModel.findByIdAndUpdate(id,{titre:titre,experties:experties,domain:domaine,description:description,file: {
+    data: buffer,
+    contentType: mimetype,
+    filename: originalname
+  }})
+  .then(result=>res.json({message:'success'}))
+  .catch(err=>console.log(err));
 })
 module.exports = router;   

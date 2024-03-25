@@ -36,12 +36,12 @@ export default function Binome() {
       .catch(err => console.log(err));
       axios.get('http://localhost:3001/etudiant/get-binomes')
       .then(res=>{
+        console.log(res.data);
           setBinomes(res.data)
       })
       .catch(err=>console.log(err));
   }, []);
  
-
 
 
   const HandelInputs = (e) => {
@@ -70,7 +70,7 @@ export default function Binome() {
     }));
   };
  
-console.log(inputs.section)
+
 
   // Fonction pour effectuer une recherche
   const handleSearch = (e) => {
@@ -96,18 +96,11 @@ console.log(inputs.section)
     setShowTheardModal(false);
     setInputs({})
   };
+
   const handleOpenWindow = (e, info) => {
     e.preventDefault();
     SetStudentDetails(info);
-    axios.get(`http://localhost:3001/etudiant/get-theme-ref/${studentDetails['theme']}`)
-    .then(res=>{
-      setShowModal(true);
-      setThemeRef(res.data.ref)
-    
-    })
-    .catch(err=>console.log(err));
-    
-   
+    setShowModal(true);
   };
 
   const HandelAjouterBinome =(e)=>{
@@ -182,36 +175,36 @@ const HandelEnvoi2=(e,etu_info)=>{
         </div>
         <div className="mb-4">
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">Nom/Prénom :</label>
-          <input type="text" id="title" readOnly className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails['nomPrenom']} />
+          <input type="text" id="title" readOnly className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails.nomPrenom} />
         </div>
         <div className="mb-4">
           <label htmlFor="category" className="block text-sm font-medium text-gray-700">Section :</label>
-          <input type="text" name="section" id="section" value={studentDetails['section']} readOnly />
+          <input type="text" name="section" id="section" value={studentDetails.section} readOnly />
         </div>
         <div className="mb-4">
           <label htmlFor="file" className="block text-sm font-medium text-gray-700">Fichier :</label>
-          <input type="text" id="filier" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails['filier']} />
+          <input type="text" id="filier" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails.filier} />
         </div>
         <div className="mb-4">
           <label htmlFor="file" className="block text-sm font-medium text-gray-700">Matricule :</label>
-          <input type="text" id="matricule" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails['matricule']} />
+          <input type="text" id="matricule" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails.matricule} />
         </div>
         <div className="mb-4">
           <label htmlFor="file" className="block text-sm font-medium text-gray-700">Email :</label>
-          <input type="text" id="email" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails['email']} />
+          <input type="text" id="email" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails.email} />
         </div>
         <div>
           <div className='flex flex-col gap-3'>
             <div>
             <label htmlFor="titreTheme">Titre de theme:</label>
-            <input type="text" id='theme' className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails['theme']===null?'Pas dinformation ?':studentDetails['theme']} />
+            <input type="text" id='theme' className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value={studentDetails.theme===null?'Pas dinformation ?':studentDetails.theme.titre} />
             </div>
             <div className='mb-2'>
   <label htmlFor="theme">Référence de thème:</label>
   <div className='flex flex-row items-center justify-center gap-2'>
-    <input type="text" id='theme' className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" ref={inputRef} value={themeRef} style={{textIndent:'2px'}}/>
+    <input type="text" id='theme' className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"   value={studentDetails.theme!==null?studentDetails.theme.reference:'Pas dinformation ?'} style={{textIndent:'2px'}}/>
     <div className='relative'>
-    <FaCopy onClick={(e) => handleCopyText(e)} className='cursor-pointer'/>
+    <FaCopy onClick={(e) => handleCopyText(e,studentDetails)} className='cursor-pointer'/>
     <div className='absolute'>{copied && <CopyBubble text="Copié!"  />}</div>
      {/* Intégration de la bulle de copie */}
     </div>
@@ -238,7 +231,7 @@ const HandelEnvoi2=(e,etu_info)=>{
 
           <div className='flex flex-col items-start justify-center gap-1 w-full'>  
           <label htmlFor="">Nom/Prenom: </label>
-        <input type="text"  className='px-3 py-2 border bg-white border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12 w-full'  readOnly value={info['nom/prenom']}/>
+        <input type="text"  className='px-3 py-2 border bg-white border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12 w-full'  readOnly value={info.nomPrenom}/>
        
         </div>
 
@@ -268,7 +261,7 @@ const HandelEnvoi2=(e,etu_info)=>{
 
           <div className='flex flex-col items-start justify-center gap-1 w-full'> 
           <label htmlFor="">Theme-Pfe:</label>
-        <input type="text"  className='px-3 py-2 border bg-white border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12 w-full'  readOnly value={info.theme!==null ? info.theme:'Pas de theme'}/>
+        <input type="text"  className='px-3 py-2 border bg-white border-gray-600 rounded-md focus:outline-none focus:border-blue-500 text-black placeholder-gray-500 pr-12 w-full'  readOnly value={info.theme!==null ? info.theme.titre:'Pas de theme'}/>
         
         </div>
 
@@ -410,12 +403,14 @@ const HandelEnvoi2=(e,etu_info)=>{
       });
   };
   //fonction pour fair copier un text 
-  const handleCopyText = (e) => {
+  const handleCopyText = (e,info) => {
     e.preventDefault();
-    inputRef.current.select();
-    document.execCommand('copy');
-    window.getSelection().removeAllRanges();
-    setCopied(true); // Définir l'état sur true après la copie réussie
+    const reference = info.theme !== null ? info.theme.reference : 'Pas d\'information ?';
+  
+    navigator.clipboard.writeText(reference)
+      .then(() => setCopied(true))
+      .catch((err) => console.error('Erreur lors de la copie : ', err));
+  
     setTimeout(() => {
       setCopied(false);
     }, 2000);
@@ -514,34 +509,34 @@ const HandelEnvoi2=(e,etu_info)=>{
     .filter((binome, index) => {
       if (!searchTerm) return true;
       return (
-        String(binome['nomPrenom']).toLowerCase().includes(searchTerm.toLowerCase()) ||
-        String(binome['email']).toLowerCase().includes(searchTerm.toLowerCase()) ||
-        String(binome['matricule']).toLowerCase().includes(searchTerm.toLowerCase())
+        String(binome.nomPrenom).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(binome.email).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(binome.matricule).toLowerCase().includes(searchTerm.toLowerCase())
       );
     })
     .map((row, index) => (
       <tr key={index} className='bg-white border-b transition duration-300 hover:bg-gray-50'>
         <td className='px-6 py-4 text-black cursor-pointer ' onClick={(e) => handleOpenWindow(e, row)}>
-          {row['nomPrenom']}
+          {row.nomPrenom}
         </td>
         <td className='px-6 py-4 text-black cursor-pointer text-center' onClick={(e) => handleOpenWindow(e, row)}>
-          {row['matricule']}
+          {row.matricule}
         </td>
         <td className='px-6 py-4 text-black cursor-pointer text-center' onClick={(e) => handleOpenWindow(e, row)}>
-          {row['email']}
+          {row.email}
         </td>
         <td className='px-6 py-4 text-black cursor-pointer text-center' onClick={(e) => handleOpenWindow(e, row)}>
-          {row['filier']}
+          {row.filier}
         </td>
         <td className='px-6 py-4 text-black cursor-pointer text-center' onClick={(e) => handleOpenWindow(e, row)}>
-        {row['section']}
+        {row.section}
         </td>
         <td className='px-6 py-4 text-black cursor-pointer text-center' onClick={(e) => handleOpenWindow(e, row)}>
-          {row['theme']===null? 'Pas de theme': row['theme']}
+          {row.theme ? (row.theme.titre ? row.theme.titre : 'Pas de thème') : 'Pas de thème'}
         </td>
         <td className='px-6 py-4 text-black text-center'>
          
-          {row['email']===EtudiantUserEmail ? <button className='bg-red-500 hover:bg-red-700 rounded-md p-2 text-white' onClick={(e)=>HandleDeleteChercher(e)}>Annuler la recherche</button>:<button className='bg-green-500 hover:bg-green-700 text-white p-2 rounded-md' onClick={(e)=>HandelEnvoi2(e,row) }>Envoyer une demande</button>}
+          {row.email===EtudiantUserEmail ? <button className='bg-red-500 hover:bg-red-700 rounded-md p-2 text-white' onClick={(e)=>HandleDeleteChercher(e)}>Annuler la recherche</button>:<button className='bg-green-500 hover:bg-green-700 text-white p-2 rounded-md' onClick={(e)=>HandelEnvoi2(e,row) }>Envoyer une demande</button>}
         </td>
       </tr>
     )):<h3>Pas de binomes </h3>}

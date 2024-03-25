@@ -17,6 +17,7 @@ export default function EncPfe() {
   const [info,setInfo]=useState({})
   const [file, setFile] = useState(null);
   const [editedTheme, setEditedTheme] = useState(null)
+  const [modif,setModif]=useState(0);
 
   useEffect(() => {
     axios.get(`http://localhost:3001/encadreur/profile/${EncadreurUserEmail}`)
@@ -32,7 +33,7 @@ export default function EncPfe() {
       .catch(err => {
         console.log(err);
       });
-  }, []);
+  }, [modif]);
 
 
 
@@ -73,6 +74,10 @@ export default function EncPfe() {
   
   const HandelProposerPfe = async (e) => {
     e.preventDefault();
+    if (!inputs.titre || !inputs.experties || !inputs.domaine || !inputs.description || !inputs.type) {
+      alert('Veuillez remplir tous les champs.');
+      return;
+  }
     const formData = new FormData();
     formData.append('file', file);
     formData.append('email', EncadreurUserEmail);
@@ -139,7 +144,35 @@ const closeEditModal=(e)=>{
    setEditModal(false);
    setEditedTheme({})//initialize
 }
-console.log(editedTheme)
+
+const HandelSubmit=(e,id)=>{
+e.preventDefault();
+
+ const formData = new FormData();
+ if(file){
+  formData.append('file', file);
+ }
+    formData.append('titre', editedTheme.titre);
+    formData.append('experties', editedTheme.experties);
+    formData.append('domaine', editedTheme.domaine);
+    formData.append('description', editedTheme.description);
+axios.put(`http://localhost:3001/encadreur/modif-theme/${id}`,formData,{
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+.then(res=>{
+  if(res.data.message==='success'){
+    alert('Theme modifier avec success')
+    setModif(prev=>prev+1);
+    setEditModal(false);
+    setEditedTheme({});
+    setFile(null);
+  }else{
+    alert('Erreur est servenur pas de modification')
+  }
+})
+}
   return (
     <div className="mx-auto p-6 date-container relative">
       <div className='absolute top-0 left-0 '>
@@ -171,37 +204,36 @@ console.log(editedTheme)
           Proposer un Theme +
         </button>
       </div>
-      <div className="grid gap-56 grid-cols-5 mt-3 ">
-        {filteredPfes.map(item => (
-          <div key={item._id} className="border w-64 p-4 rounded-lg flex flex-col shadow-md cursor-pointer transform transition duration-300 hover:shadow-xl card-pfe" onClick={() => handlePfeClick(item)}>
-            <div>
-              <h3 className="font-semibold">Ref : <span className='text-sm'>{item.reference}</span></h3>
-          
-            </div>
-            <div className=' flex flex-row items-center justify-center'>
-            <PDFThumbnail pdfUrl={`http://localhost:3001/etudiant/get-thumbnail/${encodeURIComponent(item.file.filename)}`} type='normal' />
-            </div>
-           
-            <div>
-              
-              <p className="text-xl font-bold">{item.titre}</p>
-            </div>
-            <div>
-            
-              <p className="text-md">{item.description.split(' ').slice(0, 9).join(' ')}...</p>
-            </div>
-            
-            {item.encadreur===info.id ?
-                <div className='flex flex-row items-center justify-center gap-2 mt-3'>
-                <button className='bg-red-500 hover:bg-red-700 text-white rounded-md p-2' onClick={(e)=>HandelDeletePfe(e,item._id)}>Supprimer</button>
-                <button className='bg-blue-500 hover:bg-blue-700 p-2 text-white rounded-md' onClick={(e)=>showEditModal(e,item)}>Modifier</button>
-               
-             </div>
-             :<button className='bg-blue-500 hover:bg-blue-700 p-2 text-white rounded-md flex flex-row items-center' onClick={() => downloadDocument(item.file.filename)}> <FaFileDownload className="mr-2" /> Telecharger</button>
+      <div className="grid gap-56 grid-cols-5 mt-3">
+  {filteredPfes.map(item => (
+    <div key={item._id} className="border w-64 p-4 rounded-lg flex flex-col shadow-md cursor-pointer transform transition duration-300 hover:shadow-xl card-pfe" onClick={() => handlePfeClick(item)}>
+      <div>
+        <h3 className="font-semibold">Ref : <span className='text-sm'>{item.reference}</span></h3>
+      </div>
+      <div className='flex flex-row items-center justify-center flex-grow'>
+        <PDFThumbnail pdfUrl={`http://localhost:3001/etudiant/get-thumbnail/${encodeURIComponent(item.file.filename)}`} type='normal' />
+      </div>
+      <div className='flex flex-col justify-end'>
+        <div>
+          <div>
+            <p className="text-xl font-bold">{item.titre}</p>
+            <p className="text-md">{item.description.split(' ').slice(0, 9).join(' ')}...</p>
+          </div>
+          <div className='flex flex-row items-center justify-center gap-2 mt-3'>
+            {item.encadreur === info.id ?
+              <>
+                <button className='bg-red-500 hover:bg-red-700 text-white rounded-md p-2' onClick={(e) => HandelDeletePfe(e, item._id)}>Supprimer</button>
+                <button className='bg-blue-500 hover:bg-blue-700 p-2 text-white rounded-md' onClick={(e) => showEditModal(e, item)}>Modifier</button>
+              </>
+              :
+              <button className='bg-blue-500 hover:bg-blue-700 p-2 text-white rounded-md flex flex-row items-center' onClick={() => downloadDocument(item.file.filename)}> <FaFileDownload className="mr-2" /> Télécharger</button>
             }
           </div>
-        ))}
+        </div>
       </div>
+    </div>
+  ))}
+</div>
       {selectedPfe && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-10 flex justify-center items-center  ">
           <div className="bg-white p-8 rounded-md shadow-md grid grid-cols-2   fenetre2">
@@ -288,7 +320,7 @@ console.log(editedTheme)
   <div className="fixed inset-0 bg-gray-800 bg-opacity-10 flex justify-center items-center">
     <div className="bg-white p-8 rounded-md shadow-md fenetre-pfe2">
       <h2 className="text-2xl font-semibold mb-4 text-center">Modifier un thème</h2>
-      <form>
+      <form onSubmit={(e)=>HandelSubmit(e,editedTheme._id)}>
         <div className="mb-4">
           <label htmlFor="titre" className="block text-sm font-medium text-gray-700">Titre du thème</label>
           <input

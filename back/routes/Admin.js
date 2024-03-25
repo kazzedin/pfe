@@ -526,8 +526,9 @@ router.get('/information-prf',(req,res)=>{
 router.post('/docs', upload.single('file'), async (req, res) => {
   try {
     const { buffer, mimetype, originalname } = req.file;
-    const { title, category,description } = req.body;
-
+    const { title, category, description } = req.body;
+    const currentDate = Date.now(); // Obtenir la date actuelle
+console.log(category)
     // Vérifiez si un document avec le même titre, nom de fichier et destinataire existe déjà
     const existingDoc = await docsModel.findOne({
       'file.filename': originalname,
@@ -535,14 +536,15 @@ router.post('/docs', upload.single('file'), async (req, res) => {
 
     // Si un document avec les mêmes attributs existe déjà, renvoyez une réponse indiquant l'échec de l'ajout
     if (existingDoc) {
-      return res.json({ message: 'Un document avec le même nom de fichier existe déjà.Verifier votre informations' });
+      return res.json({ message: 'Un document avec le même nom de fichier existe déjà. Veuillez vérifier vos informations.' });
     }
 
-    // Si aucun document avec les mêmes attributs n'existe, créez et sauvegardez le nouveau document
+    // Si aucun document avec les mêmes attributs n'existe, créez et sauvegardez le nouveau document avec la date d'ajout
     const newDoc = new docsModel({
       titre: title,
       distinataire: category,
-      description:description,
+      description: description,
+      dateAjout: currentDate, // Ajout de la date d'ajout
       file: {
         data: buffer,
         contentType: mimetype,
@@ -554,12 +556,12 @@ router.post('/docs', upload.single('file'), async (req, res) => {
 
     res.status(201).json({ message: 'success' });
   } catch (error) {
-    console.error('Erreur lors du téléchargement du document:', error);
+    console.error('Erreur lors du téléchargement du document :', error);
     res.status(500).json({ message: 'error' });
   }
 });
 
-//display les documentes
+//display les documentes 
 router.get('/get-docs',(req,res)=>{
   docsModel.find()
   .then(data=>res.json(data))
@@ -571,8 +573,9 @@ router.put('/docs-modif/:id', upload.single('file'),(req,res)=>{
   const id=req.params.id;
   const { title, category,description } = req.body;
   const file = req.file;
+  const currentDate = Date.now();
 
-  docsModel.findByIdAndUpdate(id,{titre:title,distinataire:category,'file.filename':file.originalname,description:description})
+  docsModel.findByIdAndUpdate(id,{titre:title,distinataire:category,'file.filename':file.originalname,description:description,dateAjout:dateAjout})
   .then(response=>{
     res.json({message:'success'})
   })

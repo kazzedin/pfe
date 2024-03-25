@@ -4,6 +4,7 @@ const docsSchema = new mongoose.Schema({
   titre: String,
   distinataire: String,
   description:String,
+  dateAjout:Date,
   file: {
     data: Buffer, // Données binaires du fichier
     contentType: String, // Type MIME du fichier

@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const {check,validationResult} = require('express-validator');
 const verifyToken =require('../Middleware/EtudiantMiddleware/VerificationJwt')
+const generateReference =require('../Middleware/EncadreurMiddleware/generateurRef')
 const cookieParser=require('cookie-parser');
 const nodemailer = require('nodemailer');
 const {etudiantModel} = require('../Db/Acteurs/Etudiant')
@@ -30,6 +31,7 @@ const options = {
 };
 const converter = fromPath(options);
 
+//le storage des images
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, 'public/images'); // Répertoire où les fichiers seront stockés
@@ -41,6 +43,19 @@ const storage = multer.diskStorage({
     }
   });
 const upload = multer({ storage: storage })
+
+//le storage de fichier (docs)
+const storage2 = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'public/docs'); // Répertoire où les fichiers seront stockés
+    },
+    filename: function (req, file, cb) {
+      const extension = path.extname(file.originalname); // Extraire l'extension du fichier
+      const filename = path.basename(file.originalname, extension); // Extraire le nom du fichier sans l'extension
+      cb(null, `${filename}${extension}`); // Nom de fichier unique avec l'extension d'origine et le timestamp
+    }
+  });
+const upload2=multer({storage: storage2})
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -208,7 +223,9 @@ router.get('/profile/:EtudiantUserEmail', async (req, res) => {
                         section: user.section,
                         filier: user.filier,
                         matricule: user.matricule,
-                        theme: theme.titre, // Récupération du titre du thème
+                        theme: theme.titre,
+                        id:user._id,
+                        binome: user.binome
                         
                     };
                     res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
@@ -223,6 +240,8 @@ router.get('/profile/:EtudiantUserEmail', async (req, res) => {
                     filier: user.filier,
                     matricule: user.matricule,
                     theme: null,
+                    id: user._id,
+                    binome:user.binome
                    
                 };
                 res.json({ image: user.photo_profile, status: user.etat_cnx, info: userInfo });
@@ -370,13 +389,15 @@ router.get('/get-date',(req,res)=>{
         .catch(err => console.log(err));
     })
     //route pour afficher les retourner les etudiant qui cherche un binome
-    router.get('/get-binomes',(req,res)=>{
-     etudiantModel.find({etatChercheBinome:true})
-     .then(result=>{
-        res.json(result);
-     })
-     .catch(err=>console.log(err));
-    })   
+    router.get('/get-binomes', (req, res) => {
+        etudiantModel.find({ etatChercheBinome: true })
+            .populate('theme') // Remplace les ID de thème par les documents de thème correspondants
+            .exec()
+            .then(result => {
+                res.json(result);
+            })
+            .catch(err => console.log(err));
+    });
   
     //supprimer la demande de recher pour un binomes
     router.put('/delete-search/:EtudiantUserEmail',(req,res)=>{
@@ -507,6 +528,92 @@ router.get('/get-date',(req,res)=>{
         }
     });
 
+
+    router.post('/propose_theme', upload2.single('file'), async (req, res) => {
+        try {
+          const { buffer, mimetype, originalname } = req.file;
+          const { email, titre, experties, domaine, description, type, nomPrenom } = req.body;
+          let newPfe;
+          const ref = generateReference();
+      
+          const existingPfe = await pfeModel.findOne({
+            titre: titre,
+            reference: ref,
+          });
+      
+          // Si un document avec les mêmes attributs existe déjà, renvoyez une réponse indiquant l'échec de l'ajout
+          if (existingPfe) {
+            return res.json({ message: 'Un thème avec le même titre existe déjà. Vérifiez vos informations.' });
+          }
+      
+          const user = await etudiantModel.findOne({ email: email });
+      
+          if (user) {
+            newPfe = new pfeModel({
+              titre: titre,
+              description: description,
+              experties: experties,
+              type: type,
+              domain: domaine,
+              reference: ref,
+              binome:{
+                membre1:user._id,
+            },
+              info: {
+                nomPrenom: nomPrenom,
+                email: email,
+              },
+              file: {
+                data: buffer,
+                contentType: mimetype,
+                filename: originalname
+              }
+            });
+      
+            await newPfe.save();
+      
+            // Mettre à jour le champ theme de l'utilisateur avec l'ID du nouveau thème
+            user.theme = newPfe._id;
+            await user.save();
+          } 
+      
+          res.status(201).json({ message: 'success', newPfe: newPfe });
+        } catch (error) {
+          console.error('Erreur lors du téléchargement du document :', error);
+          res.status(500).json({ message: 'error' });
+        }
+      });
+
+      router.delete('/delete-pfe/:EtudiantUserEmail/:id', async (req, res) => {
+        const { EtudiantUserEmail, id } = req.params;
+    
+        try {
+            // Supprimer le thème de la collection PFE
+            await pfeModel.findByIdAndDelete(id);
+    
+            // Mettre à jour l'étudiant pour supprimer l'ID du thème
+            await etudiantModel.findOneAndUpdate({ email: EtudiantUserEmail }, { $set: { theme: null } });
+    
+            res.json({ message: 'success' });
+        } catch (error) {
+            console.error('Erreur lors de la suppression du thème :', error);
+            res.status(500).json({ message: 'Une erreur est survenue lors de la suppression du thème.' });
+        }
+    });
+
+    router.put('/modif-theme/:id',upload2.single('file'),(req,res)=>{
+        const {id}=req.params;
+        const { buffer, mimetype, originalname } = req.file;
+        const { titre, experties, domaine, description} = req.body;
+        pfeModel.findByIdAndUpdate(id,{titre:titre,experties:experties,domain:domaine,description:description,file: {
+          data: buffer,
+          contentType: mimetype,
+          filename: originalname
+        }})
+        .then(result=>res.json({message:'success'}))
+        .catch(err=>console.log(err));
+      })
+
 //************************************************LES ROUTES DE INBOXES*********************************************/    
     router.get('/inbox', (req, res) => {
         messageModel.find({ type: 'invitations-binomes' }) // Utilisation des parenthèses au lieu des accolades
@@ -521,4 +628,7 @@ router.get('/get-date',(req,res)=>{
           .then(response => res.json({ message: 'Deleted' }))
           .catch(err => res.json(err)); 
       });
+
+      
+      
 module.exports = router; 

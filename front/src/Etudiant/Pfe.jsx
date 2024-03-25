@@ -1,129 +1,406 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { FaFileDownload, FaSearch } from 'react-icons/fa';
-import { IoIosArrowBack } from 'react-icons/io';
-import PDFThumbnail from './components/PDFThumbnail';
+  import React, { useState, useEffect,useContext } from 'react';
+  import axios from 'axios';
+  import { Link } from 'react-router-dom';
+  import { FaFileDownload, FaSearch } from 'react-icons/fa';
+  import { IoIosArrowBack } from 'react-icons/io';
+  import PDFThumbnail from './components/PDFThumbnail';
+  import { EtudiantUserContext } from './EtudiantUserProvider';
+  
+  export default function Pfe() {
+    const [pfes, setPfes] = useState([]);
+    const [selectedPfe, setSelectedPfe] = useState(null);
+    const [editModal,setEditModal] =useState(false);
+    const [searchTermRef, setSearchTermRef] = useState('');
+    const { EtudiantUserEmail } = useContext(EtudiantUserContext);
+    const [showProposalModal, setShowProposalModal] = useState(false);
+    const [inputs, setInputs] = useState({ type: 'interne' });
+    const [info,setInfo]=useState({})
+    const [file, setFile] = useState(null);
+    const [editedTheme, setEditedTheme] = useState(null)
+    const [modif,setModif]=useState(0);
+  
+    useEffect(() => {
+      axios.get(`http://localhost:3001/etudiant/profile/${EtudiantUserEmail}`)
+        .then(response => {
+          setInfo(response.data.info)
+        })
+        .catch(err => console.log(err));
+  
+       axios.get('http://localhost:3001/encadreur/get-pfes')
+        .then(res => {
+          setPfes(res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
 
-export default function Pfe() {
-  const [pfes, setPfes] = useState([]);
-  const [selectedPfe, setSelectedPfe] = useState(null);
-  const [searchTermTitre, setSearchTermTitre] = useState('');
-  const [searchTermRef, setSearchTermRef] = useState('');
+        Verfier()
+    }, [modif]);
+  
+  
+  
+  
+    const handleTypeChange = (e) => {
+      e.preventDefault();
+      const { value } = e.target;
+      setInputs(prevInputs => ({
+        ...prevInputs,
+        type: value
+      }));
+    };
+  
+    const handlePfeClick = (pfe) => {
+      setSelectedPfe(pfe);
+    };
+  
+    const handleCloseModal = () => {
+      setSelectedPfe(null);
+    };
+  
+    const handleProposalModal = () => {
+      setShowProposalModal(true);
+    };
+  
+    // Fonction de filtrage des PFE en fonction du terme de recherche
+    const filteredPfes = pfes.filter(pfe =>
+      pfe.reference.toLowerCase().includes(searchTermRef.toLowerCase())
+    );
+  
+    const HandelInputs=(e)=>{
+      e.preventDefault();
+      const name=e.target.name;
+      const value=e.target.value;
+      setInputs(item=>({...item,[name]:value}))
+    }
+  
+    
+    const HandelProposerPfe = async (e) => {
+      e.preventDefault();
+      if (!inputs.titre || !inputs.experties || !inputs.domaine || !inputs.description || !inputs.type) {
+        alert('Veuillez remplir tous les champs.');
+        return;
+    }
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('email', EtudiantUserEmail);
+      formData.append('nomPrenom',info['nom/prenom'])
+      formData.append('titre', inputs.titre);
+      formData.append('experties', inputs.experties);
+      formData.append('domaine', inputs.domaine);
+      formData.append('description', inputs.description);
+      formData.append('type', inputs.type);
+      
+      try {
+        const response = await axios.post('http://localhost:3001/etudiant/propose_theme', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+    
+        if (response.data.message === 'success') {
+          alert('Le thème de PFE a été bien proposé !');
+          // Mettre à jour la liste des thèmes après ajout réussi
+          setModif(prev=>prev+1);
+          setInputs({type:'interne'});
+          setFile(null);
+          setShowProposalModal(false);
+        } else {
+          alert(response.data.message);
+        }
+      } catch (error) {
+        console.error('Erreur lors de l\'envoi du fichier:', error.message);
+      }
+    };
+  
+    const handleFileChange = (e) => {
+      const uploadedFile = e.target.files[0];
+      setFile(uploadedFile);
+    };
+  
+    const HandelDeletePfe = (e, id) => {
+      e.stopPropagation();
+      axios.delete(`http://localhost:3001/etudiant/delete-pfe/${EtudiantUserEmail}/${id}`,)
+        .then(res => {
+          if (res.data.message === 'success') {
+            alert('Le thème a été supprimé avec succès');
+            // Mettre à jour la liste des thèmes après suppression réussie
+            setModif(prev=>prev+1);
+    
+          } else {
+            alert('Une erreur est survenue lors de la suppression du thème');
+          }
+        })
+        .catch(err => console.log(err));
+    };
+  
+    const downloadDocument = (filename) => {
+      const downloadUrl = `http://localhost:3001/etudiant/download-doc/${filename}`;
+      window.open(downloadUrl, '_blank');
+    };
+    const showEditModal=(e,edited)=>{
+      e.stopPropagation();
+      setEditModal(true);
+      setEditedTheme(edited)
+    }
+  const closeEditModal=(e)=>{
+     e.preventDefault();
+     setEditModal(false);
+     setEditedTheme({})//initialize
+  }
+  
+  const HandelSubmit=(e,id)=>{
+  e.preventDefault();
+  
+   const formData = new FormData();
+   if(file){
+    formData.append('file', file);
+   }
+      formData.append('titre', editedTheme.titre);
+      formData.append('experties', editedTheme.experties);
+      formData.append('domaine', editedTheme.domaine);
+      formData.append('description', editedTheme.description);
+  axios.put(`http://localhost:3001/etudiant/modif-theme/${id}`,formData,{
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+  .then(res=>{
+    if(res.data.message==='success'){
+      alert('Theme modifier avec success')
+      setModif(prev=>prev+1);
+      setEditModal(false);
+      setEditedTheme({});
+      setFile(null);
+    }else{
+      alert('Erreur est servenur pas de modification')
+    }
+  })
+  }
 
-  useEffect(() => {
-    axios.get('http://localhost:3001/etudiant/get-pfes')
-      .then(res => {
-        setPfes(res.data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
+  const Verfier=()=>{
+    if(info.theme!==null){
+      return true
+    }else{
+      return false
+    }
+  }
 
-  const downloadPfeDocument = (filename) => {
-    const downloadUrl = `http://localhost:3001/etudiant/download-pfe/${filename}`;
-    window.open(downloadUrl, '_blank');
-  };
-
-  const handlePfeClick = (pfe) => {
-    setSelectedPfe(pfe);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedPfe(null);
-  };
-
-  // Fonction de filtrage des PFE en fonction du terme de recherche
-  const filteredPfes = pfes.filter(pfe =>
-    pfe.titre.toLowerCase().includes(searchTermTitre.toLowerCase()) ||
-    pfe.ref.toLowerCase().includes(searchTermRef.toLowerCase())
-  );
-
-  return (
-    <div className="mx-auto p-6 date-container relative">
-      <div className='absolute top-0 left-0 '>
-        <div className='flex justify-start items-start mb-2 '>
-          <Link to="/Etudiant" className='hover:text-red-500 text-black rounded flex items-center  '>
-            <IoIosArrowBack className='mr-2' />
-            Retourner à la page d'étudiant
-          </Link>
-        </div>
-      </div>
-      <h1 className="text-2xl font-semibold mb-4 mt-2 text-center" style={{ textDecoration: 'underline' }}>Themes Pfe Disponibles</h1>
-      {/* Champs de recherche */}
-      <div className='flex items-center flex-row mr-3 '>
-        <label htmlFor="search" className='mb-4 mr-3'>Chercher un theme :</label>
-        <h5>Par titre:</h5>
-        <div className='relative'>
-          <input
-            type="text"
-            placeholder="Taper le titre"
-            value={searchTermTitre}
-            onChange={(e) => setSearchTermTitre(e.target.value)}
-            className="border border-gray-300 rounded-md px-6 py-1 mb-4 focus:outline-none focus:ring focus:border-blue-500"
-            style={{ paddingLeft: '40px' }} // Ajoutez cet style
-          />
-          <FaSearch className="absolute left-2 top-1/3 transform -translate-y-1/2 text-gray-600" />
-        </div>
-        <h5>Par reference:</h5>
-        <div className='relative'>
-          <input
-            type="text"
-            placeholder="Taper le reference"
-            value={searchTermRef}
-            onChange={(e) => setSearchTermRef(e.target.value)}
-            className="border border-gray-300 rounded-md px-6 py-1 mb-4 focus:outline-none focus:ring focus:border-blue-500"
-            style={{ paddingLeft: '40px' }} // Ajoutez cet style
-          />
-          <FaSearch className="absolute left-2 top-1/3 transform -translate-y-1/2 text-gray-600" />
-        </div>
-      </div>
-      <div className="grid gap-4 grid-cols-5">
-        {filteredPfes.map(item => (
-          <div key={item._id} className="border w-64 p-4 rounded-lg flex flex-col shadow-md cursor-pointer transform transition duration-300 hover:shadow-xl " onClick={() => handlePfeClick(item)}>
-            <PDFThumbnail pdfUrl={`http://localhost:3001/etudiant/get-thumbnail/${encodeURIComponent(item.file.filename)}`} type='normal' />
-            <div>
-              <h3 className="font-semibold">Titre:</h3>
-              <p className="text-lg">{item.titre}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold">Description:</h3>
-              <p className="text-md">{item.description.split(' ').slice(0, 6).join(' ')}...</p>
-            </div>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 flex items-center justify-center"
-              onClick={() => downloadPfeDocument(item.file.filename)}
-            >
-              <FaFileDownload className="mr-2" />
-              Télécharger
-            </button>
+    return (
+      <div className="mx-auto p-6 date-container relative">
+        <div className='absolute top-0 left-0 '>
+          <div className='flex justify-start items-start mb-2 '>
+            <Link to="/Etudiant" className='hover:text-red-500 text-black rounded flex items-center  '>
+              <IoIosArrowBack className='mr-2' />
+              Retourner à la page d'étudiant
+            </Link>
           </div>
-        ))}
-      </div>
-      {selectedPfe && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-10 flex justify-center items-center  ">
-          <div className="bg-white p-8 rounded-md shadow-md grid grid-cols-2   fenetre2">
-            <div>
-              <PDFThumbnail pdfUrl={`http://localhost:3001/etudiant/get-thumbnail/${encodeURIComponent(selectedPfe.file.filename)}`} type='fenetre' />
+        </div>
+        <h1 className="text-2xl font-semibold mb-4 mt-2 text-center" style={{ textDecoration: 'underline' }}>Themes Pfe Disponibles</h1>
+        {/* Champs de recherche */}
+        <div className='flex items-center flex-row justify-between mr-3 '>
+          <div className='flex flex-row items-center gap-1'>
+            <label htmlFor="search" className='mr-3'>Chercher un theme :</label>
+            <div className='relative'>
+              <input
+                type="text"
+                placeholder="Taper  reference"
+                value={searchTermRef}
+                onChange={(e) => setSearchTermRef(e.target.value)}
+                className="border border-gray-300 rounded-md px-6 py-1 focus:outline-none focus:ring focus:border-blue-500 w-72"
+                style={{ paddingLeft: '40px' }} // Ajoutez cet style
+              />
+              <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-600" />
             </div>
-            <div className="col-span-1">
-              <h2 className="text-2xl font-semibold mb-4" style={{ textDecoration: 'underline' }}>{selectedPfe.titre}</h2>
-              <h2 className="text-xl font-semibold mb-1">Description:</h2>
-              <p className="text-md mb-4">{selectedPfe.description}</p>
-              <div className='flex flex-row items-center justify-center gap-2 mt-6'>
-                <button className="bg-red-500 text-white px-4 py-2 rounded-md" onClick={handleCloseModal}>Fermer</button>
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center justify-center" onClick={() => downloadPfeDocument(selectedPfe.file.filename)}
-                  >
-                    <FaFileDownload className="mr-2" />
-                    Télécharger
-                  </button>
+          </div>
+          <button className={` ${Verfier()? 'border shadow-md p-2 rounded-md bg-gray-500 text-white cursor-not-allowed':'bg-blue-500 hover:bg-blue-700 rounded-md p-2 text-white'}`} onClick={handleProposalModal} disabled={Verfier()} title={Verfier() ? "Vous avez déjà propose un theme " : ""}>
+            Proposer un Theme +
+          </button>
+        </div>
+        <div className="grid gap-72 grid-cols-5 mt-3">
+    {filteredPfes.map(item => (
+      <div key={item._id} className="border  p-4 rounded-lg flex flex-col shadow-md cursor-pointer transform transition duration-300 hover:shadow-xl card-pfe" onClick={() => handlePfeClick(item)}>
+        <div>
+          <h3 className="font-semibold">Ref : <span className='text-sm'>{item.reference}</span></h3>
+        </div>
+        <div className='flex flex-row items-center justify-center flex-grow'>
+          <PDFThumbnail pdfUrl={`http://localhost:3001/etudiant/get-thumbnail/${encodeURIComponent(item.file.filename)}`} type='normal' />
+        </div>
+        <div className='flex flex-col justify-end'>
+          <div>
+            <div>
+              <p className="text-xl font-bold">{item.titre}</p>
+              <p className="text-md">{item.description.split(' ').slice(0, 9).join(' ')}...</p>
+            </div>
+            <div className='flex flex-row items-center justify-center gap-2 mt-3'>
+              {item.binome.membre1 === info.id ?
+                <>
+                  <button className='bg-red-500 hover:bg-red-700 text-white rounded-md p-2' onClick={(e) => HandelDeletePfe(e, item._id)}>Supprimer</button>
+                  <button className='bg-blue-500 hover:bg-blue-700 p-2 text-white rounded-md' onClick={(e) => showEditModal(e, item)}>Modifier</button>
+                </>
+                :<div className='flex flex-row items-center justify-center gap-2'>
+                <button className='bg-blue-500 hover:bg-blue-700 p-2 text-white rounded-md flex flex-row items-center' onClick={() => downloadDocument(item.file.filename)}> <FaFileDownload className="mr-2" /> Télécharger</button>
+                {info.binome!==null ? <button className='bg-green-500 hover:bg-green-700 p-2 text-white rounded-md flex flex-row items-center w-44' >Envoyer aux binome</button>:""}
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+        {selectedPfe && (
+          <div className="fixed inset-0 bg-gray-800 bg-opacity-10 flex justify-center items-center  ">
+            <div className="bg-white p-8 rounded-md shadow-md grid grid-cols-2   fenetre2">
+            
+              <div>
+              <h3 className="font-semibold">Ref : <span className='text-sm'>{selectedPfe.reference}</span></h3>
+                <PDFThumbnail pdfUrl={`http://localhost:3001/etudiant/get-thumbnail/${encodeURIComponent(selectedPfe.file.filename)}`} type='fenetre' />
+              </div>
+              <div className="col-span-1">
+                <h2 className="text-2xl font-semibold mb-4" style={{ textDecoration: 'underline' }}>{selectedPfe.titre}</h2>
+                <h2 className="text-xl font-semibold mb-1">Description:</h2>
+                <p className="text-md mb-4">{selectedPfe.description}</p>
+                <h2 className="text-xl font-semibold mb-1">Expertise reuquis:</h2>
+                <p className="text-md mb-4">{selectedPfe.experties}</p>
+                <h2 className="text-xl font-semibold mb-1">Domaine:</h2>
+                <p className="text-md mb-4">{selectedPfe.domain}</p>
+                <h2 className="text-xl font-semibold mb-1">Type:</h2>
+                <p className="text-md mb-4">{selectedPfe.type}</p>
+                <h2 className="text-xl font-semibold mb-1">Information de personne propposer :</h2>
+                <div className='flex flex-col gap-1 items-start justify-center '>
+                <label htmlFor="nomprenom">Nom/Prenom:
+                <input type='text' className=" ml-4 text-md mb-4 border border-gray-400 p-1 rounded-md w-60" value={selectedPfe.info.nomPrenom}></input>
+                </label>
+                <label htmlFor="email"> Email:
+                <input type='text' className=" ml-20 text-md mb-4 border border-gray-400 p-1 rounded-md w-60" value={selectedPfe.info.email}></input>
+                </label>
+                </div>
+                <h2 className="text-xl font-semibold mb-1">Etat:</h2>
+                <p className="text-md mb-4 text-red-600">{selectedPfe.etat}</p> 
+                <div className='flex flex-row items-center justify-center gap-2 mt-6'>
+                  <button className="bg-red-500 text-white px-4 py-2 rounded-md" onClick={handleCloseModal}>Fermer</button>
+                  {selectedPfe.binome.membre1!==info.id ? 
+                  <div className='flex flex-row justify-center items-center gap-2'>
+                    <button className='bg-blue-500 text-white px-4 py-2 rounded-md flex flex-row items-center' onClick={() => downloadDocument(selectedPfe.file.filename)}>  <FaFileDownload className="mr-2" />Telecharger</button>
+                    {info.binome!==null ?<button className='bg-green-500 text-white px-4 py-2 rounded-md flex flex-row items-center w-48 mr-2'>Envoyer aux Binome</button>:""}
+                  </div>:""
+                  }
                 </div>
               </div>
             </div>
           </div>
         )}
+        {showProposalModal && (
+          <div className="fixed inset-0 bg-gray-800 bg-opacity-10 flex justify-center ">
+            <div className="bg-white p-8 rounded-md shadow-md fenetre-pfe">
+              <h2 className="text-2xl font-semibold mb-4 text-center">Proposer un thème</h2>
+              <form>
+                <div className="mb-4">
+                  <label htmlFor="titre" className="block text-sm font-medium text-gray-700">Titre du thème</label>
+                  <input type="text" id="titre" name="titre" className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500" value={inputs.titre} onChange={(e)=>HandelInputs(e)} />
+                </div>
+                <div className="mb-4">
+        
+                  <div className="mb-4">
+                 <label htmlFor="experties" className="block text-sm font-medium text-gray-700">Expertise requise</label>
+                   <input type="text" id="experties" name="experties" className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500" placeholder='EX:maitriser python ...' value={inputs.experties} onChange={(e)=>HandelInputs(e)}/>
+                 </div>
+                  </div>
+                <div className="mb-4">
+                  <label htmlFor="domaine" className="block text-sm font-medium text-gray-700">Domaine du thème</label>
+                  <input type="text" id="domaine" name="domaine" className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500" placeholder='EX:IA,DEVLOPPMENT WEB ...' value={inputs.domaine} onChange={(e)=>HandelInputs(e)}/>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description du thème</label>
+                  <textarea id="description" name="description" rows="4" className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500" value={inputs.description} onChange={(e)=>HandelInputs(e)}/>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="type" className="block text-sm font-medium text-gray-700">Type de thème</label>
+                  <select id="type" name="type" className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500" value={inputs.type} onChange={(e)=>handleTypeChange(e)}>
+                    <option value="interne">Interne</option>
+                    <option value="externe">Externe</option>
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="pdf" className="block text-sm font-medium text-gray-700">Fichier PDF du thème</label>
+                  <input type="file" id="pdf" name="pdf" accept=".pdf" className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500"  onChange={handleFileChange}/>
+                </div>
+                <div className="flex justify-end gap-2">
+                <button type="submit" className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-md" onClick={()=>setShowProposalModal(false)}>Fermer</button>
+                  <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md" onClick={(e)=>HandelProposerPfe(e)} >Proposer</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+       {editModal && editedTheme && (
+    <div className="fixed inset-0 bg-gray-800 bg-opacity-10 flex justify-center items-center">
+      <div className="bg-white p-8 rounded-md shadow-md fenetre-pfe2">
+        <h2 className="text-2xl font-semibold mb-4 text-center">Modifier un thème</h2>
+        <form onSubmit={(e)=>HandelSubmit(e,editedTheme._id)}>
+          <div className="mb-4">
+            <label htmlFor="titre" className="block text-sm font-medium text-gray-700">Titre du thème</label>
+            <input
+              type="text"
+              id="titre"
+              name="titre"
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500"
+              value={editedTheme.titre || ''} // Assurez-vous de gérer le cas où editedTheme est null
+              onChange={(e) => setEditedTheme({...editedTheme, titre: e.target.value})}
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="experties" className="block text-sm font-medium text-gray-700">Expertise requise</label>
+            <input
+              type="text"
+              id="experties"
+              name="experties"
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500"
+              value={editedTheme.experties || ''}
+              onChange={(e) => setEditedTheme({...editedTheme, experties: e.target.value})}
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="domaine" className="block text-sm font-medium text-gray-700">Domaine du thème</label>
+            <input
+              type="text"
+              id="domaine"
+              name="domaine"
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500"
+              value={editedTheme.domain || ''}
+              onChange={(e) => setEditedTheme({...editedTheme, domain: e.target.value})}
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description du thème</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="4"
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500"
+              value={editedTheme.description || ''}
+              onChange={(e) => setEditedTheme({...editedTheme, description: e.target.value})}
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="pdf" className="block text-sm font-medium text-gray-700">Fichier PDF du thème</label>
+            <input
+              type="file"
+              id="pdf"
+              name="pdf"
+              accept=".pdf"
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-500"
+              onChange={handleFileChange}
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md">Enregistrer</button>
+            <button type="button" className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-md" onClick={(e) => closeEditModal(e)}>Fermer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )}
         {pfes.length === 0 && (
           <div className="text-center">
             <h2 className="text-lg">Aucun PFE disponible pour le moment</h2>
@@ -132,5 +409,4 @@ export default function Pfe() {
       </div>
     );
   }
-  
-                 
+   
